@@ -2,21 +2,20 @@
 
 import test  from 'tstest'
 
-import {
-  SimpleVorpal,
+import Vorpal, {
   Action,
   CommandInstance,
-}                   from './simple-vorpal'
+}                   from 'vorpal'
 
 test('smoke testing', async t => {
-  const vorpal = new SimpleVorpal()
+  const vorpal = new Vorpal()
 
   vorpal.version('1.2.3')
-  t.equal((vorpal as any).vorpal._version, '1.2.3', 'set the version')
+  t.equal((vorpal as any)._version, '1.2.3', 'set the version')
 })
 
 test('command() foo', async t => {
-  const vorpal = new SimpleVorpal()
+  const vorpal = new Vorpal()
   const fooAction: Action = async function (
     this: CommandInstance,
     args,
@@ -48,7 +47,7 @@ test('command() foo', async t => {
 test('command() stdout pipe redirect', async t => {
   const EXPECTED_TEXT = 'vorpal for chatbot'
 
-  const vorpal = new SimpleVorpal()
+  const vorpal = new Vorpal()
   const fooAction: Action = async function (
     this: CommandInstance,
   ) {
