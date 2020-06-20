@@ -12,7 +12,7 @@ import {
   simpleExec,
 }                   from './stdout-assembler'
 
-test('stdout assembler', async t => {
+test('stdout assembler for known command', async t => {
   const EXPECTED_TEXT = 'vorpal for chatbot'
 
   const vorpal = new Vorpal()
@@ -31,4 +31,15 @@ test('stdout assembler', async t => {
 
   const stdout = await simpleExec(vorpal, 'foo')
   t.equal(stdout, EXPECTED_TEXT, 'should get the expected stdout')
+})
+
+test.skip('stdout assembler for unknown command', async t => {
+  const EXPECTED_TEXT_RE = /Invalid Command/i
+
+  const vorpal = new Vorpal()
+
+  vorpal.use(StdoutAssembler())
+
+  const stdout = await simpleExec(vorpal, 'unknown_command')
+  t.true(EXPECTED_TEXT_RE.test(stdout), 'should get the expected invalid command message')
 })
