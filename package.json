@@ -2,8 +2,8 @@
   "name": "wechaty-vorpal",
   "version": "0.2.5",
   "description": "Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.",
-  "main": "dist/src/index.js",
-  "typings": "dist/src/index.d.ts",
+  "main": "dist/src/mod.js",
+  "typings": "dist/src/mod.d.ts",
   "scripts": {
     "clean": "shx rm -fr dist/*",
     "dist": "npm run clean && tsc",
