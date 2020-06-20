@@ -10,6 +10,7 @@ import {
 
 import Vorpal       from 'vorpal'
 import {
+  StdoutAssembler,
   simpleExec,
 }                   from './stdout-assembler'
 
@@ -31,6 +32,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   const matchRoom    = matchers.roomMatcher(config.room)
 
   const vorpal = new Vorpal()
+  vorpal.use(StdoutAssembler())
 
   let extensionList: VorpalExtension[] = []
   if (config.use) {

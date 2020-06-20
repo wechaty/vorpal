@@ -37,6 +37,7 @@ function StdoutAssembler () {
 
     vorpal
       .command('wechatyVorpalStdoutAssembler', 'pipe stdout to our store with id')
+      .hidden()
       .option('-i --id <id>', 'distinct id for this output')
       .action(wechatyVorpalStdoutAssembler)
   }
@@ -46,7 +47,7 @@ async function simpleExec (
   vorpal: Vorpal,
   command: string
 ): Promise<string> {
-  log.verbose('WechatyVorpal', 'simpleExec(vorpal, %s)', command)
+  log.verbose('WechatyVorpal', 'simpleExec(vorpal, "%s")', command)
 
   const id = cuid()
 

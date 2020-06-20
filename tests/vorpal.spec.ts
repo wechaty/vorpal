@@ -7,6 +7,11 @@ import Vorpal, {
   CommandInstance,
 }                   from 'vorpal'
 
+import {
+  StdoutAssembler,
+  simpleExec,
+}                   from '../src/stdout-assembler'
+
 test('smoke testing', async t => {
   const vorpal = new Vorpal()
 
@@ -73,4 +78,14 @@ test('command() stdout pipe redirect', async t => {
   await vorpal.exec('foo | collect')
 
   t.deepEqual(output, EXPECTED_TEXT, 'should execute a command and get the output')
+})
+
+test.only('StdoutAssembler extension with hacker-news', async t => {
+  const vorpal = new Vorpal()
+
+  vorpal.use(StdoutAssembler())
+  vorpal.use(require('vorpal-hacker-news'))
+
+  const stdout = await simpleExec(vorpal, 'hacker-news --length 3')
+  t.true(/Hacker News/i.test(stdout), 'should get the stdout with hacker news')
 })
