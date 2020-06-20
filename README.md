@@ -1,6 +1,17 @@
 # wechaty-vorpal
 
+[![Wechaty Vorpal](https://img.shields.io/badge/Wechaty-Vorpal-brightgreen.svg)](https://github.com/wechaty/wechaty-vorpal)
+[![NPM](https://github.com/wechaty/wechaty-vorpal/workflows/NPM/badge.svg)](https://github.com/wechaty/wechaty-vorpal/actions?query=workflow%3ANPM)
+ [![NPM Version](https://img.shields.io/npm/v/wechaty-vorpal?color=brightgreen)](https://www.npmjs.com/package/wechaty-vorpal)
+
 Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.
+
+[![Wechaty Vorpal](docs/images/wechaty-vorpal.png)](https://github.com/wechaty/wechaty-vorpal)
+
+> Image: [rainbow sword](http://pixelartmaker.com/art/3008b950f5ab168)
+
+[![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-brightgreen.svg)](https://github.com/Wechaty/wechaty)
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-blue.svg)](https://www.typescriptlang.org/)
 
 ## Resources
 
@@ -10,7 +21,7 @@ Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.
 
 ### v0.0.1 (Jun 19, 2020)
 
-Init version for managing Wechaty ChatOps Commands
+Init the first version of Vorpal Wechaty Plugin for managing ChatOps Commands
 
 ## Contributors
 
