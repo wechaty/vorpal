@@ -65,13 +65,13 @@ Usage: hacker-news [options]
 ```sh
 Pulling top 3 stories on Hacker News:
 
-  1. [37mDiscovering Dennis Ritchies Lost Dissertation[39m (org)
+  1. Discovering Dennis Ritchies Lost Dissertation (org)
      93 points by beefhash 3 hours ago | 23 comments
 
-  2. [37mUpdating the Git protocol for SHA-256[39m (net)
+  2. Updating the Git protocol for SHA-256 (net)
      81 points by chmaynard 14 hours ago | 48 comments
 
-  3. [37mMac OS X Leopard and Xcode on iPad Pro[39m (com)
+  3. Mac OS X Leopard and Xcode on iPad Pro (com)
      134 points by tosh 10 hours ago | 28 comments
 ```
 
