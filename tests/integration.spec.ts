@@ -4,7 +4,7 @@ import {
   test,
 }             from 'tstest'
 
-import { WechatyVorpal } from '../src/'
+import { WechatyVorpal } from '../src/mod'
 
 import {
   Wechaty,
