@@ -13,8 +13,12 @@ import {
   simpleExec,
 }                   from './stdout-assembler'
 
+type VorpalExtensionFunction = (vorpal: Vorpal, options: any) => void
+type VorpalExtension = string | VorpalExtensionFunction
+type VorpalExtensions = VorpalExtension | VorpalExtension[]
+
 export interface WechatyVorpalConfig {
-  use: string[],
+  use: VorpalExtensions,
 
   contact? : matchers.ContactMatcherOptions,
   room?    : matchers.RoomMatcherOptions,
@@ -28,7 +32,16 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
   const vorpal = new Vorpal()
 
-  config.use.forEach(m => vorpal.use(m))
+  let extensionList: VorpalExtension[] = []
+  if (config.use) {
+    if (Array.isArray(config.use)) {
+      extensionList = config.use
+    } else {
+      extensionList = [ config.use ]
+    }
+  }
+
+  extensionList.forEach(m => vorpal.use(m))
   log.verbose('WechatyVorpal', 'WechatyVorpal() %s vorpal module installed', config.use.length)
 
   return function WechatyVorpalPlugin (wechaty: Wechaty) {
