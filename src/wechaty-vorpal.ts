@@ -23,6 +23,7 @@ export interface WechatyVorpalConfig {
 
   contact? : matchers.ContactMatcherOptions,
   room?    : matchers.RoomMatcherOptions,
+  at?      : boolean,
 }
 
 function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
@@ -54,12 +55,17 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       const from = message.from()
 
       if (room) {
-        if (!await matchRoom(room))             { return }
-      } else if (from) {
-        if (!await matchContact(from))          { return }
-      } else                                    { return }
+        if (!await matchRoom(room))                 { return }
 
-      if (message.type() !== Message.Type.Text) { return }
+        const atSelf = await message.mentionSelf()
+        if (config.at && !atSelf)                   { return }
+
+      } else if (from) {
+        if (!await matchContact(from))              { return }
+
+      } else                                        { return }
+
+      if (message.type() !== Message.Type.Text)     { return }
 
       const command = message.text()
 

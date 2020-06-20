@@ -13,6 +13,68 @@ Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-brightgreen.svg)](https://github.com/Wechaty/wechaty)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-blue.svg)](https://www.typescriptlang.org/)
 
+## Usage
+
+```ts
+import { Wechaty }        from 'wechaty'
+import { WechatyVorpal }  from 'wechaty-vorpal'
+import hackerNews         from 'vorpal-hacker-news'
+
+const wechaty = new Wechaty()
+
+wechaty.use(
+  WechatyVorpal({
+    use: hackerNews,
+  }),
+)
+
+wechaty.start()
+```
+
+See: [wechaty-vorpal-contrib](https://github.com/wechaty/wechaty-vorpal-contrib) for more Wechaty Vorpal Extension CLI for Chatbots.
+
+## Demo
+
+![Wechaty Vorpal Hacker News](docs/images/wechaty-vorpal-hacker-news.png)
+
+> help
+
+```sh
+Commands:
+
+    help [command...]       Provides help for a given command.
+    exit                    Exits application.
+    hacker-news [options]   Lists the top stories on hacker news.
+```
+
+> help hacker-news
+
+```sh
+Usage: hacker-news [options]
+
+  Lists the top stories on hacker news.
+
+  Options:
+
+    --help              output usage information
+    -l, --length [amt]  Limits the list to a given length.
+```
+
+> hacker-news --length 3
+
+```sh
+Pulling top 3 stories on Hacker News:
+
+  1. [37mDiscovering Dennis Ritchies Lost Dissertation[39m (org)
+     93 points by beefhash 3 hours ago | 23 comments
+
+  2. [37mUpdating the Git protocol for SHA-256[39m (net)
+     81 points by chmaynard 14 hours ago | 48 comments
+
+  3. [37mMac OS X Leopard and Xcode on iPad Pro[39m (com)
+     134 points by tosh 10 hours ago | 28 comments
+```
+
 ## Resources
 
 1. [Creating Node.js Command Line Utilities to Improve Your Workflow](https://www.telerik.com/blogs/creating-node-js-command-line-utilities-improve-workflow)
