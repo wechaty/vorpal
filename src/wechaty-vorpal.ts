@@ -1,14 +1,16 @@
 import {
   Wechaty,
   WechatyPlugin,
-  log,
   Message,
+  log,
 }                   from 'wechaty'
 import {
   matchers,
 }                   from 'wechaty-plugin-contrib'
 
 import Vorpal       from 'vorpal'
+import stripAnsi    from 'strip-ansi'
+
 import {
   StdoutAssembler,
   simpleExec,
@@ -33,8 +35,23 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   const matchRoom    = matchers.roomMatcher(config.room)
 
   const vorpal = new Vorpal()
+
+  /**
+   * Use StdoutAssembler to redirect stdout to buffer
+   */
   vorpal.use(StdoutAssembler())
 
+  /**
+   * Remove the default `exit` command
+   */
+  const exit = vorpal.find('exit')
+  if (exit) {
+    exit.remove()
+  }
+
+  /**
+   * Load all Vorpal Extentions
+   */
   let extensionList: VorpalExtension[] = []
   if (config.use) {
     if (Array.isArray(config.use)) {
@@ -47,6 +64,9 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   extensionList.forEach(m => vorpal.use(m))
   log.verbose('WechatyVorpal', 'WechatyVorpal() %s vorpal module installed', config.use.length)
 
+  /**
+   * Connect with Wechaty
+   */
   return function WechatyVorpalPlugin (wechaty: Wechaty) {
     log.verbose('WechatyVorpal', 'WechatyVorpalPlugin(%s)', wechaty)
 
@@ -70,7 +90,9 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       const command = message.text()
 
       const stdout = await simpleExec(vorpal, command)
-      await message.say(stdout)
+
+      const stripedStdout = stripAnsi(stdout)
+      await message.say(stripedStdout)
     })
   }
 }
