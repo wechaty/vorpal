@@ -19,7 +19,7 @@ Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.
 
 ## History
 
-### v0.0.1 (Jun 19, 2020)
+### v0.2 (Jun 19, 2020)
 
 Init the first version of Vorpal Wechaty Plugin for managing ChatOps Commands
 
