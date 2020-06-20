@@ -16,6 +16,8 @@ Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.
 ## Resources
 
 1. [Creating Node.js Command Line Utilities to Improve Your Workflow](https://www.telerik.com/blogs/creating-node-js-command-line-utilities-improve-workflow)
+1. [vantge - Distributed, realtime CLI for live Node apps.](https://github.com/dthree/vantage)
+1. [vorpal - Node's framework for interactive CLIs](https://github.com/dthree/vorpal)
 
 ## History
 
