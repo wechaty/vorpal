@@ -1,6 +1,6 @@
 {
   "name": "wechaty-vorpal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
