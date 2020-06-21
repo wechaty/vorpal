@@ -9,7 +9,6 @@ import {
 }                   from 'wechaty-plugin-contrib'
 
 import Vorpal       from 'vorpal'
-import stripAnsi    from 'strip-ansi'
 
 import {
   StdoutAssembler,
@@ -89,10 +88,26 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
       const command = message.text()
 
-      const stdout = await simpleExec(vorpal, command)
+      const simpleResult = await simpleExec(vorpal, command)
 
-      const stripedStdout = stripAnsi(stdout)
-      await message.say(stripedStdout)
+      if (simpleResult.stdout) {
+        await message.say(simpleResult.stdout)
+      }
+
+      if (simpleResult.ret) {
+        let retList
+        if (Array.isArray(simpleResult.ret)) {
+          retList = simpleResult.ret
+        } else {
+          retList = [ simpleResult.ret ]
+        }
+        for (const ret of retList) {
+          if (ret instanceof Function) {
+            await ret(message)
+          }
+          await message.say(msg)
+        }
+      }
     })
   }
 }

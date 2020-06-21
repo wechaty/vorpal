@@ -3,3 +3,6 @@ export {
   WechatyVorpalConfig,
   WechatyVorpal,
 }                         from './wechaty-vorpal'
+export {
+  CommandReturnedTypes,
+}                                     from './stdout-assembler'

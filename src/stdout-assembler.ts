@@ -3,6 +3,14 @@ import Vorpal, {
   Args,
   CommandInstance,
 }                   from 'vorpal'
+import {
+  Message,
+  UrlLink,
+  Contact,
+  FileBox,
+}                   from 'wechaty'
+
+import stripAnsi    from 'strip-ansi'
 
 import {
   log,
@@ -22,11 +30,10 @@ function StdoutAssembler () {
       this: CommandInstance,
       args: Args,
     ) {
-      if (!args || !args.stdin) {
-        return
-      }
-      const stdin = args.stdin as string[]
-      const id = args.options.id as string
+      if (!args || !args.stdin) { return }
+
+      const stdin = args.stdin      as string[]
+      const id    = args.options.id as string
 
       if (!(id in stdoutStore)) {
         stdoutStore[id] = []
@@ -43,25 +50,38 @@ function StdoutAssembler () {
   }
 }
 
+type CommandReturnedMessage     = FileBox | UrlLink | Contact | string
+type CommandReturnedFunction    = (message: Message) => void | CommandReturnedMessage | CommandReturnedMessage[]
+type CommandReturnedType        = CommandReturnedMessage | CommandReturnedFunction
+export type CommandReturnedTypes = CommandReturnedType | CommandReturnedType[]
+
+interface SimpleExecResult {
+  stdout: string,
+  ret: CommandReturnedTypes,
+}
+
 async function simpleExec (
   vorpal: Vorpal,
   command: string
-): Promise<string> {
+): Promise<SimpleExecResult> {
   log.verbose('WechatyVorpal', 'simpleExec(vorpal, "%s")', command)
 
   const id = cuid()
 
   const appendPipe = ' | wechatyVorpalStdoutAssembler --id ' + id
-  await vorpal.exec(command + appendPipe)
+  const ret = await vorpal.exec(command + appendPipe) as CommandReturnedTypes
 
   const textListList = stdoutStore[id] || []
   delete stdoutStore[id]
 
-  const text = textListList
+  const stdout = textListList
     .map(textList => textList.join(''))
     .join('\n')
 
-  return text
+  return {
+    ret,
+    stdout: stripAnsi(stdout),
+  }
 }
 
 export {
