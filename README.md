@@ -4,7 +4,7 @@
 [![NPM](https://github.com/wechaty/wechaty-vorpal/workflows/NPM/badge.svg)](https://github.com/wechaty/wechaty-vorpal/actions?query=workflow%3ANPM)
  [![NPM Version](https://img.shields.io/npm/v/wechaty-vorpal?color=brightgreen)](https://www.npmjs.com/package/wechaty-vorpal)
 
-Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.
+Extensible Interactive CLI Plugin for Wechaty ChatOps, Powered by Vorpal.
 
 [![Wechaty Vorpal](docs/images/wechaty-vorpal.png)](https://github.com/wechaty/wechaty-vorpal)
 
