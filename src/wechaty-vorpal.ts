@@ -73,6 +73,8 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       const room = message.room()
       const from = message.from()
 
+      if (message.self())                           { return }
+
       if (room) {
         if (!await matchRoom(room))                 { return }
 
