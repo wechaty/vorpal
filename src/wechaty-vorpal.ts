@@ -107,7 +107,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
           if (ret instanceof Function) {
             await ret(message)
           }
-          await message.say(msg)
+          await message.say(message)
         }
       }
     })
