@@ -29,8 +29,8 @@ test('stdout assembler for known command', async t => {
     .command('foo')
     .action(fooAction)
 
-  const stdout = await simpleExec(vorpal, 'foo')
-  t.equal(stdout, EXPECTED_TEXT, 'should get the expected stdout')
+  const ret = await simpleExec(vorpal, 'foo')
+  t.equal(ret.stdout, EXPECTED_TEXT, 'should get the expected stdout')
 })
 
 test.skip('stdout assembler for unknown command', async t => {

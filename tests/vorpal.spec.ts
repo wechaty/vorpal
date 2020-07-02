@@ -80,7 +80,7 @@ test('command() stdout pipe redirect', async t => {
   t.deepEqual(output, EXPECTED_TEXT, 'should execute a command and get the output')
 })
 
-test.only('StdoutAssembler extension with hacker-news', async t => {
+test('StdoutAssembler extension with hacker-news', async t => {
   const vorpal = new Vorpal()
 
   vorpal.use(StdoutAssembler())
