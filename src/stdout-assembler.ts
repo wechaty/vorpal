@@ -3,12 +3,6 @@ import Vorpal, {
   Args,
   CommandInstance,
 }                   from 'vorpal'
-import {
-  Message,
-  UrlLink,
-  Contact,
-  FileBox,
-}                   from 'wechaty'
 
 import stripAnsi    from 'strip-ansi'
 
@@ -50,14 +44,9 @@ function StdoutAssembler () {
   }
 }
 
-type CommandReturnedMessage     = FileBox | UrlLink | Contact | string
-type CommandReturnedFunction    = (message: Message) => void | CommandReturnedMessage | CommandReturnedMessage[]
-type CommandReturnedType        = CommandReturnedMessage | CommandReturnedFunction
-export type CommandReturnedTypes = CommandReturnedType | CommandReturnedType[]
-
 interface SimpleExecResult {
-  stdout: string,
-  ret: CommandReturnedTypes,
+  stdout : string,
+  ret?   : unknown,
 }
 
 async function simpleExec (
@@ -69,7 +58,7 @@ async function simpleExec (
   const id = cuid()
 
   const appendPipe = ' | wechatyVorpalStdoutAssembler --id ' + id
-  const ret = await vorpal.exec(command + appendPipe) as CommandReturnedTypes
+  const ret = await vorpal.exec(command + appendPipe)
 
   const textListList = stdoutStore[id] || []
   delete stdoutStore[id]

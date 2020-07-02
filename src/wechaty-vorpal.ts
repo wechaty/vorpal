@@ -6,8 +6,12 @@ import {
 }                   from 'wechaty'
 import {
   matchers,
+  mappers,
+  talkers,
 }                   from 'wechaty-plugin-contrib'
-
+import {
+  Observable,
+}                   from 'rxjs'
 import Vorpal       from 'vorpal'
 
 import {
@@ -44,21 +48,16 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
    * Remove the default `exit` command
    */
   const exit = vorpal.find('exit')
-  if (exit) {
-    exit.remove()
-  }
+  if (exit) { exit.remove() }
 
   /**
-   * Load all Vorpal Extentions
+   * Load all Vorpal Extensions
    */
-  let extensionList: VorpalExtension[] = []
-  if (config.use) {
-    if (Array.isArray(config.use)) {
-      extensionList = config.use
-    } else {
-      extensionList = [ config.use ]
-    }
-  }
+  const extensionList = config.use
+    ? Array.isArray(config.use)
+      ? config.use
+      : [ config.use ]
+    : []
 
   extensionList.forEach(m => vorpal.use(m))
   log.verbose('WechatyVorpal', 'WechatyVorpal() %s vorpal module installed', config.use.length)
@@ -86,28 +85,33 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
       if (message.type() !== Message.Type.Text)     { return }
 
-      const command = message.text()
+      const command = await message.mentionText()
 
-      const simpleResult = await simpleExec(vorpal, command)
+      const {
+        stdout,
+        ret,
+      }           = await simpleExec(vorpal, command)
 
-      if (simpleResult.stdout) {
-        await message.say(simpleResult.stdout)
+      if (stdout) {
+        await message.say(stdout)
       }
 
-      if (simpleResult.ret) {
-        let retList
-        if (Array.isArray(simpleResult.ret)) {
-          retList = simpleResult.ret
-        } else {
-          retList = [ simpleResult.ret ]
-        }
-        for (const ret of retList) {
-          if (ret instanceof Function) {
-            await ret(message)
-          }
-          await message.say(msg)
-        }
+      /**
+       * If our Vorpal command returns an Observable,
+       * Then it must a stream of `mappers.MessageMapperOptions`
+       * Which will be used to create messages
+       */
+      // TODO(huan): use a duck type to identify whether the ret is an Observable
+      if (ret instanceof Observable) {
+        ret.subscribe(async (options: mappers.MessageMapperOptions) => {
+          const mapMessage = mappers.messageMapper(options)
+          const msgList = await mapMessage(message)
+
+          const talkMessage = talkers.messageTalker(msgList)
+          await talkMessage(message)
+        })
       }
+
     })
   }
 }
