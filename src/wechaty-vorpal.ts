@@ -19,7 +19,7 @@ import {
   simpleExec,
 }                   from './stdout-assembler'
 
-export type WechatyVorpalMessageObservable = Observable<mappers.MessageMapperOptions>
+export type WechatyVorpalMessages = mappers.MessageMapperOptions
 
 type VorpalExtensionFunction = (vorpal: Vorpal, options: any) => void
 type VorpalExtension = string | VorpalExtensionFunction

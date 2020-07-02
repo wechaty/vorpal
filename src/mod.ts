@@ -2,5 +2,5 @@ export { VERSION }        from './version'
 export {
   WechatyVorpalConfig,
   WechatyVorpal,
-  WechatyVorpalMessageObservable,
-}                                   from './wechaty-vorpal'
+  WechatyVorpalMessages,
+}                         from './wechaty-vorpal'
