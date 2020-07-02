@@ -86,6 +86,6 @@ test.only('StdoutAssembler extension with hacker-news', async t => {
   vorpal.use(StdoutAssembler())
   vorpal.use(require('vorpal-hacker-news'))
 
-  const stdout = await simpleExec(vorpal, 'hacker-news --length 3')
+  const { stdout } = await simpleExec(vorpal, 'hacker-news --length 3')
   t.true(/Hacker News/i.test(stdout), 'should get the stdout with hacker news')
 })
