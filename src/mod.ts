@@ -1,12 +1,13 @@
-import Vorpal from 'vorpal'
+export {
+  Observable,
+}             from 'rxjs'
 
 export { VERSION }        from './version'
 export {
+  Vorpal,
+}                         from './vorpal/mod'
+export {
   WechatyVorpalConfig,
   WechatyVorpal,
-  WechatyVorpalMessages,
+  SayableMessage,
 }                         from './wechaty-vorpal'
-
-export {
-  Vorpal,
-}

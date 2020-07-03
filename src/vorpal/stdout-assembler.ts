@@ -8,14 +8,20 @@ import stripAnsi    from 'strip-ansi'
 
 import {
   log,
-}                 from './config'
+}                 from '../config'
 
-const stdoutStore: {
+// import { monkeyPatch } from './monkey-patch'
+
+interface StdoutStore {
   [id: string]: string[][],
-} = {}
+}
+
+const stdoutStore: StdoutStore = {}
 
 function StdoutAssembler () {
   log.verbose('WechatyVorpal', 'StdoutAssembler()')
+
+  // monkeyPatch(stdoutStore)
 
   return function StdoutAssemblerExtension (vorpal: Vorpal) {
     log.verbose('WechatyVorpal', 'StdoutAssemblerExtension()')

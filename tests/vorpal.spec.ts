@@ -10,7 +10,7 @@ import Vorpal, {
 import {
   StdoutAssembler,
   simpleExec,
-}                   from '../src/stdout-assembler'
+}                   from '../src/vorpal/mod'
 
 test('smoke testing', async t => {
   const vorpal = new Vorpal()

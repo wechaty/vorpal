@@ -3,23 +3,25 @@ import {
   WechatyPlugin,
   Message,
   log,
-}                   from 'wechaty'
+}                       from 'wechaty'
 import {
   matchers,
-  mappers,
   talkers,
 }                   from 'wechaty-plugin-contrib'
 import {
+  MappedMessage,
+}                   from 'wechaty-plugin-contrib/src/mappers/message-mapper'
+import {
   Observable,
 }                   from 'rxjs'
-import Vorpal       from 'vorpal'
-
 import {
+  Vorpal,
   StdoutAssembler,
   simpleExec,
-}                   from './stdout-assembler'
+}                   from './vorpal/mod'
 
-export type WechatyVorpalMessages = mappers.MessageMapperOptions
+// TODO(huan): move SayableMessage to Wechaty
+export type SayableMessage = MappedMessage
 
 type VorpalExtensionFunction = (vorpal: Vorpal, options: any) => void
 type VorpalExtension = string | VorpalExtensionFunction
@@ -64,30 +66,37 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   extensionList.forEach(m => vorpal.use(m))
   log.verbose('WechatyVorpal', 'WechatyVorpal() %s vorpal module installed', config.use.length)
 
+  const matchPlugin = (message: Message): boolean => {
+    if (message.self())                       { return false }
+    if (message.type() !== Message.Type.Text) { return false }
+    return true
+  }
+
+  const matchConfig = async (message: Message): Promise<boolean> => {
+    const room = message.room()
+    const from = message.from()
+
+    if (room) {
+      if (!await matchRoom(room))                 { return false }
+      const atSelf = await message.mentionSelf()
+      if (config.at && !atSelf)                   { return false }
+    } else if (from) {
+      if (!await matchContact(from))              { return false }
+    } else                                        { return false }
+
+    return true
+  }
+
   /**
    * Connect with Wechaty
    */
   return function WechatyVorpalPlugin (wechaty: Wechaty) {
     log.verbose('WechatyVorpal', 'WechatyVorpalPlugin(%s)', wechaty)
 
-    wechaty.on('message', async message => {
-      const room = message.room()
-      const from = message.from()
+    async function onMessage (message: Message) {
 
-      if (message.self())                           { return }
-
-      if (room) {
-        if (!await matchRoom(room))                 { return }
-
-        const atSelf = await message.mentionSelf()
-        if (config.at && !atSelf)                   { return }
-
-      } else if (from) {
-        if (!await matchContact(from))              { return }
-
-      } else                                        { return }
-
-      if (message.type() !== Message.Type.Text)     { return }
+      if (!await matchPlugin(message))  { return }
+      if (!await matchConfig(message))  { return }
 
       const command = await message.mentionText()
 
@@ -107,16 +116,20 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
        */
       // TODO(huan): use a duck type to identify whether the ret is an Observable
       if (ret instanceof Observable) {
-        ret.subscribe(async (options: mappers.MessageMapperOptions) => {
-          const mapMessage = mappers.messageMapper(options)
-          const msgList = await mapMessage(message)
+        ret.subscribe(async (msg: SayableMessage) => {
+          // const mapMessage = mappers.messageMapper(msg)
+          // const msgList = await mapMessage(message)
 
-          const talkMessage = talkers.messageTalker(msgList)
+          const talkMessage = talkers.messageTalker(msg)
           await talkMessage(message)
         })
       }
 
-    })
+    }
+
+    wechaty.on('message', onMessage)
+    return () => void wechaty.off('message', onMessage)
+
   }
 }
 
