@@ -2,10 +2,11 @@
 
 import test  from 'tstest'
 
-import Vorpal, {
+import {
+  Vorpal,
   Action,
   CommandInstance,
-}                   from 'vorpal'
+}                   from './mod'
 
 import {
   StdoutAssembler,
