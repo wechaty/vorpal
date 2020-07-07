@@ -22,7 +22,7 @@ export class Command extends EventEmitter {
   private _parent: Vorpal
   private _description;
   public _mode;
-  public _catch;
+  public _default;
   public _help;
   public _noHelp;
   public _types;
@@ -54,7 +54,7 @@ export class Command extends EventEmitter {
     this._hidden = false
     this._parent = parent
     this._mode = false
-    this._catch = false
+    this._default = false
     this._help = undefined
     this._init = undefined
     this._after = undefined
