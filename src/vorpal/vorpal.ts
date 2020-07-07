@@ -1,6 +1,8 @@
 /* eslint-disable sort-keys */
 import { EventEmitter } from 'events'
 
+import { Message } from 'wechaty'
+
 import { Command } from './command'
 import { CommandInstance } from './command-instance'
 import Session from './session'
@@ -31,6 +33,22 @@ export class Vorpal extends EventEmitter {
   private isCommandArgKeyPairNormalized: boolean
 
   public _help: any
+
+  protected _message?: Message
+
+  get message (): Message {
+    if (!this._message) {
+      throw new Error('Vorpal has not set Message instance yet')
+    }
+    return this._message
+  }
+
+  set message (newMessage: Message) {
+    if (this._message) {
+      throw new Error('Message from Vorpal can not set twice!')
+    }
+    this._message = newMessage
+  }
 
   constructor () {
     super()
