@@ -83,6 +83,10 @@ Pulling top 3 stories on Hacker News:
 
 ## History
 
+### v0.3 (Jul 7, 2020)
+
+Inherit the TypeScript source code from the [Vorpal Reforged](https://github.com/vorpaljs-reforged/vorpal) ([MIT License](src/vorpal/LICENSE)) so that we can refactor it to fit the Chatbot environment better.
+
 ### v0.2 (Jun 19, 2020)
 
 Init the first version of Vorpal Wechaty Plugin for managing ChatOps Commands
