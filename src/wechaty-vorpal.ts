@@ -93,6 +93,8 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   return function WechatyVorpalPlugin (wechaty: Wechaty) {
     log.verbose('WechatyVorpal', 'WechatyVorpalPlugin(%s)', wechaty)
 
+    vorpal.wechaty = wechaty
+
     async function onMessage (message: Message) {
 
       if (!await matchPlugin(message))  { return }
