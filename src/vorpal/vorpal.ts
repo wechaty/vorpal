@@ -3,11 +3,17 @@ import { EventEmitter } from 'events'
 
 import { Message } from 'wechaty'
 
-import { Command } from './command'
-import { CommandInstance } from './command-instance'
-import Session from './session'
-import * as utils from './utils'
-import commons from './vorpal-commons'
+import * as utils from './utils/mod'
+
+import { Command }          from './command'
+import { CommandInstance }  from './command-instance'
+import { Session }          from './session'
+import { commons }          from './vorpal-commons'
+
+export type VorpalExtension = (
+  vorpal   : Vorpal,
+  options? : Object,
+) => void
 
 interface VorpalMeta {
   version?    : string,
@@ -22,7 +28,7 @@ interface CommandXOptions {
   default? : boolean,
 }
 
-export class Vorpal extends EventEmitter {
+class Vorpal extends EventEmitter {
 
   private meta: VorpalMeta
 
@@ -136,36 +142,39 @@ export class Vorpal extends EventEmitter {
    * from another Node module as an extension
    * of Vorpal.
    *
-   * @param {Array} commands
+   * @param {Array} extension
    * @return {Vorpal}
    * @api public
    */
 
-  public use (commands, options?) {
-    if (!commands) {
-      return this
-    }
-    if (typeof commands === 'function') {
-      commands.call(this, this, options)
-    } else if (typeof commands === 'string') {
+  public use (
+    extension: string
+            | VorpalExtension
+            | Command | Command[],
+    options?: Object,
+  ): this {
+    if (typeof extension === 'function') {
+      extension.call(this, this, options)
+    } else if (typeof extension === 'string') {
       /* eslint-disable-next-line @typescript-eslint/no-var-requires */
-      return this.use(require(commands), options)
+      const module = require(extension)
+      return this.use(module, options)
     } else {
-      commands = Array.isArray(commands) ? commands : [commands]
-      for (const cmd of commands) {
+      extension = Array.isArray(extension) ? extension : [extension]
+      for (const cmd of extension) {
         if (cmd.command) {
           const command = this.command(cmd.command)
           if (cmd.description) {
-            command.description(cmd.description)
+            command.description(cmd.description as any)
           }
           if (cmd.options) {
             cmd.options = Array.isArray(cmd.options) ? cmd.options : [cmd.options]
             for (let j = 0; j < cmd.options.length; ++j) {
-              command.option(cmd.options[j][0], cmd.options[j][1])
+              command.option((cmd.options[j] as any)[0], (cmd.options[j] as any)[1])
             }
           }
           if (cmd.action) {
-            command.action(cmd.action)
+            command.action(cmd.action as any)
           }
         }
       }
@@ -183,7 +192,11 @@ export class Vorpal extends EventEmitter {
    * @api public
    */
 
-  public command (name: string, desc?: string, opts: CommandXOptions = {}): Command {
+  public command (
+    name: string,
+    desc?: string,
+    opts: CommandXOptions = {},
+  ): Command {
     opts = opts || {}
     name = String(name)
 
@@ -199,7 +212,6 @@ export class Vorpal extends EventEmitter {
     }
 
     cmd._noHelp = Boolean(opts.noHelp)
-    cmd._mode = opts.mode || false
     cmd._default = opts.default || false
     cmd._parseExpectedArgs(args)
 
@@ -311,11 +323,10 @@ export class Vorpal extends EventEmitter {
     })
   }
 
-  public _exec (item) {
+  public _exec (item: any) {
     const self = this
     item = item || {}
     item.command = item.command || ''
-    const modeCommand = item.command
 
     const commandData = utils.parseCommand(item.command, this.commands)
     item.command = commandData.command
@@ -323,7 +334,7 @@ export class Vorpal extends EventEmitter {
     const match = commandData.match
     const matchArgs = commandData.matchArgs as string
 
-    function throwHelp (cmd, msg, alternativeMatch?) {
+    function throwHelp (cmd: any, msg?: string, alternativeMatch?: any) {
       if (msg) {
         cmd.session.log(msg)
       }
@@ -331,7 +342,7 @@ export class Vorpal extends EventEmitter {
       cmd.session.log(pickedMatch.helpInformation())
     }
 
-    function callback (cmd, err?, msg?) {
+    function callback (cmd: any, err?: any, msg?: any) {
       if (!err && cmd.resolve) {
         cmd.resolve(msg)
       } else if (err && cmd.reject) {
@@ -341,13 +352,8 @@ export class Vorpal extends EventEmitter {
 
     if (match) {
       item.fn = match._fn
-      item._cancel = match._cancel
       item.validate = match._validate
       item.commandObject = match
-      const init = match._init
-        || function (args, cb) {
-          cb()
-        }
 
       item.args = utils.buildCommandArgs(
         matchArgs,
@@ -407,7 +413,7 @@ export class Vorpal extends EventEmitter {
       // execution string.
 
       // Build the instances for each pipe.
-      item.pipes = item.pipes.map(function (pipe) {
+      item.pipes = item.pipes.map(function (pipe: any) {
         return new CommandInstance({
           commandWrapper: item,
           command: pipe.command._name,
@@ -424,7 +430,7 @@ export class Vorpal extends EventEmitter {
         item.pipes[k].downstream = downstream
       }
 
-      item.session.execCommandSet(item, function (wrapper, err, data) {
+      item.session.execCommandSet(item, function (wrapper: any, err: any, data: any) {
         callback(wrapper, err, data)
       })
     } else {
@@ -442,7 +448,7 @@ export class Vorpal extends EventEmitter {
    * @api public
    */
 
-  public find (name) {
+  public find (name: string) {
     return this.commands.find(command => command._name === name)
   }
 
@@ -454,7 +460,7 @@ export class Vorpal extends EventEmitter {
    * @api public
    */
 
-  public help (fn) {
+  public help (fn: Function) {
     this._help = fn
   }
 
@@ -465,7 +471,7 @@ export class Vorpal extends EventEmitter {
    * @api private
    */
 
-  public _commandHelp (command) {
+  public _commandHelp (command?: string) {
     if (!this.commands.length) {
       return ''
     }
@@ -532,7 +538,7 @@ export class Vorpal extends EventEmitter {
 
         return [
           cmd._name
-            + (cmd._alias ? '|' + cmd._alias : '')
+            + ((cmd as any)._alias ? '|' + (cmd as any)._alias : '')
             + (cmd.options.length ? ' [options]' : '')
             + ' '
             + args,
@@ -541,10 +547,10 @@ export class Vorpal extends EventEmitter {
       })
 
     const width = commands.reduce(function (max, commandX) {
-      return Math.max(max, commandX[0].length)
+      return Math.max(max, (commandX[0] as any).length)
     }, 0)
 
-    const counts = {}
+    const counts = {} as { [key: string]: any }
 
     let groups = matches
       .filter(function (cmd) {
@@ -582,8 +588,8 @@ export class Vorpal extends EventEmitter {
       : '\n  Commands:\n\n'
         + commands
           .map(function (cmd) {
-            const prefix = '    ' + utils.pad(cmd[0], width) + '  '
-            const suffixArr = cmd[1].split('\n')
+            const prefix = '    ' + utils.pad(cmd[0] as any, width) + '  '
+            const suffixArr = (cmd[1] as any).split('\n')
             for (let i = 0; i < suffixArr.length; ++i) {
               if (i !== 0) {
                 suffixArr[i] = utils.pad('', width + 6) + suffixArr[i]
@@ -606,7 +612,7 @@ export class Vorpal extends EventEmitter {
       .replace(/\n\n$/, '\n')
   }
 
-  public _helpHeader (hideTitle) {
+  public _helpHeader (hideTitle: boolean) {
     const header = []
 
     if (this.meta.banner) {
@@ -639,4 +645,4 @@ export class Vorpal extends EventEmitter {
 
 }
 
-export default Vorpal
+export { Vorpal }

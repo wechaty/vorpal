@@ -18,7 +18,7 @@ test('stdout assembler for known command', async t => {
 
   const vorpal = new Vorpal()
 
-  vorpal.use(StdoutAssembler())
+  vorpal.use(StdoutAssembler() as any)
 
   const fooAction: Action = async function (
     this: CommandInstance,
@@ -30,7 +30,7 @@ test('stdout assembler for known command', async t => {
     .command('foo')
     .action(fooAction)
 
-  const ret = await simpleExec(vorpal, 'foo')
+  const ret = await simpleExec(vorpal, 'foo', {})
   t.equal(ret.stdout, EXPECTED_TEXT, 'should get the expected stdout')
 })
 
@@ -41,6 +41,6 @@ test.skip('stdout assembler for unknown command', async t => {
 
   vorpal.use(StdoutAssembler())
 
-  const { stdout } = await simpleExec(vorpal, 'unknown_command')
+  const { stdout } = await simpleExec(vorpal, 'unknown_command', {})
   t.true(EXPECTED_TEXT_RE.test(stdout), 'should get the expected invalid command message')
 })

@@ -1,8 +1,10 @@
 import cuid         from 'cuid'
-import Vorpal, {
+import { Vorpal }   from './vorpal'
+
+import {
   Args,
   CommandInstance,
-}                   from 'vorpal'
+}                   from './command-instance'
 
 import stripAnsi    from 'strip-ansi'
 
@@ -57,9 +59,12 @@ interface SimpleExecResult {
 
 async function simpleExec (
   vorpal: Vorpal,
-  command: string
+  command: string,
+  stdio: any,
 ): Promise<SimpleExecResult> {
   log.verbose('WechatyVorpal', 'simpleExec(vorpal, "%s")', command)
+
+  void stdio
 
   const id = cuid()
 

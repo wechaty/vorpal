@@ -4,7 +4,7 @@ import { ArgTypes } from '../types'
 
 import { Command } from '../command'
 import {
-  CommandArgs,
+  Args,
   CommandInstance,
 }                   from '../command-instance'
 
@@ -19,10 +19,10 @@ const MAX_ARGS = 10
 const ARGS_PATTERN = /"(.*?)"|'(.*?)'|`(.*?)`|([^\s"]+)/gi
 
 type CommandExecutionItem = {
-  args: string | CommandArgs; // From buildCommandArgs()
+  args: string | Args; // From buildCommandArgs()
   command: string; // The input on the command line
   commandObject?: Command;
-  fn: (ci: CommandInstance, args: CommandArgs) => void; // TODO response value?
+  fn: (ci: CommandInstance, args: Args) => void; // TODO response value?
   options: ModeOptions;
   pipes: string[] | CommandInstance[]; // From parseCommand()
   session: Session;
@@ -37,7 +37,7 @@ type ModeOptions = {
 /**
  * Parses command arguments from multiple sources.
  */
-export function parseArgs (input: string, opts: Record<string, any> = null): CLIArgs {
+export function parseArgs (input: string, opts?: Record<string, any>): CLIArgs {
   const args = []
   let match
 
@@ -60,8 +60,8 @@ export function buildCommandArgs (
   command: Command,
   execCommand?: CommandExecutionItem,
   isCommandArgKeyPairNormalized = false
-): CommandArgs | string {
-  const args = { options: {} } as CommandArgs
+): Args | string {
+  const args = { options: {} } as Args
 
   // Normalize all foo="bar" with "foo='bar'".
   // This helps implement unix-like key value pairs.
@@ -74,7 +74,7 @@ export function buildCommandArgs (
 
   // Make a list of all boolean options registered for this command.
   // These are simply commands that don't have required or optional args.
-  const booleans = []
+  const booleans = [] as string[]
 
   command.options.forEach(opt => {
     if (!opt.required && !opt.optional) {

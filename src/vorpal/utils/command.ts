@@ -16,16 +16,16 @@ export function matchCommand (
   const parts = String(commandName)
     .trim()
     .split(' ')
-  let match = null
+  let match: undefined | null | Command = null
   let matchArgs = ''
 
   for (let i = 0; i < parts.length; i += 1) {
-    const subcommandName = String(parts.slice(0, parts.length - i).join(' ')).trim()
+    const subCommandName = String(parts.slice(0, parts.length - i).join(' ')).trim()
 
-    match = commands.find(command => command._name === subcommandName) || match
+    match = commands.find(command => command._name === subCommandName) || match
 
     if (!match) {
-      match = commands.find(command => command._aliases.includes(subcommandName)) || match
+      match = commands.find(command => command._aliases.includes(subCommandName)) || match
     }
 
     if (match) {
@@ -48,7 +48,7 @@ export function matchCommand (
 
       commands.some(command => {
         const catchParts = String(command._name).split(' ')
-        const commandParts = String((match && match.command) || '').split(' ')
+        const commandParts = String((match && (match as any).command) || '').split(' ')
         let matchAll = true
 
         for (let i = 0; i < commandParts.length; i += 1) {
@@ -68,7 +68,7 @@ export function matchCommand (
       })
 
       if (wordMatch) {
-        match = null
+        match = undefined
       } else {
         matchArgs = commandName
       }
@@ -79,6 +79,17 @@ export function matchCommand (
     args: matchArgs,
     command: match || null,
   }
+}
+
+/**
+ * This will expand to contain one boolean key for each type of quote.
+ * The value keyed by the quote is toggled off and on as quote type is opened and closed.
+ * Example { "`": true, "'": false } would mean that there is an open angle quote.
+ */
+interface QuoteTracker {
+  '`'?: boolean
+  '"'?: boolean
+  "'"?: boolean
 }
 
 /**
@@ -103,15 +114,15 @@ export function parseCommand (command: string, commands: Command[] = []): Parsed
       .split('|')
 
     // Construct empty array to place correctly split commands into.
-    const newPipes = []
+    const newPipes = [] as string[]
 
     // We will look for pipe characters within these quotes to rejoin together.
-    const quoteChars = ['"', "'", '`']
+    const quoteChars = ['"', "'", '`'] as const
+    const includeQuotaChar = (char: string): char is '"' | "'" | '`' => {
+      return quoteChars.includes(char as any)
+    }
 
-    // This will expand to contain one boolean key for each type of quote.
-    // The value keyed by the quote is toggled off and on as quote type is opened and closed.
-    // Example { "`": true, "'": false } would mean that there is an open angle quote.
-    const quoteTracker = {}
+    const quoteTracker: QuoteTracker = {}
 
     // The current command piece before being rejoined with it's over half.
     // Since it's not common for pipes to occur in commands,
@@ -129,7 +140,7 @@ export function parseCommand (command: string, commands: Command[] = []): Parsed
       for (let i = 0; i < possiblePipe.length; i += 1) {
         const char = possiblePipe[i]
 
-        if (quoteChars.includes(char)) {
+        if (includeQuotaChar(char)) {
           quoteTracker[char] = !quoteTracker[char]
         }
       }
@@ -151,7 +162,7 @@ export function parseCommand (command: string, commands: Command[] = []): Parsed
     })
 
     // Set the first pipe to command and the rest to pipes.
-    parsed.command = newPipes.shift()
+    parsed.command = newPipes.shift()!
     parsed.pipes = parsed.pipes.concat(newPipes)
   }
 

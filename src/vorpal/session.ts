@@ -2,7 +2,7 @@
 import { EventEmitter } from 'events'
 
 import { CommandInstance } from './command-instance'
-import Vorpal from './vorpal'
+import { Vorpal } from './vorpal'
 
 interface CommandResponse {
   error?: Error;
@@ -12,16 +12,16 @@ interface CommandResponse {
 
 export class Session extends EventEmitter {
 
-  private _registeredCommands: number;
-  private _completedCommands: number;
+  private _registeredCommands?: number;
+  private _completedCommands?: number;
   private _commandSetCallback: any;
 
   /**
-   * Compitable with old code
+   * Compatible with old code
    */
   public parent: Vorpal
 
-  public _pipeFn: Function
+  public _pipeFn?: Function
 
   /**
    * Initialize a new `Session` instance.
@@ -59,7 +59,7 @@ export class Session extends EventEmitter {
    * @api public
    */
 
-  public log (...args) {
+  public log (...args: string[]) {
     args = typeof this._pipeFn === 'function'
       ? this._pipeFn(args)
       : args
@@ -79,7 +79,7 @@ export class Session extends EventEmitter {
    * @api public
    */
 
-  public help (command) {
+  public help (command: string) {
     this.log(this.vorpal._commandHelp(command || ''))
   }
 
@@ -90,7 +90,7 @@ export class Session extends EventEmitter {
    * @api public
    */
 
-  public execCommandSet (wrapper, callback) {
+  public execCommandSet (wrapper: any, callback: any) {
     const self = this
     let response: CommandResponse = {}
     var res /* eslint-disable-line no-var */
@@ -108,7 +108,7 @@ export class Session extends EventEmitter {
 
     wrapper.commandInstance = commandInstance
 
-    function sendDones (itm) {
+    function sendDones (itm: any) {
       if (itm.commandObject && itm.commandObject._done) {
         itm.commandObject._done.call(itm)
       }
@@ -141,12 +141,13 @@ export class Session extends EventEmitter {
       sendDones(commandInstance)
     }
 
-    function onCompletion (wrapperInner, err, data?, argus?) {
+    function onCompletion (wrapperInner: any, err: any, data?: any, argus?: any) {
       response = {
         error: err,
         data,
         args: argus,
       }
+      void wrapperInner
       self.completeCommand()
     }
 
@@ -171,7 +172,7 @@ export class Session extends EventEmitter {
     }
 
     // Call the root command.
-    res = wrapper.fn.call(commandInstance, wrapper.args, function (...argus) {
+    res = wrapper.fn.call(commandInstance, wrapper.args, function (...argus: any) {
       onCompletion(wrapper, argus[0], argus[1], argus)
     })
 
@@ -195,7 +196,7 @@ export class Session extends EventEmitter {
    * Adds on a command or sub-command in progress.
    * Session keeps tracked of commands,
    * and as soon as all commands have been
-   * compelted, the session returns the entire
+   * completed, the session returns the entire
    * command set as complete.
    *
    * @return {session}
@@ -208,7 +209,7 @@ export class Session extends EventEmitter {
   }
 
   /**
-   * Marks a command or subcommand as having completed.
+   * Marks a command or subcommander as having completed.
    * If all commands have completed, calls back
    * to the root command as being done.
    *
@@ -216,8 +217,8 @@ export class Session extends EventEmitter {
    * @api public
    */
   public completeCommand () {
-    this._completedCommands++
-    if (this._registeredCommands <= this._completedCommands) {
+    this._completedCommands!++
+    if (this._registeredCommands! <= this._completedCommands!) {
       this._registeredCommands = 0
       this._completedCommands = 0
       if (this._commandSetCallback) {

@@ -1,35 +1,35 @@
 import { Command } from './command'
 import { Session } from './session'
 
-export type CommandArgs = {
-  [arg: string]: string | string[];
-} & CommandArgsOptions;
+export type Args = {
+  [arg: string]: string | string[]
+} & ArgsOptions
 
-interface CommandArgsOptions {
+interface ArgsOptions {
   options: {
-    [arg: string]: string | number | boolean;
-  };
+    [arg: string]: string | number | boolean
+  }
 }
 
 interface CommandInstanceOptions {
-  commandWrapper?: any;
-  args?: CommandArgs;
-  commandObject?: Command;
-  command?: any;
-  callback?: any;
-  downstream?: CommandInstance;
+  commandWrapper?: any
+  args?: Args
+  commandObject?: Command
+  command?: any
+  callback?: any
+  downstream?: CommandInstance
 }
 
 export class CommandInstance {
 
-  public commandWrapper: any;
-  public args: CommandArgs;
-  public commandObject: any;
-  public command: Command;
+  public commandWrapper: any
+  public args?: Args
+  public commandObject: any
+  public command: Command
   public session: Session
-  public parent: any;
-  public callback: any;
-  public downstream: CommandInstance;
+  public parent: any
+  public callback: any
+  public downstream?: CommandInstance
   /**
    * Initialize a new `CommandInstance` instance.
    *
@@ -60,16 +60,16 @@ export class CommandInstance {
    * Route stdout either through a piped command, or the session's stdout.
    */
 
-  public log (...args) {
+  public log (...args: string[]) {
     if (this.downstream) {
       const fn = this.downstream.commandObject._fn || (() => {})
       this.session.registerCommand()
-      this.downstream.args.stdin = args
+      this.downstream.args!.stdin = args
       const onComplete = (err?: Error) => {
         if (err) {
-          this.session.log(err.stack || err)
+          this.session.log(String(err.stack || err))
           this.session.parent.emit('client_command_error', {
-            command: this.downstream.command,
+            command: this.downstream!.command,
             error: err,
           })
         }
@@ -83,7 +83,7 @@ export class CommandInstance {
         } catch (e) {
           // Log error without piping to downstream on validation error.
           this.session.log(e.toString())
-          onComplete(null)
+          onComplete()
           return
         }
       }
@@ -99,8 +99,8 @@ export class CommandInstance {
     }
   }
 
-  public help (a) {
-    return this.session.help(a)
+  public help (command: string) {
+    return this.session.help(command)
   }
 
 }

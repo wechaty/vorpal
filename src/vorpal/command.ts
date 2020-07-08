@@ -1,40 +1,49 @@
 import { EventEmitter } from 'events'
-import camelCase from 'lodash.camelcase'
+import { camelCase } from 'lodash'
 
-import Option from './option'
-import { humanReadableArgName, pad } from './utils'
+import {
+  humanReadableArgName,
+  pad,
+}                       from './utils/mod'
+
+import { Option } from './option'
 import { Vorpal } from './vorpal'
+import {
+  Action,
+}                 from './types'
+import { Args } from './command-instance'
 
 export interface Arg {
-  required: boolean;
-  name: string;
-  variadic: boolean;
+  required: boolean
+  name: string
+  variadic: boolean
 }
 
 export class Command extends EventEmitter {
 
-  private commands: Command[] = [];
-  public options: Option[];
-  public _args;
-  public _aliases: string[];
-  public _name;
-  public _hidden;
+  public command?: string
+  private commands: Command[] = []
+  public options: Option[]
+  public _args: Arg[]
+  public _aliases: string[]
+  public _name: string
+  public _hidden: boolean
   private _parent: Vorpal
-  private _description;
-  public _mode;
-  public _default;
-  public _help;
-  public _noHelp;
-  public _types;
-  public _init;
-  private _after;
-  public _allowUnknownOptions;
-  private _done;
-  public _cancel;
-  private _usage;
-  public _fn;
-  public _validate;
-  public _parse;
+  private _description?: string
+  public _default: boolean
+  public _help?: Function
+  public _noHelp: any
+  public _types: any
+  public _init: any
+
+  public _after: any
+  public _done?: Function
+
+  public _allowUnknownOptions: boolean
+  private _usage?: string
+  public _fn?: Action
+  public _validate?: Function
+  public _parse?: Function
 
   /**
    * Initialize a new `Command` instance.
@@ -44,7 +53,7 @@ export class Command extends EventEmitter {
    * @return {Command}
    * @api public
    */
-  constructor (name, parent) {
+  constructor (name: string, parent: any) {
     super()
     this.commands = []
     this.options = []
@@ -53,7 +62,6 @@ export class Command extends EventEmitter {
     this._name = name
     this._hidden = false
     this._parent = parent
-    this._mode = false
     this._default = false
     this._help = undefined
     this._init = undefined
@@ -72,11 +80,11 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public option (flags, description, autocomplete?): Command {
-    const option = new Option(flags, description, autocomplete)
-    const oname = option.name()
-    const name = camelCase(oname)
-    let defaultValue
+  public option (flags: string, description: string): Command {
+    const option = new Option(flags, description)
+    const optionName = option.name()
+    const name = camelCase(optionName)
+    let defaultValue: any
 
     // preassign default value only for --no-*, [optional], or <required>
     if (option.bool === false || option.optional || option.required) {
@@ -86,7 +94,7 @@ export class Command extends EventEmitter {
       }
       // preassign only if we have a default
       if (defaultValue !== undefined) {
-        this[name] = defaultValue
+        (this as any)[name] = defaultValue
       }
     }
 
@@ -95,18 +103,18 @@ export class Command extends EventEmitter {
 
     // when it's passed assign the value
     // and conditionally invoke the callback
-    this.on(oname, val => {
+    this.on(optionName, val => {
       // unassigned or bool
-      if (typeof this[name] === 'boolean' && typeof this[name] === 'undefined') {
+      if (typeof (this as any)[name] === 'boolean' && typeof (this as any)[name] === 'undefined') {
         // if no value, bool true, and we have a default, then use it!
         if (val === null) {
-          this[name] = option.bool ? defaultValue || true : false
+          (this as any)[name] = option.bool ? defaultValue || true : false
         } else {
-          this[name] = val
+          (this as any)[name] = val
         }
       } else if (val !== null) {
         // reassign
-        this[name] = val
+        (this as any)[name] = val
       }
     })
 
@@ -121,20 +129,22 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public action (fn) {
+  public action (fn: Action) {
     this._fn = fn
     return this
   }
 
   /**
-   * Let's you compose other funtions to extend the command.
+   * Let's you compose other functions to extend the command.
    *
    * @param {Function} fn
    * @return {Command}
    * @api public
    */
 
-  public use (fn) {
+  public use (
+    fn: ((command: Command) => void),
+  ) {
     return fn(this)
   }
 
@@ -148,20 +158,8 @@ export class Command extends EventEmitter {
    * @returns {Command}
    * @api public
    */
-  public validate (fn) {
+  public validate (fn: (args: Args) => boolean | string) {
     this._validate = fn
-    return this
-  }
-
-  /**
-   * Defines a function to be called when the
-   * command is canceled.
-   *
-   * @param fn
-   * @returns {Command}
-   * @api public
-   */ public cancel (fn) {
-    this._cancel = fn
     return this
   }
 
@@ -174,38 +172,8 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public done (fn) {
+  public done (fn: Function) {
     this._done = fn
-    return this
-  }
-
-  /**
-   * Defines an init action for a mode command.
-   *
-   * @param {Function} fn
-   * @return {Command}
-   * @api public
-   */
-
-  public init (fn) {
-    if (this._mode !== true) {
-      throw Error('Cannot call init from a non-mode action.')
-    }
-    this._init = fn
-    return this
-  }
-
-  /**
-   * Defines a prompt delimiter for a
-   * mode once entered.
-   *
-   * @param {String} delimiter
-   * @return {Command}
-   * @api public
-   */
-
-  public delimiter (delimiter: string) {
-    // delimiter
     return this
   }
 
@@ -218,7 +186,7 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public types (types) {
+  public types (types: { [key: string]: any}) {
     const supported = ['string', 'boolean']
     for (const item of Object.keys(types)) {
       if (supported.indexOf(item) === -1) {
@@ -238,11 +206,11 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public alias (...aliases): this {
+  public alias (...aliases: string[]): this {
     for (const alias of aliases) {
       if (Array.isArray(alias)) {
-        for (const subalias of alias) {
-          this.alias(subalias)
+        for (const subAlias of alias) {
+          this.alias(subAlias)
         }
         return this
       }
@@ -273,8 +241,10 @@ export class Command extends EventEmitter {
    * @return {Command}
    * @api public
    */
+  public description (str: string): this
+  public description (): string
 
-  public description (str) {
+  public description (str?: string) {
     if (arguments.length === 0) {
       return this._description
     }
@@ -302,7 +272,7 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public arguments (description) {
+  public arguments (description: string) {
     return this._parseExpectedArgs(description.split(/ +/))
   }
 
@@ -314,7 +284,7 @@ export class Command extends EventEmitter {
    */
 
   public helpInformation () {
-    let description = []
+    let description = [] as string[]
     const cmdName = this._name
     let alias = ''
 
@@ -327,7 +297,7 @@ export class Command extends EventEmitter {
     }
     const usage = ['', `  Usage:  ${cmdName} ${this.usage()}`, '']
 
-    const cmds = []
+    const cmds = [] as string[]
 
     const help = String(this.optionHelp().replace(/^/gm, '    '))
     const options = ['  Options:', '', help, '']
@@ -426,10 +396,8 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public help (fn) {
-    if (typeof fn === 'function') {
-      this._help = fn
-    }
+  public help (fn: Function) {
+    this._help = fn
     return this
   }
 
@@ -442,10 +410,8 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public parse (fn) {
-    if (typeof fn === 'function') {
-      this._parse = fn
-    }
+  public parse (fn: Function) {
+    this._parse = fn
     return this
   }
 
@@ -457,10 +423,8 @@ export class Command extends EventEmitter {
    * @api public
    */
 
-  public after (fn) {
-    if (typeof fn === 'function') {
-      this._after = fn
-    }
+  public after (fn: Function) {
+    this._after = fn
     return this
   }
 
@@ -472,7 +436,7 @@ export class Command extends EventEmitter {
    * @api private
    */
 
-  public _parseExpectedArgs (args) {
+  public _parseExpectedArgs (args: string[]) {
     if (!args.length) {
       return
     }

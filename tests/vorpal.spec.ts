@@ -2,12 +2,10 @@
 
 import test  from 'tstest'
 
-import Vorpal, {
+import {
   Action,
   CommandInstance,
-}                   from 'vorpal'
-
-import {
+  Vorpal,
   StdoutAssembler,
   simpleExec,
 }                   from '../src/vorpal/mod'
@@ -16,7 +14,7 @@ test('smoke testing', async t => {
   const vorpal = new Vorpal()
 
   vorpal.version('1.2.3')
-  t.equal((vorpal as any)._version, '1.2.3', 'set the version')
+  t.equal((vorpal as any).meta.version, '1.2.3', 'set the version')
 })
 
 test('command() foo', async t => {
@@ -44,8 +42,9 @@ test('command() foo', async t => {
     options: {
       test: true,
     },
+    rawCommand: 'foo bar1 bar2 -t',
   }
-  const result = await vorpal.execSync('foo bar1 bar2 -t')
+  const result = await vorpal.exec('foo bar1 bar2 -t')
   t.deepEqual(result, fixture, 'should execute a command with no options')
 })
 
@@ -86,6 +85,6 @@ test('StdoutAssembler extension with hacker-news', async t => {
   vorpal.use(StdoutAssembler())
   vorpal.use(require('vorpal-hacker-news'))
 
-  const { stdout } = await simpleExec(vorpal, 'hacker-news --length 3')
+  const { stdout } = await simpleExec(vorpal, 'hacker-news --length 3', {})
   t.true(/Hacker News/i.test(stdout), 'should get the stdout with hacker news')
 })

@@ -7,7 +7,7 @@
 import { Vorpal } from './vorpal'
 import { CommandInstance } from './command-instance'
 
-export default function (vorpal: Vorpal) {
+function commons (vorpal: Vorpal) {
   /**
    * Help for a particular command.
    */
@@ -17,13 +17,13 @@ export default function (vorpal: Vorpal) {
     .description('Provides help for a given command.')
     .action(function (this: CommandInstance, args, cb) {
       if (args.command) {
-        args.command = args.command.join(' ')
+        args.command = (args.command as any).join(' ')
         const commandWithName = this.parent.commands.find(
-          command => command._name === String(args.command).trim()
+          (command: any) => command._name === String(args.command).trim()
         )
         if (commandWithName && !commandWithName._hidden) {
           if (typeof commandWithName._help === 'function') {
-            commandWithName._help(args.command, str => {
+            commandWithName._help(args.command, (str: string) => {
               this.log(str)
               cb()
             })
@@ -43,13 +43,15 @@ export default function (vorpal: Vorpal) {
    * Exits Vorpal.
    */
 
-  vorpal
-    .command('exit')
-    .alias('quit')
-    .description('Exits application.')
-    .action(function (args) {
-      args.options = args.options || {}
-      args.options.sessionId = this.session.id
-      this.parent.exit(args.options)
-    })
+  // vorpal
+  //   .command('exit')
+  //   .alias('quit')
+  //   .description('Exits application.')
+  //   .action(function (args) {
+  //     args.options = args.options || {}
+  //     args.options.sessionId = this.session.id
+  //     this.parent.exit(args.options)
+  //   })
 }
+
+export { commons }

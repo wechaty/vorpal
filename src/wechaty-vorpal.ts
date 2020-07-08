@@ -3,22 +3,19 @@ import {
   WechatyPlugin,
   Message,
   log,
-}                       from 'wechaty'
+}                   from 'wechaty'
 import {
   matchers,
-  talkers,
 }                   from 'wechaty-plugin-contrib'
 import {
   MappedMessage,
 }                   from 'wechaty-plugin-contrib/src/mappers/message-mapper'
 import {
-  Observable,
-}                   from 'rxjs'
-import {
   Vorpal,
   StdoutAssembler,
   simpleExec,
 }                   from './vorpal/mod'
+import { vorpalIo } from './vorpal-io'
 
 // TODO(huan): move SayableMessage to Wechaty
 export type SayableMessage = MappedMessage
@@ -93,39 +90,39 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   return function WechatyVorpalPlugin (wechaty: Wechaty) {
     log.verbose('WechatyVorpal', 'WechatyVorpalPlugin(%s)', wechaty)
 
-    vorpal.wechaty = wechaty
-
     async function onMessage (message: Message) {
 
       if (!await matchPlugin(message))  { return }
       if (!await matchConfig(message))  { return }
 
+      const io = vorpalIo(message)
+      if (io.busy())                    { return }
+
       const command = await message.mentionText()
 
-      const {
-        stdout,
-        ret,
-      }           = await simpleExec(vorpal, command)
-
-      if (stdout) {
-        await message.say(stdout)
+      try {
+        const stdio = io.stdio()
+        const ret = await simpleExec(vorpal, command, stdio)
+        void ret  // ret is the return of the action of vorpal command
+      } finally {
+        io.close()
       }
 
-      /**
-       * If our Vorpal command returns an Observable,
-       * Then it must a stream of `mappers.MessageMapperOptions`
-       * Which will be used to create messages
-       */
-      // TODO(huan): use a duck type to identify whether the ret is an Observable
-      if (ret instanceof Observable) {
-        ret.subscribe(async (msg: SayableMessage) => {
-          // const mapMessage = mappers.messageMapper(msg)
-          // const msgList = await mapMessage(message)
+      // /**
+      //  * If our Vorpal command returns an Observable,
+      //  * Then it must a stream of `mappers.MessageMapperOptions`
+      //  * Which will be used to create messages
+      //  */
+      // // TODO(huan): use a duck type to identify whether the ret is an Observable
+      // if (ret instanceof Observable) {
+      //   ret.subscribe(async (msg: SayableMessage) => {
+      //     // const mapMessage = mappers.messageMapper(msg)
+      //     // const msgList = await mapMessage(message)
 
-          const talkMessage = talkers.messageTalker(msg)
-          await talkMessage(message)
-        })
-      }
+      //     const talkMessage = talkers.messageTalker(msg)
+      //     await talkMessage(message)
+      //   })
+      // }
 
     }
 

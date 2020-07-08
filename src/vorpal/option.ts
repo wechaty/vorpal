@@ -1,7 +1,7 @@
 /**
  * Expose `Option`.
  */
-export default class Option {
+class Option {
 
   public required: number;
   public optional: number;
@@ -26,9 +26,9 @@ export default class Option {
 
     this.flags = _flags.split(/[ ,|]+/)
     if (this.flags.length > 1 && !/^[[<]/.test(this.flags[1])) {
-      this.assignFlag(this.flags.shift())
+      this.assignFlag(this.flags.shift()!)
     }
-    this.assignFlag(this.flags.shift())
+    this.assignFlag(this.flags.shift()!)
   }
 
   /**
@@ -53,7 +53,7 @@ export default class Option {
    * @api private
    */
 
-  public is (arg) {
+  public is (arg: string) {
     return arg === this.short || arg === this.long
   }
 
@@ -64,7 +64,7 @@ export default class Option {
    * @api private
    */
 
-  public assignFlag (flag) {
+  public assignFlag (flag: string) {
     if (flag.startsWith('--')) {
       this.long = flag
     } else {
@@ -73,3 +73,5 @@ export default class Option {
   }
 
 }
+
+export { Option }

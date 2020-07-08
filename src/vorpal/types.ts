@@ -1,33 +1,36 @@
 import {
-  Arg,
+  // Arg,
   Command,
-}           from '../command'
+}           from './command'
 
 import {
-  CommandInstance,
-  CommandArgs,
-}                   from '../command-instance'
+  // CommandInstance,
+  Args, CommandInstance,
+}                   from './command-instance'
 
 export type ArgTypes = {
   [P in 'string' | 'boolean']: unknown
 }
 
-type ParseFn = (str: string, args: string | CommandArgs) => string
-type ValidateFn = (instance: CommandInstance, args: CommandArgs) => string
-type CancelFn = (instance: CommandInstance) => void
-type FnFn = (args: Arg[], onComplete: (err?: Error) => void) => void
+// type ParseFn = (str: string, args: string | Args) => string
+// type ValidateFn = (instance: CommandInstance, args: Args) => string
+// type CancelFn = (instance: CommandInstance) => void
+// type FnFn = (args: Arg[], onComplete: (err?: Error) => void) => void
 
-export type Action = (args: CommandArgs) => Promise<void>;
-type Cancel = () => void;
+export type Action = (
+  this: CommandInstance,
+  args: Args,
+  callback: Function,
+) => void | Promise<void>
 
-export interface MatchParts<T extends CommandArgs | string> {
+export interface MatchParts<T extends Args | string> {
   args: T
-  command?: Command
+  command?: null | Command
 }
 
 export type ParsedCommand = {
   command: string
-  match?: Command
-  matchArgs: string | CommandArgs
+  match?: null | Command
+  matchArgs: string | Args
   pipes: string[]
 }
