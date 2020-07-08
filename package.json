@@ -40,9 +40,8 @@
     "@chatie/semver": "^0.4.7",
     "@chatie/tsconfig": "^0.10.1",
     "@types/cuid": "^1.3.1",
-    "@types/lodash.camelcase": "^4.3.6",
+    "@types/lodash": "^4.14.157",
     "@types/minimist": "^1.2.0",
-    "@types/vorpal": "^1.12.0",
     "pkg-jq": "^0.2.4",
     "shx": "^0.3.2",
     "tstest": "^0.4.10",
@@ -51,10 +50,8 @@
     "wechaty-puppet-mock": "^0.22.31"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.157",
     "cuid": "^2.1.8",
     "lodash": "^4.17.15",
-    "lodash.camelcase": "^4.3.0",
     "minimist": "^1.2.5",
     "rxjs": "^6.5.5",
     "strip-ansi": "^6.0.0",
