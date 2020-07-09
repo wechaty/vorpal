@@ -15,11 +15,11 @@ const busyState: {
   [id: string]: true
 } = {}
 
-const vorpalIo = (message: Message) => {
-  return new VorpalIo(message)
-}
-
 class VorpalIo {
+
+  static from (message: Message): VorpalIo {
+    return new this(message)
+  }
 
   protected stdinSub?  : Subject<SayableMessage>
   protected stdoutSub? : Subject<SayableMessage>
@@ -31,7 +31,8 @@ class VorpalIo {
     log.verbose('VorpalIo', 'constructor(%s)', message)
   }
 
-  stdio () {
+  obsio () {
+    log.verbose('VorpalIo', 'obsio()')
     if (this.busy()) {
       throw new Error(`Vorpal Io for ${this.message} is busy!`)
     }
@@ -44,10 +45,14 @@ class VorpalIo {
   }
 
   busy (): boolean {
-    return !!(busyState[this.id()])
+    const isBusy = !!(busyState[this.id()])
+    log.verbose('VorpalIo', 'busy() = %s', isBusy)
+    return isBusy
   }
 
   close (): void {
+    log.verbose('VorpalIo', 'close()')
+
     if (this.stdinSub) {
       this.stdinSub.complete()
       this.stdinSub = undefined
@@ -80,6 +85,7 @@ class VorpalIo {
   }
 
   protected setBusy (busy: boolean): void {
+    log.verbose('VorpalIo', 'setBusy(%s) for %s', busy, this.message)
     if (busy) {
       busyState[this.id()] = true
     } else {
@@ -93,18 +99,26 @@ class VorpalIo {
       return this.stdinSub
     }
 
+    const room = this.message.room()
+    const from = this.message.from()
+
     const sub = new Subject<SayableMessage>()
 
     const onMessage = (message: Message) => {
-      // TODO: filter by the current io condition
+      if (message.from() === from)  { return }
+      if (message.room() === room)  { return }
       sub.next(message)
     }
     this.message.wechaty.on('message', onMessage)
-    sub.subscribe({
-      complete: () => this.message.wechaty.off('message', onMessage),
-    })
 
     this.stdinSub = sub
+    const complete = () => {
+      this.message.wechaty.off('message', onMessage)
+      this.stdinSub = undefined
+    }
+
+    sub.subscribe({ complete })
+
     return sub.asObservable()
   }
 
@@ -115,6 +129,11 @@ class VorpalIo {
 
     const sub = new Subject<SayableMessage>()
 
+    this.stdoutSub = sub
+    const complete = () => {
+      this.stdoutSub = undefined
+    }
+
     const next = async (msg: SayableMessage) => {
       const talker = talkers.messageTalker(msg)
       try {
@@ -124,9 +143,11 @@ class VorpalIo {
       }
     }
 
-    sub.subscribe({ next })
+    sub.subscribe({
+      complete,
+      next,
+    })
 
-    this.stdoutSub = sub
     return sub
   }
 
@@ -136,12 +157,18 @@ class VorpalIo {
     }
 
     const sub = new Subject<Error>()
+
     this.stderrSub = sub
+    const complete = () => {
+      this.stderrSub = undefined
+    }
+    sub.subscribe({ complete })
+
     return sub
   }
 
 }
 
 export {
-  vorpalIo,
+  VorpalIo,
 }

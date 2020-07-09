@@ -15,7 +15,7 @@ import {
   StdoutAssembler,
   simpleExec,
 }                   from './vorpal/mod'
-import { vorpalIo } from './vorpal-io'
+import { VorpalIo } from './vorpal-io'
 
 // TODO(huan): move SayableMessage to Wechaty
 export type SayableMessage = MappedMessage
@@ -95,14 +95,14 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       if (!await matchPlugin(message))  { return }
       if (!await matchConfig(message))  { return }
 
-      const io = vorpalIo(message)
+      const io = VorpalIo.from(message)
       if (io.busy())                    { return }
 
       const command = await message.mentionText()
 
       try {
-        const stdio = io.stdio()
-        const ret = await simpleExec(vorpal, command, stdio)
+        const obsio = io.obsio()
+        const ret = await simpleExec(vorpal, command, obsio)
         void ret  // ret is the return of the action of vorpal command
       } finally {
         io.close()
