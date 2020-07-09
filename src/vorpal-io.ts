@@ -2,12 +2,20 @@ import {
   Message,
   log,
 }                   from 'wechaty'
-import cuid from 'cuid'
+import cuid         from 'cuid'
+
 import {
   Observable,
   Subject,
-}                 from 'rxjs'
-import { talkers } from 'wechaty-plugin-contrib'
+  of,
+  EMPTY,
+}                   from 'rxjs'
+import {
+  concatMap,
+  delay,
+  concat,
+}                   from 'rxjs/operators'
+import { talkers }  from 'wechaty-plugin-contrib'
 
 import { SayableMessage } from './wechaty-vorpal'
 
@@ -20,6 +28,11 @@ export interface ObsIo {
 const busyState: {
   [id: string]: true
 } = {}
+
+const addDelay = () => concatMap(item => concat(
+  of(item),                 // emit first item right away
+  EMPTY.pipe(delay(1000)),  // delay next item
+))
 
 class VorpalIo {
 
@@ -157,7 +170,9 @@ class VorpalIo {
       }
     }
 
-    sub.subscribe({
+    sub.pipe(
+      addDelay(),
+    ).subscribe({
       complete,
       next,
     })
@@ -187,7 +202,9 @@ class VorpalIo {
       }
     }
 
-    sub.subscribe({
+    sub.pipe(
+      addDelay(),
+    ).subscribe({
       complete,
       next,
     })
