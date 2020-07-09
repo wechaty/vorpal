@@ -101,7 +101,7 @@ test('StdoutAssembler extension with hacker-news', async t => {
   t.true(/Hacker News/i.test(fixture.input[0]), 'should get the stdout with hacker news')
 })
 
-test('Vorpal help command', async t => {
+test('Vorpal help command with options', async t => {
   const EXPECTED_RE = /-t --option +test option/
 
   const vorpal = new Vorpal()
