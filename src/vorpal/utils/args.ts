@@ -18,15 +18,18 @@ const PAIR_NORMALIZE_PATTERN = /(['"]?)(\w+)=(?:(['"])((?:(?!\3).)*)\3|(\S+))\1/
 const MAX_ARGS = 10
 const ARGS_PATTERN = /"(.*?)"|'(.*?)'|`(.*?)`|([^\s"]+)/gi
 
-type CommandExecutionItem = {
-  args: string | Args; // From buildCommandArgs()
-  command: string; // The input on the command line
-  commandObject?: Command;
-  fn: (ci: CommandInstance, args: Args) => void; // TODO response value?
-  options: ModeOptions;
-  pipes: string[] | CommandInstance[]; // From parseCommand()
+export type CommandExecutionItem = {
+  args?: string | Args // From buildCommandArgs()
+  command?: string // The input on the command line
+  commandObject?: Command
+  commandInstance?: CommandInstance
+  fn?: (ci: CommandInstance, args: Args) => any // TODO response value?
+  options?: ModeOptions;
+  pipes?: string[] | CommandInstance[]; // From parseCommand()
+  validate?: any
   session: Session;
-  sync: boolean;
+  sync?: boolean;
+  _cancel?: any,
 };
 
 type ModeOptions = {

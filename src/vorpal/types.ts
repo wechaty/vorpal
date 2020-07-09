@@ -32,5 +32,5 @@ export type ParsedCommand = {
   command: string
   match?: null | Command
   matchArgs: string | Args
-  pipes: string[]
+  pipes: CommandInstance[]
 }

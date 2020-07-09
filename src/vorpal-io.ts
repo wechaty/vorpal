@@ -11,6 +11,12 @@ import { talkers } from 'wechaty-plugin-contrib'
 
 import { SayableMessage } from './wechaty-vorpal'
 
+export interface ObsIo {
+  stdin: Observable<SayableMessage>
+  stdout: Subject<SayableMessage>
+  stderr: Subject<string>
+}
+
 const busyState: {
   [id: string]: true
 } = {}
@@ -23,7 +29,7 @@ class VorpalIo {
 
   protected stdinSub?  : Subject<SayableMessage>
   protected stdoutSub? : Subject<SayableMessage>
-  protected stderrSub? : Subject<Error>
+  protected stderrSub? : Subject<string>
 
   constructor (
     protected message: Message,
@@ -31,12 +37,15 @@ class VorpalIo {
     log.verbose('VorpalIo', 'constructor(%s)', message)
   }
 
-  obsio () {
+  obsio (): ObsIo {
     log.verbose('VorpalIo', 'obsio()')
+
     if (this.busy()) {
       throw new Error(`Vorpal Io for ${this.message} is busy!`)
     }
+
     this.setBusy(true)
+
     return {
       stderr : this.stderr(),
       stdin  : this.stdin(),
@@ -151,12 +160,12 @@ class VorpalIo {
     return sub
   }
 
-  protected stderr (): Subject<Error> {
+  protected stderr (): Subject<string> {
     if (this.stderrSub) {
       return this.stderrSub
     }
 
-    const sub = new Subject<Error>()
+    const sub = new Subject<string>()
 
     this.stderrSub = sub
     const complete = () => {

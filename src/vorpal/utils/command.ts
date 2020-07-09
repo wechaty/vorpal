@@ -163,7 +163,7 @@ export function parseCommand (command: string, commands: Command[] = []): Parsed
 
     // Set the first pipe to command and the rest to pipes.
     parsed.command = newPipes.shift()!
-    parsed.pipes = parsed.pipes.concat(newPipes)
+    parsed.pipes = parsed.pipes.concat(newPipes as any)
   }
 
   function parseMatch () {

@@ -1,6 +1,8 @@
 /* eslint-disable sort-keys */
 import { EventEmitter } from 'events'
 
+import * as utils from './utils/mod'
+
 import { CommandInstance } from './command-instance'
 import { Vorpal } from './vorpal'
 
@@ -90,10 +92,10 @@ export class Session extends EventEmitter {
    * @api public
    */
 
-  public execCommandSet (wrapper: any, callback: any) {
+  public execCommandSet (wrapper: utils.CommandExecutionItem, callback: any) {
     const self = this
     let response: CommandResponse = {}
-    var res /* eslint-disable-line no-var */
+    // var res /* eslint-disable-line no-var */
     const cbk = callback
     this._registeredCommands = 1
     this._completedCommands = 0
@@ -101,7 +103,7 @@ export class Session extends EventEmitter {
     // Create the command instance for the first
     // command and hook it up to the pipe chain.
     const commandInstance = new CommandInstance({
-      downstream: wrapper.pipes[0],
+      downstream: wrapper.pipes![0] as any,
       commandObject: wrapper.commandObject,
       commandWrapper: wrapper,
     })
@@ -168,13 +170,13 @@ export class Session extends EventEmitter {
     }
 
     if (wrapper.args && typeof wrapper.args === 'object') {
-      wrapper.args.rawCommand = wrapper.command
+      wrapper.args.rawCommand = wrapper.command!
     }
 
     // Call the root command.
-    res = wrapper.fn.call(commandInstance, wrapper.args, function (...argus: any) {
+    const res = wrapper.fn!.call(commandInstance, wrapper.args as any, function (...argus: any) {
       onCompletion(wrapper, argus[0], argus[1], argus)
-    })
+    } as any)
 
     // If the command as declared by the user
     // returns a promise, handle accordingly.

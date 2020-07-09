@@ -4,6 +4,7 @@ import { EventEmitter } from 'events'
 import { Message } from 'wechaty'
 
 import * as utils from './utils/mod'
+import { ObsIo } from '../vorpal-io'
 
 import { Command }          from './command'
 import { CommandInstance }  from './command-instance'
@@ -275,6 +276,145 @@ class Vorpal extends EventEmitter {
   public pipe (fn: Function) {
     this.session._pipeFn = fn
     return this
+  }
+
+  async obsExec (obsio: ObsIo, command: string, args?: any): Promise<number> {
+    args = args || {}
+
+    const self = this
+
+    const commandData = utils.parseCommand(command, this.commands)
+
+    const item: utils.CommandExecutionItem = {
+      args,
+      command: commandData.command,
+      pipes: commandData.pipes,
+      session: this.session,
+    }
+
+    const match = commandData.match
+    const matchArgs = commandData.matchArgs as string
+
+    function throwHelp (cmd: any, msg?: string, alternativeMatch?: any) {
+      void cmd
+      if (msg) {
+        // cmd.session.log(msg)
+        obsio.stdout.next(msg)
+      }
+      const pickedMatch = alternativeMatch || match
+      // cmd.session.log(pickedMatch.helpInformation())
+      obsio.stdout.next(pickedMatch.helpInformation())
+    }
+
+    // function callback (cmd: any, err?: any, msg?: any) {
+    //   if (!err && cmd.resolve) {
+    //     return msg
+    //   } else if (err && cmd.reject) {
+    //     throw msg
+    //   }
+    // }
+
+    if (!match) {
+      // If no command match, just return.
+      // item.session.log()
+      // return callback(item, undefined, 'Invalid command.')
+      obsio.stdout.next(this._commandHelp(item.command))
+      obsio.stderr.next('Invalid command')
+      return 1
+    }
+
+    item.fn = match._fn as any
+    item.validate = match._validate
+    item.commandObject = match
+
+    item.args = utils.buildCommandArgs(
+      matchArgs,
+      match,
+      item,
+      self.isCommandArgKeyPairNormalized
+    )
+
+    // If we get a string back, it's a validation error.
+    // Show help and return.
+    if (typeof item.args === 'string' || typeof item.args !== 'object') {
+      throwHelp(item, item.args)
+      // return callback(item, undefined, item.args)
+      return 1
+    }
+
+    // Build the piped commands.
+    let allValid = true
+    for (let j = 0; j < item.pipes!.length; ++j) {
+      const commandParts = utils.matchCommand(item.pipes![j] as any, self.commands)
+      if (!commandParts.command) {
+        item.session.log(self._commandHelp(item.pipes![j] as any))
+        allValid = false
+        break
+      }
+      commandParts.args = (utils.buildCommandArgs(
+        commandParts.args,
+        commandParts.command
+      ) as unknown) as string
+      if (typeof commandParts.args === 'string' || typeof commandParts.args !== 'object') {
+        throwHelp(item, commandParts.args, commandParts.command)
+        allValid = false
+        break
+      }
+      item.pipes![j] = commandParts as any
+    }
+    // If invalid piped commands, return.
+    if (!allValid) {
+      // return callback(item)
+      return 0
+    }
+
+    // If `--help` or `/?` is passed, do help.
+    if (item.args.options.help && typeof match._help === 'function') {
+      // If the command has a custom help function, run it
+      // as the actual "command". In this way it can go through
+      // the whole cycle and expect a callback.
+      item.fn = match._help as any
+      delete item.validate
+      delete item._cancel
+    } else if (item.args.options.help) {
+      // Otherwise, throw the standard help.
+      throwHelp(item, '')
+      // return callback(item)
+      return 0
+    }
+
+    // Builds commandInstance objects for every
+    // command and piped command included in the
+    // execution string.
+
+    // Build the instances for each pipe.
+    item.pipes = (item.pipes as any).map(function (pipe: any) {
+      return new CommandInstance({
+        commandWrapper: item,
+        command: pipe.command._name,
+        commandObject: pipe.command,
+        args: pipe.args,
+      })
+    })
+
+    // Reverse through the pipes and assign the
+    // `downstream` object of each parent to its
+    // child command.
+    for (let k = item.pipes!.length - 1; k > -1; --k) {
+      const downstream = item.pipes![k + 1]
+      ;(item.pipes as any)[k].downstream = downstream
+    }
+
+    return new Promise((resolve, reject) => {
+      item.session.execCommandSet(item, function (wrapper: any, err: any, data: any) {
+        void wrapper
+        if (err) {
+          reject(data)
+        } else {
+          resolve(data)
+        }
+      })
+    })
   }
 
   /**
