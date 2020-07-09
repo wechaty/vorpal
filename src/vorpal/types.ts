@@ -27,14 +27,6 @@ type CallbackAction = (
 
 export type Action = PromiseAction | CallbackAction
 
-const t: Action = function (args: Args) {
-  void args
-  return 42
-}
-
-type tt = ReturnType<typeof t>
-void t
-
 export interface MatchParts<T extends Args | string> {
   args: T
   command?: null | Command
