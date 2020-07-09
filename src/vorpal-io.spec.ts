@@ -25,19 +25,27 @@ const messageFixture = () => {
   const messageId = cuid() + '#message'
 
   const wechaty = new Wechaty({ puppet: 'wechaty-puppet-mock' })
+
+  const input = [] as Message[]
+  wechaty.on('message', message => input.push(message))
+
+  const output = [] as any[]
   const message = {
     from: () => ({
       id: contactId,
     } as any as Contact),
+    id: messageId,
     room: () => ({
       id: roomId,
     } as any as Room),
-    say: () => {},
+    say: (...args: any[]) => output.push(args),
     wechaty,
-    id: messageId,
   } as any as Message
 
-  return message
+  return {
+    message,
+    output,
+  }
 }
 
 class VorpalIoTest extends VorpalIo {
@@ -49,16 +57,16 @@ class VorpalIoTest extends VorpalIo {
 }
 
 test('VorpalIo smoke testing', async t => {
-  const message = messageFixture()
+  const fixture = messageFixture()
 
-  const io = VorpalIo.from(message)
+  const io = VorpalIo.from(fixture.message)
   t.ok(io, 'should instantiate an instance of VorpalIo')
 })
 
 test('VorpalIo obsio()', async t => {
-  const message = messageFixture()
+  const fixture = messageFixture()
 
-  const io = VorpalIo.from(message)
+  const io = VorpalIo.from(fixture.message)
   const obsio = io.obsio()
 
   t.true(obsio.stderr instanceof Subject, 'should get stderr as Subject')
@@ -67,9 +75,9 @@ test('VorpalIo obsio()', async t => {
 })
 
 test('VorpalIo busy()', async t => {
-  const message = messageFixture()
+  const fixture = messageFixture()
 
-  const io = new VorpalIoTest(message)
+  const io = new VorpalIoTest(fixture.message)
   t.false(io.busy(), 'should not busy right after initializing from message')
 
   const obsio = io.obsio()
@@ -81,9 +89,9 @@ test('VorpalIo busy()', async t => {
 })
 
 test('VorpalIo close()', async t => {
-  const message = messageFixture()
+  const fixture = messageFixture()
 
-  const io = new VorpalIoTest(message)
+  const io = new VorpalIoTest(fixture.message)
 
   const obsio = io.obsio()
   void obsio
@@ -100,13 +108,13 @@ test('VorpalIo close()', async t => {
 })
 
 test('VorpalIo obsio() stdout', async t => {
-  const message = messageFixture()
+  const fixture = messageFixture()
 
-  const io = new VorpalIoTest(message)
+  const io = new VorpalIoTest(fixture.message)
   const obsio = io.obsio()
 
   const sandbox = sinon.createSandbox()
-  const sayStub = sandbox.stub(message, 'say')
+  const sayStub = sandbox.stub(fixture.message, 'say')
 
   const TEXT = 'hello'
 
@@ -118,13 +126,13 @@ test('VorpalIo obsio() stdout', async t => {
 })
 
 test('VorpalIo obsio() stderr', async t => {
-  const message = messageFixture()
+  const fixture = messageFixture()
 
-  const io = new VorpalIoTest(message)
+  const io = new VorpalIoTest(fixture.message)
   const obsio = io.obsio()
 
   const sandbox = sinon.createSandbox()
-  const sayStub = sandbox.stub(message, 'say')
+  const sayStub = sandbox.stub(fixture.message, 'say')
 
   const TEXT = 'hello'
 
@@ -136,16 +144,16 @@ test('VorpalIo obsio() stderr', async t => {
 })
 
 test('VorpalIo obsio() stdin', async t => {
-  const message = messageFixture()
+  const fixture = messageFixture()
 
-  const io = new VorpalIoTest(message)
+  const io = new VorpalIoTest(fixture.message)
   const obsio = io.obsio()
 
   const spy = sinon.spy()
   obsio.stdin.subscribe(spy)
 
-  const MESSAGE = messageFixture()
-  message.wechaty.emit('message', MESSAGE)
+  const { message: MESSAGE } = messageFixture()
+  fixture.message.wechaty.emit('message', MESSAGE)
   await new Promise(resolve => setImmediate(resolve))
 
   t.true(spy.called, 'should call say when stdin got something')

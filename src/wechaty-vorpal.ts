@@ -102,7 +102,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
       try {
         const obsio = io.obsio()
-        const ret = await simpleExec(vorpal, command, obsio)
+        const ret = await vorpal.exec(command, undefined, obsio)
         void ret  // ret is the return of the action of vorpal command
       } finally {
         io.close()
