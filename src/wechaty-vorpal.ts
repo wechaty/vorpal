@@ -12,8 +12,6 @@ import {
 }                   from 'wechaty-plugin-contrib/src/mappers/message-mapper'
 import {
   Vorpal,
-  StdoutAssembler,
-  simpleExec,
 }                   from './vorpal/mod'
 import { VorpalIo } from './vorpal-io'
 
@@ -39,11 +37,6 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   const matchRoom    = matchers.roomMatcher(config.room)
 
   const vorpal = new Vorpal()
-
-  /**
-   * Use StdoutAssembler to redirect stdout to buffer
-   */
-  vorpal.use(StdoutAssembler())
 
   /**
    * Remove the default `exit` command

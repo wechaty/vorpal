@@ -2,6 +2,7 @@
 import { EventEmitter } from 'events'
 
 import { Message }  from 'wechaty'
+import stripAnsi    from 'strip-ansi'
 
 import * as utils from './utils/mod'
 import { ObsIo } from '../vorpal-io'
@@ -448,7 +449,17 @@ class Vorpal extends EventEmitter {
         if (err) {
           reject(data)
         } else {
-          resolve(data)
+          if (typeof data === 'string') {
+            data = stripAnsi(data)
+            if (obsio) {
+              obsio.stdout.next(data)
+            } else {
+              item.session.log(data)
+            }
+            resolve(0)
+          } else {
+            resolve(data)
+          }
         }
       })
     })

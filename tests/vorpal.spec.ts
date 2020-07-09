@@ -6,9 +6,12 @@ import {
   Action,
   CommandInstance,
   Vorpal,
-  StdoutAssembler,
-  simpleExec,
 }                   from '../src/vorpal/mod'
+
+import {
+  messageFixture,
+}                   from '../src/vorpal-io.spec'
+import { VorpalIo } from '../src/vorpal-io'
 
 test('smoke testing', async t => {
   const vorpal = new Vorpal()
@@ -82,9 +85,14 @@ test('command() stdout pipe redirect', async t => {
 test('StdoutAssembler extension with hacker-news', async t => {
   const vorpal = new Vorpal()
 
-  vorpal.use(StdoutAssembler())
   vorpal.use(require('vorpal-hacker-news'))
 
-  const { stdout } = await simpleExec(vorpal, 'hacker-news --length 3', {})
-  t.true(/Hacker News/i.test(stdout), 'should get the stdout with hacker news')
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  const ret = await vorpal.exec('hacker-news --length 3', undefined, io.obsio())
+
+  t.equal(ret, 0, 'should return 0 for hacker news')
+  // console.info(fixture.input)
+  t.true(/Hacker News/i.test(fixture.input[0]), 'should get the stdout with hacker news')
 })
