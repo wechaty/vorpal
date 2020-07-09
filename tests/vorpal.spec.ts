@@ -98,7 +98,7 @@ test('hacker-news', async t => {
     obsio: io.obsio(),
   })
 
-  t.equal(ret, 0, 'should return 0 for hacker news')
+  t.true(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
   t.true(/Hacker News/i.test(fixture.input[0]), 'should get the stdout with hacker news')
 })
 
