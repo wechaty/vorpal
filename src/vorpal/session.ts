@@ -201,8 +201,6 @@ export class Session extends EventEmitter {
         .catch(function (err) {
           onCompletion(wrapper, true, err)
         })
-    } else {
-      onCompletion(wrapper, undefined, res ?? 0)
     }
 
     return this

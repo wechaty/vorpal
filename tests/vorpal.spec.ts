@@ -97,7 +97,6 @@ test('StdoutAssembler extension with hacker-news', async t => {
   })
 
   t.equal(ret, 0, 'should return 0 for hacker news')
-  // console.info(fixture.input)
   t.true(/Hacker News/i.test(fixture.input[0]), 'should get the stdout with hacker news')
 })
 
