@@ -74,7 +74,7 @@ export class Session extends EventEmitter {
 
     if (this.obsio) {
       // FIXME(huan): args to string?
-      this.obsio.stdout.next(args.join(' '))
+      this.obsio.stdout.next(stripAnsi(args.join(' ')))
     } else {
       args = args.map(arg => stripAnsi(arg))
       console.info(...args)

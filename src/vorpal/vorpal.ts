@@ -2,7 +2,6 @@
 import { EventEmitter } from 'events'
 
 import { Message }  from 'wechaty'
-import stripAnsi    from 'strip-ansi'
 
 import * as utils from './utils/mod'
 import { ObsIo } from '../vorpal-io'
