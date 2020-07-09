@@ -50,7 +50,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   const extensionList = config.use
     ? Array.isArray(config.use)
       ? config.use
-      : [ config.use ]
+      : [config.use]
     : []
 
   extensionList.forEach(m => vorpal.use(m))
@@ -96,7 +96,9 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       try {
         const obsio = io.obsio()
         const ret = await vorpal.exec(command, undefined, obsio)
-        void ret  // ret is the return of the action of vorpal command
+        if (ret !== 0) {
+          log.error('WechatyVorpal', 'WechatyVorpalPlugin() onMessage() command<%s> exit code %s', command, ret)
+        }
       } finally {
         io.close()
       }
@@ -104,7 +106,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
     }
 
     wechaty.on('message', onMessage)
-    return () => void wechaty.off('message', onMessage)
+    return () => wechaty.off('message', onMessage)
 
   }
 }

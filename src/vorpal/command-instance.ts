@@ -36,9 +36,11 @@ export class CommandInstance {
   public callback: any
   public downstream?: CommandInstance
 
-  public stdin  : Observable<SayableMessage>
-  public stdout : Subject<SayableMessage>
-  public stderr : Subject<string>
+  protected obsio?: ObsIo
+
+  get stdin () : Observable<SayableMessage> { return this.obsio!.stdin }
+  get stdout (): Subject<SayableMessage> { return this.obsio!.stdout }
+  get stderr (): Subject<string> { return this.obsio!.stderr }
 
   /**
    * Initialize a new `CommandInstance` instance.
@@ -66,9 +68,7 @@ export class CommandInstance {
     this.callback = callback
     this.downstream = downstream
 
-    this.stdout = obsio!.stdout
-    this.stderr = obsio!.stderr
-    this.stdin  = obsio!.stdin
+    this.obsio = obsio
   }
 
   /**
