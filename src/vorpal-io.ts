@@ -23,7 +23,7 @@ const busyState: {
 
 class VorpalIo {
 
-  static from (message: Message): VorpalIo {
+  static from (message: Message) {
     return new this(message)
   }
 
@@ -64,15 +64,12 @@ class VorpalIo {
 
     if (this.stdinSub) {
       this.stdinSub.complete()
-      this.stdinSub = undefined
     }
     if (this.stderrSub) {
       this.stderrSub.complete()
-      this.stderrSub = undefined
     }
     if (this.stdoutSub) {
       this.stdoutSub.complete()
-      this.stdoutSub = undefined
     }
     this.setBusy(false)
   }
@@ -86,11 +83,15 @@ class VorpalIo {
       return cuid()
     }
 
+    let id
     if (room) {
-      return `${from.id}@${room.id}`
+      id = `${from.id}@${room.id}`
+    } else {
+      id = from.id
     }
 
-    return from.id
+    // log.silly('VorpalIo', 'id() = %s', id)
+    return id
   }
 
   protected setBusy (busy: boolean): void {
@@ -116,6 +117,8 @@ class VorpalIo {
     const onMessage = (message: Message) => {
       if (message.from() === from)  { return }
       if (message.room() === room)  { return }
+
+      log.verbose('VorpalIo', 'stdin() onMessage(%s)', message)
       sub.next(message)
     }
     this.message.wechaty.on('message', onMessage)
@@ -144,9 +147,11 @@ class VorpalIo {
     }
 
     const next = async (msg: SayableMessage) => {
-      const talker = talkers.messageTalker(msg)
+      log.verbose('VorpalIo', 'stdout() next(%s)', msg)
+
+      const talk = talkers.messageTalker(msg)
       try {
-        await talker(this.message)
+        await talk(this.message)
       } catch (e) {
         log.error('VorpalIo', 'stdout() next() rejection: %s', e)
       }
@@ -171,7 +176,21 @@ class VorpalIo {
     const complete = () => {
       this.stderrSub = undefined
     }
-    sub.subscribe({ complete })
+
+    const next = async (msg: SayableMessage) => {
+      log.verbose('VorpalIo', 'stderr() next(%s)', msg)
+      const talker = talkers.messageTalker(msg)
+      try {
+        await talker(this.message)
+      } catch (e) {
+        log.error('VorpalIo', 'stderr() next() rejection: %s', e)
+      }
+    }
+
+    sub.subscribe({
+      complete,
+      next,
+    })
 
     return sub
   }
