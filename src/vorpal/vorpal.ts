@@ -36,7 +36,7 @@ class Vorpal extends EventEmitter {
   public commands: Command[]
 
   // private util: any
-  public session: Session
+  // public session: Session
   private isCommandArgKeyPairNormalized: boolean
 
   public _help: any
@@ -65,9 +65,6 @@ class Vorpal extends EventEmitter {
 
     // // Expose common utilities, like padding.
     // this.util = utils
-
-    // Active vorpal server session.
-    this.session = new Session(this)
 
     // Allow unix-like key value pair normalization to be turned off by toggling this switch on.
     this.isCommandArgKeyPairNormalized = true
@@ -258,10 +255,10 @@ class Vorpal extends EventEmitter {
    * @api public
    */
 
-  public log (...args: string[]) {
-    this.session.log(...args)
-    return this
-  }
+  // public log (...args: string[]) {
+  //   this.session.log(...args)
+  //   return this
+  // }
 
   /**
    * Intercepts all logging through `vorpal.log`
@@ -273,10 +270,10 @@ class Vorpal extends EventEmitter {
    * @api public
    */
 
-  public pipe (fn: Function) {
-    this.session._pipeFn = fn
-    return this
-  }
+  // public pipe (fn: Function) {
+  //   this.session._pipeFn = fn
+  //   return this
+  // }
 
   /**
    * Executes a vorpal API command and
@@ -297,11 +294,13 @@ class Vorpal extends EventEmitter {
 
     const commandData = utils.parseCommand(command, this.commands)
 
+    const session = new Session(this, obsio)
+
     const item: utils.CommandExecutionItem = {
       args,
       command: commandData.command,
       pipes: commandData.pipes,
-      session: this.session,
+      session: session,
     }
 
     const match = commandData.match
@@ -336,8 +335,8 @@ class Vorpal extends EventEmitter {
       // If no command match, just return.
       const helpMsg = this._commandHelp(item.command)
       if (obsio) {
-        obsio.stdout.next(helpMsg)
         obsio.stderr.next('Invalid command')
+        obsio.stdout.next(helpMsg)
         return 1
       } else {
         item.session.log(helpMsg)

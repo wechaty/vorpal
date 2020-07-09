@@ -30,6 +30,7 @@ export class CommandInstance {
   public parent: any
   public callback: any
   public downstream?: CommandInstance
+
   /**
    * Initialize a new `CommandInstance` instance.
    *

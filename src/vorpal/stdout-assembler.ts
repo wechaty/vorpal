@@ -32,7 +32,7 @@ function StdoutAssembler () {
       this: CommandInstance,
       args: Args,
     ) {
-      if (!args || !args.stdin) { return }
+      if (!args || !args.stdin) { return 1 }
 
       const stdin = args.stdin      as string[]
       const id    = args.options.id as string
@@ -42,6 +42,7 @@ function StdoutAssembler () {
       }
 
       stdoutStore[id].push(stdin)
+      return 0
     }
 
     vorpal

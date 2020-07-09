@@ -15,7 +15,7 @@ function commons (vorpal: Vorpal) {
   vorpal
     .command('help [command...]')
     .description('Provides help for a given command.')
-    .action(function (this: CommandInstance, args, cb) {
+    .action(function (this: CommandInstance, args) {
       if (args.command) {
         args.command = (args.command as any).join(' ')
         const commandWithName = this.parent.commands.find(
@@ -25,9 +25,8 @@ function commons (vorpal: Vorpal) {
           if (typeof commandWithName._help === 'function') {
             commandWithName._help(args.command, (str: string) => {
               this.log(str)
-              cb()
             })
-            return
+            return 0
           }
           this.log(commandWithName.helpInformation())
         } else {
@@ -36,7 +35,7 @@ function commons (vorpal: Vorpal) {
       } else {
         this.log(this.parent._commandHelp(args.command))
       }
-      cb()
+      return 0
     })
 
   /**

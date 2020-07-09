@@ -5,6 +5,7 @@ import * as utils from './utils/mod'
 
 import { CommandInstance } from './command-instance'
 import { Vorpal } from './vorpal'
+import { ObsIo } from '../vorpal-io'
 
 interface CommandResponse {
   error?: Error;
@@ -35,6 +36,7 @@ export class Session extends EventEmitter {
 
   constructor (
     public vorpal: Vorpal,
+    public obsio?: ObsIo,
   ) {
     super()
     this.parent = vorpal
@@ -68,7 +70,14 @@ export class Session extends EventEmitter {
     if (args.length === 0 || args[0] === '') {
       return this
     }
-    console.info(...args)
+
+    if (this.obsio) {
+      // FIXME(huan): args to string?
+      this.obsio.stdout.next(args.join(' '))
+    } else {
+      console.info(...args)
+    }
+
     return this
   }
 

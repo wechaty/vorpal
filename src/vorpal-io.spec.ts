@@ -15,11 +15,17 @@ import {
   Subject,
   Observable,
 }               from 'rxjs'
-
-import { VorpalIo } from './vorpal-io'
 import cuid from 'cuid'
 
-const messageFixture = () => {
+import {
+  Vorpal,
+  Action,
+  CommandInstance,
+}                   from './vorpal/mod'
+
+import { VorpalIo } from './vorpal-io'
+
+export const messageFixture = () => {
   const contactId = cuid() + '#contact'
   const roomId    = cuid() + '#room'
   const messageId = cuid() + '#message'
@@ -152,4 +158,50 @@ test('VorpalIo obsio() stdin', async t => {
   t.true(spy.called, 'should call say when stdin got something')
   t.equal(spy.args[0][0], MESSAGE, 'should get message from subscribe')
   t.deepEqual(spy.args, fixture.output, 'should match wechaty & obs')
+})
+
+/**
+ *
+ * Integration Tests with Vorpal
+ *
+ */
+
+test('obsio for known command', async t => {
+  const EXPECTED_TEXT = 'vorpal for chatbot'
+  const EXPECTED_RET = 42
+
+  const vorpal = new Vorpal()
+
+  const fooAction: Action = async function (
+    this: CommandInstance,
+  ) {
+    this.log(EXPECTED_TEXT)
+    return EXPECTED_RET
+  }
+
+  vorpal
+    .command('foo')
+    .action(fooAction)
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  const ret = await vorpal.exec('foo', undefined, io.obsio())
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.equal(ret, EXPECTED_RET, 'should return' + EXPECTED_RET)
+  t.deepEqual(fixture.input, [[EXPECTED_TEXT]], 'should get the expected stdout')
+})
+
+test('obsio for unknown command', async t => {
+  const vorpal = new Vorpal()
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  const ret = await vorpal.exec('unknown_command', undefined, io.obsio())
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.equal(ret, 1, 'should return 1 for unknown command')
+  t.deepEqual(fixture.input[0], ['Invalid command'], 'should get the expected invalid command message')
 })

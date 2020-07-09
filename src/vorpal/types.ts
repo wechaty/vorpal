@@ -21,7 +21,7 @@ export type Action = (
   this: CommandInstance,
   args: Args,
   callback: Function,
-) => void | Promise<void>
+) => number | Promise<number>
 
 export interface MatchParts<T extends Args | string> {
   args: T
