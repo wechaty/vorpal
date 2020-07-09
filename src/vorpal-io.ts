@@ -7,13 +7,13 @@ import cuid         from 'cuid'
 import {
   Observable,
   Subject,
-  of,
   EMPTY,
+  concat,
+  of,
 }                   from 'rxjs'
 import {
   concatMap,
   delay,
-  concat,
 }                   from 'rxjs/operators'
 import { talkers }  from 'wechaty-plugin-contrib'
 
@@ -29,10 +29,10 @@ const busyState: {
   [id: string]: true
 } = {}
 
-const addDelay = () => concatMap(item => concat(
-  of(item),                 // emit first item right away
-  EMPTY.pipe(delay(1000)),  // delay next item
-))
+// const addDelay = () => concatMap<any, any>(item => concat(
+//   of(item),                 // emit first item right away
+//   EMPTY.pipe(delay(1000)),  // delay next item
+// ))
 
 class VorpalIo {
 
@@ -171,7 +171,10 @@ class VorpalIo {
     }
 
     sub.pipe(
-      addDelay(),
+      concatMap(item => concat(
+        of(item),                 // emit first item right away
+        EMPTY.pipe(delay(1000)),  // delay next item
+      ))
     ).subscribe({
       complete,
       next,
@@ -203,7 +206,10 @@ class VorpalIo {
     }
 
     sub.pipe(
-      addDelay(),
+      concatMap(item => concat(
+        of(item),                 // emit first item right away
+        EMPTY.pipe(delay(1000)),  // delay next item
+      ))
     ).subscribe({
       complete,
       next,

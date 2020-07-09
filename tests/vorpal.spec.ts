@@ -85,7 +85,7 @@ test('command() stdout pipe redirect', async t => {
   t.deepEqual(output, EXPECTED_TEXT, 'should execute a command and get the output')
 })
 
-test('hacker-news', async t => {
+test.skip('hacker-news', async t => {
   const vorpal = new Vorpal()
 
   vorpal.use(require('vorpal-hacker-news'))
@@ -144,7 +144,8 @@ test('Vorpal compatibility: command actions that call this.log() twice', async t
     message: fixture.message,
     obsio: io.obsio(),
   })
-  await new Promise(resolve => setImmediate(resolve))
+  // FIXME(huan): remove the 2500 timer
+  await new Promise(resolve => setTimeout(resolve, 2500))
 
   t.deepEqual(fixture.input, EXPECTED_INPUT, 'should get one/two as fixture input')
 })
