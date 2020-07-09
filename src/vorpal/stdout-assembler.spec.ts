@@ -41,6 +41,6 @@ test.skip('stdout assembler for unknown command', async t => {
 
   vorpal.use(StdoutAssembler())
 
-  const { stdout } = await simpleExec(vorpal, 'unknown_command', {})
-  t.true(EXPECTED_TEXT_RE.test(stdout), 'should get the expected invalid command message')
+  const ret = await simpleExec(vorpal, 'unknown_command', {})
+  t.true(EXPECTED_TEXT_RE.test(ret.stdout), 'should get the expected invalid command message')
 })
