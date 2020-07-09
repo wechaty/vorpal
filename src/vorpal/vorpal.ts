@@ -1,7 +1,7 @@
 /* eslint-disable sort-keys */
 import { EventEmitter } from 'events'
 
-import { Message } from 'wechaty'
+import { Message }  from 'wechaty'
 
 import * as utils from './utils/mod'
 import { ObsIo } from '../vorpal-io'

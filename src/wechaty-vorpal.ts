@@ -108,22 +108,6 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
         io.close()
       }
 
-      // /**
-      //  * If our Vorpal command returns an Observable,
-      //  * Then it must a stream of `mappers.MessageMapperOptions`
-      //  * Which will be used to create messages
-      //  */
-      // // TODO(huan): use a duck type to identify whether the ret is an Observable
-      // if (ret instanceof Observable) {
-      //   ret.subscribe(async (msg: SayableMessage) => {
-      //     // const mapMessage = mappers.messageMapper(msg)
-      //     // const msgList = await mapMessage(message)
-
-      //     const talkMessage = talkers.messageTalker(msg)
-      //     await talkMessage(message)
-      //   })
-      // }
-
     }
 
     wechaty.on('message', onMessage)

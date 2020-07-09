@@ -1,5 +1,6 @@
 /* eslint-disable sort-keys */
 import { EventEmitter } from 'events'
+import stripAnsi    from 'strip-ansi'
 
 import * as utils from './utils/mod'
 
@@ -75,6 +76,7 @@ export class Session extends EventEmitter {
       // FIXME(huan): args to string?
       this.obsio.stdout.next(args.join(' '))
     } else {
+      args = args.map(arg => stripAnsi(arg))
       console.info(...args)
     }
 
