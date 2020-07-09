@@ -122,6 +122,15 @@ export class Command extends EventEmitter {
   }
 
   /**
+   * Huan(202007): keep `autocomplete` method
+   *  for compatible with CLI Vorpal
+   */
+  autocomplete (obj: any) {
+    void obj
+    return this
+  }
+
+  /**
    * Defines an action for a given command.
    *
    * @param {Function} fn

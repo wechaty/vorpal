@@ -8,10 +8,11 @@ import {
   Vorpal,
 }                   from '../src/vorpal/mod'
 
+import { VorpalIo } from '../src/vorpal-io'
+
 import {
   messageFixture,
-}                   from '../src/vorpal-io.spec'
-import { VorpalIo } from '../src/vorpal-io'
+}                   from './message-fixture.spec'
 
 test('smoke testing', async t => {
   const vorpal = new Vorpal()
@@ -98,4 +99,25 @@ test('StdoutAssembler extension with hacker-news', async t => {
   t.equal(ret, 0, 'should return 0 for hacker news')
   // console.info(fixture.input)
   t.true(/Hacker News/i.test(fixture.input[0]), 'should get the stdout with hacker news')
+})
+
+test('Vorpal help command', async t => {
+  const EXPECTED_RE = /-t --option +test option/
+
+  const vorpal = new Vorpal()
+  vorpal
+    .command('foo')
+    .option('-t --option', 'test option')
+    .action(() => {})
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  await vorpal.exec('help foo', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.true(EXPECTED_RE.test(fixture.input[0][0]), 'should get the help stdout with options message')
 })

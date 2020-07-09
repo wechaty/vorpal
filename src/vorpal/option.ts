@@ -3,32 +3,34 @@
  */
 class Option {
 
-  public required: number;
-  public optional: number;
-  public bool: boolean;
-  public flags: string[];
-  public long?: string;
-  public short?: string;
+  public required: number
+  public optional: number
+  public bool: boolean
+  public flags: string
+  public long?: string
+  public short?: string
 
   /**
    * Initialize a new `Option` instance.
    *
-   * @param {String} _flags
+   * @param {String} flags
    * @param {String} description
    * @param {Autocomplete} autocomplete
    * @return {Option}
    * @api public
    */
-  constructor (_flags: string, public description: string = '') {
-    this.required = _flags.includes('<') ? _flags.indexOf('<') : 0
-    this.optional = _flags.includes('[') ? _flags.indexOf('[') : 0
-    this.bool = !_flags.includes('-no-')
+  constructor (flags: string, public description: string = '') {
+    this.required = flags.includes('<') ? flags.indexOf('<') : 0
+    this.optional = flags.includes('[') ? flags.indexOf('[') : 0
+    this.bool = !flags.includes('-no-')
+    this.flags = flags
 
-    this.flags = _flags.split(/[ ,|]+/)
-    if (this.flags.length > 1 && !/^[[<]/.test(this.flags[1])) {
-      this.assignFlag(this.flags.shift()!)
+    const flagList = flags.split(/[ ,|]+/)
+
+    if (flagList.length > 1 && !/^[[<]/.test(flagList[1])) {
+      this.assignFlag(flagList.shift()!)
     }
-    this.assignFlag(this.flags.shift()!)
+    this.assignFlag(flagList.shift()!)
   }
 
   /**
