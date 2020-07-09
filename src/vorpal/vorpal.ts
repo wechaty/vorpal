@@ -452,17 +452,17 @@ class Vorpal extends EventEmitter {
         if (err) {
           reject(data)
         } else {
-          if (typeof data === 'string') {
-            data = stripAnsi(data)
-            if (options?.obsio) {
-              options.obsio.stdout.next(data)
-            } else {
-              item.session.log(data)
-            }
-            resolve(0)
-          } else {
-            resolve(data)
-          }
+          // if (typeof data === 'string') {
+          //   data = stripAnsi(data)
+          //   if (options?.obsio) {
+          //     options.obsio.stdout.next(data)
+          //   } else {
+          //     item.session.log(data)
+          //   }
+          //   resolve(0)
+          // } else {
+          resolve(data)
+          // }
         }
       })
     })
