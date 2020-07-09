@@ -90,7 +90,10 @@ test('StdoutAssembler extension with hacker-news', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('hacker-news --length 3', undefined, io.obsio())
+  const ret = await vorpal.exec('hacker-news --length 3', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
 
   t.equal(ret, 0, 'should return 0 for hacker news')
   // console.info(fixture.input)

@@ -1,8 +1,4 @@
 export {
-  Observable,
-  Observer,
-}             from 'rxjs'
-export {
   log,
   Wechaty,
 }             from 'wechaty'
@@ -10,6 +6,8 @@ export {
 export { VERSION }        from './version'
 export {
   Vorpal,
+  CommandInstance,
+  Args,
 }                         from './vorpal/mod'
 export {
   WechatyVorpalConfig,

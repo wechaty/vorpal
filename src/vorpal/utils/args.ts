@@ -1,6 +1,5 @@
 import { clone, isObject, isUndefined } from 'lodash'
 import Session from '../session'
-import { ArgTypes } from '../types'
 
 import { Command } from '../command'
 import {
@@ -10,6 +9,11 @@ import {
 
 import minimist from 'minimist'
 import { ObsIo } from '../../vorpal-io'
+import { Message } from 'wechaty'
+
+export type ArgTypes = {
+  [P in 'string' | 'boolean']: unknown
+}
 
 type CLIArgs = minimist.ParsedArgs & {
   [key: string]: string | boolean | number;
@@ -32,6 +36,7 @@ export type CommandExecutionItem = {
   sync?: boolean
   _cancel?: any
   obsio?: ObsIo
+  message?: Message
 };
 
 type ModeOptions = {

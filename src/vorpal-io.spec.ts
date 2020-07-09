@@ -186,7 +186,10 @@ test('obsio for known command', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('foo', undefined, io.obsio())
+  const ret = await vorpal.exec('foo', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, EXPECTED_RET, 'should return' + EXPECTED_RET)
@@ -199,7 +202,10 @@ test('obsio for unknown command', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('unknown_command', undefined, io.obsio())
+  const ret = await vorpal.exec('unknown_command', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, 1, 'should return 1 for unknown command')
@@ -222,7 +228,10 @@ test('obsio with command instance', async t => {
     })
 
   // void io
-  const ret = await vorpal.exec('test', undefined, io.obsio())
+  const ret = await vorpal.exec('test', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, RET, 'should return ' + RET + ' for test command')
@@ -241,10 +250,37 @@ test('obsio with command instance return undefined', async t => {
     .action(function action () {})
 
   // void io
-  const ret = await vorpal.exec('test', undefined, io.obsio())
+  const ret = await vorpal.exec('test', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, 0, 'should return 0 for void action')
+
+  io.close()
+})
+
+test('obsio with message', async t => {
+  const vorpal = new Vorpal()
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  let message
+
+  vorpal.command('test')
+    .action(function action () {
+      message = this.message
+    })
+
+  await vorpal.exec('test', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.equal(message, fixture.message, 'should return get the message from command instance')
 
   io.close()
 })

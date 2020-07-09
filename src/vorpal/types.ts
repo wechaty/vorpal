@@ -5,12 +5,9 @@ import {
 
 import {
   // CommandInstance,
-  Args, CommandInstance,
+  Args,
+  CommandInstance,
 }                   from './command-instance'
-
-export type ArgTypes = {
-  [P in 'string' | 'boolean']: unknown
-}
 
 // type ParseFn = (str: string, args: string | Args) => string
 // type ValidateFn = (instance: CommandInstance, args: Args) => string

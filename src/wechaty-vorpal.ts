@@ -95,10 +95,20 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
       try {
         const obsio = io.obsio()
-        const ret = await vorpal.exec(command, undefined, obsio)
+
+        const ret = await vorpal.exec(
+          command,
+          undefined,
+          {
+            message,
+            obsio,
+          },
+        )
+
         if (ret !== 0) {
           log.error('WechatyVorpal', 'WechatyVorpalPlugin() onMessage() command<%s> exit code %s', command, ret)
         }
+
       } finally {
         io.close()
       }

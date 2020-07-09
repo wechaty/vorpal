@@ -118,6 +118,7 @@ export class Session extends EventEmitter {
       commandObject: wrapper.commandObject,
       commandWrapper: wrapper,
       obsio: wrapper.obsio,
+      message: wrapper.message,
     })
 
     wrapper.commandInstance = commandInstance

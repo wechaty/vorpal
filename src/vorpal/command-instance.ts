@@ -4,6 +4,7 @@ import { Observable, Subject } from 'rxjs'
 
 import { SayableMessage } from '../wechaty-vorpal'
 import { ObsIo }          from '../vorpal-io'
+import { Message } from 'wechaty'
 
 export type Args = {
   [arg: string]: string | string[]
@@ -23,6 +24,7 @@ interface CommandInstanceOptions {
   callback?: any
   downstream?: CommandInstance
   obsio?: ObsIo
+  message?: Message
 }
 
 export class CommandInstance {
@@ -42,6 +44,9 @@ export class CommandInstance {
   get stdout (): Subject<SayableMessage> { return this.obsio!.stdout }
   get stderr (): Subject<string> { return this.obsio!.stderr }
 
+  protected _message?: Message
+  get message () : Message { return this._message! }
+
   /**
    * Initialize a new `CommandInstance` instance.
    *
@@ -58,6 +63,7 @@ export class CommandInstance {
     callback,
     downstream,
     obsio,
+    message,
   }: CommandInstanceOptions = {}) {
     this.command = command
     this.commandObject = commandObject
@@ -69,6 +75,7 @@ export class CommandInstance {
     this.downstream = downstream
 
     this.obsio = obsio
+    this._message = message
   }
 
   /**
