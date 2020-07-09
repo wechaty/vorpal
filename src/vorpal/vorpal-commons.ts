@@ -38,19 +38,6 @@ function commons (vorpal: Vorpal) {
       return 0
     })
 
-  /**
-   * Exits Vorpal.
-   */
-
-  // vorpal
-  //   .command('exit')
-  //   .alias('quit')
-  //   .description('Exits application.')
-  //   .action(function (args) {
-  //     args.options = args.options || {}
-  //     args.options.sessionId = this.session.id
-  //     this.parent.exit(args.options)
-  //   })
 }
 
 export { commons }

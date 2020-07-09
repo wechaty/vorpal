@@ -9,6 +9,7 @@ import {
 }                   from '../command-instance'
 
 import minimist from 'minimist'
+import { ObsIo } from '../../vorpal-io'
 
 type CLIArgs = minimist.ParsedArgs & {
   [key: string]: string | boolean | number;
@@ -25,11 +26,12 @@ export type CommandExecutionItem = {
   commandInstance?: CommandInstance
   fn?: (ci: CommandInstance, args: Args) => any // TODO response value?
   options?: ModeOptions;
-  pipes?: string[] | CommandInstance[]; // From parseCommand()
+  pipes?: string[] | CommandInstance[] // From parseCommand()
   validate?: any
-  session: Session;
-  sync?: boolean;
-  _cancel?: any,
+  session: Session
+  sync?: boolean
+  _cancel?: any
+  obsio?: ObsIo
 };
 
 type ModeOptions = {

@@ -288,7 +288,7 @@ class Vorpal extends EventEmitter {
    * @api public
    */
 
-  public exec (command: string, args?: any, obsio?: ObsIo) {
+  public async exec (command: string, args?: any, obsio?: ObsIo): Promise<number | string> {
     args = args || {}
 
     const self = this
@@ -302,6 +302,7 @@ class Vorpal extends EventEmitter {
       command: commandData.command,
       pipes: commandData.pipes,
       session: session,
+      obsio,
     }
 
     const match = commandData.match
@@ -395,11 +396,7 @@ class Vorpal extends EventEmitter {
     // If invalid piped commands, return.
     if (!allValid) {
       // return callback(item)
-      if (obsio) {
-        return 0
-      } else {
-        return
-      }
+      return 1
     }
 
     // If `--help` or `/?` is passed, do help.
@@ -414,11 +411,7 @@ class Vorpal extends EventEmitter {
       // Otherwise, throw the standard help.
       throwHelp(item, '')
       // return callback(item)
-      if (obsio) {
-        return 0
-      } else {
-        return
-      }
+      return 0
     }
 
     // Builds commandInstance objects for every
@@ -432,6 +425,7 @@ class Vorpal extends EventEmitter {
         command: pipe.command._name,
         commandObject: pipe.command,
         args: pipe.args,
+        obsio,
       })
     })
 

@@ -117,6 +117,7 @@ export class Session extends EventEmitter {
       downstream: wrapper.pipes![0] as any,
       commandObject: wrapper.commandObject,
       commandWrapper: wrapper,
+      obsio: wrapper.obsio,
     })
 
     wrapper.commandInstance = commandInstance
@@ -174,7 +175,6 @@ export class Session extends EventEmitter {
         return this
       }
     }
-
     if (valid !== true && valid !== undefined) {
       onCompletion(wrapper, valid || null)
       return this
@@ -200,6 +200,8 @@ export class Session extends EventEmitter {
         .catch(function (err) {
           onCompletion(wrapper, true, err)
         })
+    } else {
+      onCompletion(wrapper, undefined, res ?? 0)
     }
 
     return this

@@ -1,5 +1,9 @@
 import { Command } from './command'
 import { Session } from './session'
+import { Observable, Subject } from 'rxjs'
+
+import { SayableMessage } from '../wechaty-vorpal'
+import { ObsIo }          from '../vorpal-io'
 
 export type Args = {
   [arg: string]: string | string[]
@@ -18,6 +22,7 @@ interface CommandInstanceOptions {
   command?: any
   callback?: any
   downstream?: CommandInstance
+  obsio?: ObsIo
 }
 
 export class CommandInstance {
@@ -30,6 +35,10 @@ export class CommandInstance {
   public parent: any
   public callback: any
   public downstream?: CommandInstance
+
+  public stdin  : Observable<SayableMessage>
+  public stdout : Subject<SayableMessage>
+  public stderr : Subject<string>
 
   /**
    * Initialize a new `CommandInstance` instance.
@@ -46,6 +55,7 @@ export class CommandInstance {
     commandWrapper,
     callback,
     downstream,
+    obsio,
   }: CommandInstanceOptions = {}) {
     this.command = command
     this.commandObject = commandObject
@@ -55,6 +65,10 @@ export class CommandInstance {
     this.parent = this.session.vorpal
     this.callback = callback
     this.downstream = downstream
+
+    this.stdout = obsio!.stdout
+    this.stderr = obsio!.stderr
+    this.stdin  = obsio!.stdin
   }
 
   /**

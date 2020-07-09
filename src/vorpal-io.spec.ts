@@ -205,3 +205,46 @@ test('obsio for unknown command', async t => {
   t.equal(ret, 1, 'should return 1 for unknown command')
   t.deepEqual(fixture.input[0], ['Invalid command'], 'should get the expected invalid command message')
 })
+
+test('obsio with command instance', async t => {
+  const vorpal = new Vorpal()
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  const TEXT = 'test'
+  const RET = 42
+
+  vorpal.command('test')
+    .action(function action () {
+      this.stdout.next(TEXT)
+      return RET
+    })
+
+  // void io
+  const ret = await vorpal.exec('test', undefined, io.obsio())
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.equal(ret, RET, 'should return ' + RET + ' for test command')
+  t.deepEqual(fixture.input[0], [TEXT], 'should get the expected TEXT message')
+
+  io.close()
+})
+
+test('obsio with command instance return undefined', async t => {
+  const vorpal = new Vorpal()
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  vorpal.command('test')
+    .action(function action () {})
+
+  // void io
+  const ret = await vorpal.exec('test', undefined, io.obsio())
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.equal(ret, 0, 'should return 0 for void action')
+
+  io.close()
+})
