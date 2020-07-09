@@ -103,11 +103,10 @@ export class Session extends EventEmitter {
    * @api public
    */
 
-  public execCommandSet (wrapper: utils.CommandExecutionItem, callback: any) {
+  public execCommandSet (wrapper: utils.CommandExecutionItem, callback: any): void {
     const self = this
     let response: CommandResponse = {}
     // var res /* eslint-disable-line no-var */
-    const cbk = callback
     this._registeredCommands = 1
     this._completedCommands = 0
 
@@ -152,11 +151,15 @@ export class Session extends EventEmitter {
         self.vorpal.emit('client_command_executed', { command: wrapper.command })
       }
 
-      cbk(wrapper, err, data, argus)
+      callback(wrapper, err, data, argus)
       sendDones(commandInstance)
     }
 
     function onCompletion (wrapperInner: any, err: any, data?: any, argus?: any) {
+
+      // console.info(new Error().stack)
+      // console.info('###', data)
+
       response = {
         error: err,
         data,
@@ -173,12 +176,12 @@ export class Session extends EventEmitter {
       } catch (e) {
         // Complete with error on validation error
         onCompletion(wrapper, e)
-        return this
+        return
       }
     }
     if (valid !== true && valid !== undefined) {
       onCompletion(wrapper, valid || null)
-      return this
+      return
     }
 
     if (wrapper.args && typeof wrapper.args === 'object') {
@@ -195,6 +198,9 @@ export class Session extends EventEmitter {
     if (res instanceof Promise) {
       res
         .then(function (data) {
+          if (typeof data === 'undefined') {
+            data = 0
+          }
           onCompletion(wrapper, undefined, data)
           return undefined
         })
@@ -203,7 +209,7 @@ export class Session extends EventEmitter {
         })
     }
 
-    return this
+    // return this
   }
 
   /**

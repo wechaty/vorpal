@@ -14,11 +14,26 @@ import {
 // type CancelFn = (instance: CommandInstance) => void
 // type FnFn = (args: Arg[], onComplete: (err?: Error) => void) => void
 
-export type Action = (
+type PromiseAction = (
   this: CommandInstance,
   args: Args,
-  callback: Function,
-) => void | number | Promise<void | number>
+) => Promise<void | number>
+
+type CallbackAction = (
+  this: CommandInstance,
+  args: Args,
+  callback: (err: any, data: any) => void,
+) => void | number
+
+export type Action = PromiseAction | CallbackAction
+
+const t: Action = function (args: Args) {
+  void args
+  return 42
+}
+
+type tt = ReturnType<typeof t>
+void t
 
 export interface MatchParts<T extends Args | string> {
   args: T

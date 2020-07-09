@@ -187,7 +187,7 @@ test('obsio with command instance', async t => {
   const RET = 42
 
   vorpal.command('test')
-    .action(function action () {
+    .action(async function action (this: CommandInstance) {
       this.stdout.next(TEXT)
       return RET
     })
@@ -212,7 +212,7 @@ test('obsio with command instance return undefined', async t => {
   const io = VorpalIo.from(fixture.message)
 
   vorpal.command('test')
-    .action(function action () {})
+    .action(async function action () {})
 
   // void io
   const ret = await vorpal.exec('test', undefined, {
@@ -235,7 +235,7 @@ test('obsio with message', async t => {
   let message
 
   vorpal.command('test')
-    .action(function action () {
+    .action(async function action (this: CommandInstance) {
       message = this.message
     })
 

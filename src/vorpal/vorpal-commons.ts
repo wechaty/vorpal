@@ -4,8 +4,11 @@
  * through vorpal.use(module).
  */
 
-import { Vorpal } from './vorpal'
-import { CommandInstance } from './command-instance'
+import { Vorpal }   from './vorpal'
+import {
+  CommandInstance,
+  Args,
+}                   from './command-instance'
 
 function commons (vorpal: Vorpal) {
   /**
@@ -15,7 +18,7 @@ function commons (vorpal: Vorpal) {
   vorpal
     .command('help [command...]')
     .description('Provides help for a given command.')
-    .action(function (this: CommandInstance, args) {
+    .action(async function (this: CommandInstance, args: Args) {
       if (args.command) {
         args.command = (args.command as any).join(' ')
         const commandWithName = this.parent.commands.find(

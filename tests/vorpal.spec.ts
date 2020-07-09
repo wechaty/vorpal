@@ -6,6 +6,7 @@ import {
   Action,
   CommandInstance,
   Vorpal,
+  Args,
 }                   from '../src/vorpal/mod'
 
 import { VorpalIo } from '../src/vorpal-io'
@@ -23,14 +24,15 @@ test('smoke testing', async t => {
 
 test('command() foo', async t => {
   const vorpal = new Vorpal()
+
+  let actualArgs
   const fooAction: Action = async function (
-    this: CommandInstance,
-    args,
+    args: Args,
   ) {
     /**
      * This action function is take from the vorpal official unit test
      */
-    return args as any
+    actualArgs = args
   }
 
   vorpal
@@ -38,7 +40,7 @@ test('command() foo', async t => {
     .option('-t --test', 'test')
     .action(fooAction)
 
-  const fixture = {
+  const EXPECTED_ARGS = {
     bars: [
       'bar1',
       'bar2',
@@ -48,8 +50,8 @@ test('command() foo', async t => {
     },
     rawCommand: 'foo bar1 bar2 -t',
   }
-  const result = await vorpal.exec('foo bar1 bar2 -t')
-  t.deepEqual(result, fixture, 'should execute a command with no options')
+  await vorpal.exec('foo bar1 bar2 -t')
+  t.deepEqual(actualArgs, EXPECTED_ARGS, 'should execute a command with no options')
 })
 
 test('command() stdout pipe redirect', async t => {
@@ -65,7 +67,7 @@ test('command() stdout pipe redirect', async t => {
   let output = ''
   const collect: Action = async function (
     this: CommandInstance,
-    args,
+    args: Args,
   ) {
     output = args.stdin[0]
   }
@@ -107,7 +109,7 @@ test('Vorpal help command with options', async t => {
   vorpal
     .command('foo')
     .option('-t --option', 'test option')
-    .action(() => {})
+    .action(async () => {})
 
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
@@ -119,4 +121,100 @@ test('Vorpal help command with options', async t => {
   await new Promise(resolve => setImmediate(resolve))
 
   t.true(EXPECTED_RE.test(fixture.input[0][0]), 'should get the help stdout with options message')
+})
+
+test('Vorpal compatibility: command actions that call this.log() twice', async t => {
+  const EXPECTED_INPUT = [
+    ['one'],
+    ['two'],
+  ]
+
+  const vorpal = new Vorpal()
+  vorpal
+    .command('log_twice')
+    .action(async function (this: any) {
+      this.log('one')
+      this.log('two')
+    })
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  await vorpal.exec('log_twice', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.deepEqual(fixture.input, EXPECTED_INPUT, 'should get one/two as fixture input')
+})
+
+test('Vorpal compatibility: command actions that return a str', async t => {
+  const TEXT = 'str'
+
+  const vorpal = new Vorpal()
+  vorpal
+    .command('ret_str')
+    .action(async function (this: any) {
+      return TEXT as any
+    })
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  await vorpal.exec('ret_str', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.deepEqual(fixture.input, [[TEXT]], 'should get TEXT from return string')
+})
+
+test('Vorpal compatibility: command actions with a callback', async t => {
+  const TEXT = 'callback text'
+
+  const vorpal = new Vorpal()
+  vorpal
+    .command('callback')
+    .action(function (this: any, args: any, callback: any) {
+      void args
+      setImmediate(() => callback(undefined, TEXT))
+    })
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  await vorpal.exec('callback', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.deepEqual(fixture.input, [[TEXT]], 'should get TEXT from callback')
+})
+
+test('Vorpal compatibility: command actions log with a callback', async t => {
+  const TEXT_LOG = 'log text'
+  const TEXT_CB = 'callback text'
+
+  const vorpal = new Vorpal()
+  vorpal
+    .command('callback')
+    .action(function (this: any, args: any, callback) {
+      void args
+      this.log(TEXT_LOG)
+      setImmediate(() => callback(undefined, TEXT_CB))
+    })
+
+  const fixture = messageFixture()
+  const io = VorpalIo.from(fixture.message)
+
+  await vorpal.exec('callback', undefined, {
+    message: fixture.message,
+    obsio: io.obsio(),
+  })
+  await new Promise(resolve => setTimeout(resolve))
+
+  t.deepEqual(fixture.input, [[TEXT_LOG], [TEXT_CB]], 'should get TEXT_{LOG,CB} from log & callback')
 })
