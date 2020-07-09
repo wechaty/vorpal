@@ -26,10 +26,10 @@ const messageFixture = () => {
 
   const wechaty = new Wechaty({ puppet: 'wechaty-puppet-mock' })
 
-  const input = [] as Message[]
-  wechaty.on('message', message => input.push(message))
-
   const output = [] as any[]
+  wechaty.on('message', (...args: any[]) => output.push(args))
+
+  const input = [] as any[]
   const message = {
     from: () => ({
       id: contactId,
@@ -38,11 +38,12 @@ const messageFixture = () => {
     room: () => ({
       id: roomId,
     } as any as Room),
-    say: (...args: any[]) => output.push(args),
+    say: (...args: any[]) => input.push(args),
     wechaty,
   } as any as Message
 
   return {
+    input,
     message,
     output,
   }
@@ -113,16 +114,12 @@ test('VorpalIo obsio() stdout', async t => {
   const io = new VorpalIoTest(fixture.message)
   const obsio = io.obsio()
 
-  const sandbox = sinon.createSandbox()
-  const sayStub = sandbox.stub(fixture.message, 'say')
-
   const TEXT = 'hello'
 
   obsio.stdout.next(TEXT)
   await new Promise(resolve => setImmediate(resolve))
 
-  t.true(sayStub.called, 'should call say when writing to stdout')
-  t.equal(sayStub.args[0][0], TEXT, 'should say when writing to stdout')
+  t.deepEqual(fixture.input, [[TEXT]], 'should pass stdout to wechaty')
 })
 
 test('VorpalIo obsio() stderr', async t => {
@@ -131,16 +128,12 @@ test('VorpalIo obsio() stderr', async t => {
   const io = new VorpalIoTest(fixture.message)
   const obsio = io.obsio()
 
-  const sandbox = sinon.createSandbox()
-  const sayStub = sandbox.stub(fixture.message, 'say')
-
   const TEXT = 'hello'
 
   obsio.stderr.next(TEXT)
   await new Promise(resolve => setImmediate(resolve))
 
-  t.true(sayStub.called, 'should call say when writing to stderr')
-  t.equal(sayStub.args[0][0], TEXT, 'should say when writing to stderr')
+  t.deepEqual(fixture.input, [[TEXT]], 'should pass stderr to wechaty')
 })
 
 test('VorpalIo obsio() stdin', async t => {
@@ -158,4 +151,5 @@ test('VorpalIo obsio() stdin', async t => {
 
   t.true(spy.called, 'should call say when stdin got something')
   t.equal(spy.args[0][0], MESSAGE, 'should get message from subscribe')
+  t.deepEqual(spy.args, fixture.output, 'should match wechaty & obs')
 })

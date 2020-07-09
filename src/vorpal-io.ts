@@ -152,6 +152,7 @@ class VorpalIo {
       const talk = talkers.messageTalker(msg)
       try {
         await talk(this.message)
+        console.info('talked')
       } catch (e) {
         log.error('VorpalIo', 'stdout() next() rejection: %s', e)
       }
