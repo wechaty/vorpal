@@ -85,7 +85,7 @@ test('command() stdout pipe redirect', async t => {
   t.deepEqual(output, EXPECTED_TEXT, 'should execute a command and get the output')
 })
 
-test('StdoutAssembler extension with hacker-news', async t => {
+test('hacker-news', async t => {
   const vorpal = new Vorpal()
 
   vorpal.use(require('vorpal-hacker-news'))
@@ -162,13 +162,13 @@ test('Vorpal compatibility: command actions that return a str', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  await vorpal.exec('ret_str', undefined, {
+  const ret = await vorpal.exec('ret_str', undefined, {
     message: fixture.message,
     obsio: io.obsio(),
   })
   await new Promise(resolve => setImmediate(resolve))
 
-  t.deepEqual(fixture.input, [[TEXT]], 'should get TEXT from return string')
+  t.equal(ret, TEXT, 'should get TEXT from return string')
 })
 
 test('Vorpal compatibility: command actions with a callback', async t => {
@@ -185,13 +185,13 @@ test('Vorpal compatibility: command actions with a callback', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  await vorpal.exec('callback', undefined, {
+  const ret = await vorpal.exec('callback', undefined, {
     message: fixture.message,
     obsio: io.obsio(),
   })
   await new Promise(resolve => setImmediate(resolve))
 
-  t.deepEqual(fixture.input, [[TEXT]], 'should get TEXT from callback')
+  t.deepEqual(ret, TEXT, 'should get TEXT from callback')
 })
 
 test('Vorpal compatibility: command actions log with a callback', async t => {
@@ -210,11 +210,12 @@ test('Vorpal compatibility: command actions log with a callback', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  await vorpal.exec('callback', undefined, {
+  const ret = await vorpal.exec('callback', undefined, {
     message: fixture.message,
     obsio: io.obsio(),
   })
   await new Promise(resolve => setTimeout(resolve))
 
-  t.deepEqual(fixture.input, [[TEXT_LOG], [TEXT_CB]], 'should get TEXT_{LOG,CB} from log & callback')
+  t.equal(ret, TEXT_CB, 'should use callback data as ret')
+  t.deepEqual(fixture.input, [[TEXT_LOG]], 'should get TEXT_LOG from log')
 })
