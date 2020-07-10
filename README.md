@@ -83,7 +83,22 @@ Pulling top 3 stories on Hacker News:
 
 ## History
 
-### v0.3 (Jul 7, 2020)
+### v0.4 (July 10, 2020)
+
+1. Support Input, Output, and Error (powered by Observable)
+    1. `this.stdout.next(...)`
+    1. `this.stderr.next(...)`
+    1. `this.stdin.subscribe(msg => {...})`.
+1. Support send any supported `SayableMessage` type of message to the user
+    1. `string`
+    1. `FileBox`
+    1. `Contact`
+    1. `UrlLink`
+    1. etc...
+1. Support get the `message` instance which invoked this command
+    1. `this.message`
+
+### v0.3 (July 7, 2020)
 
 Inherit the TypeScript source code from the [Vorpal Reforged](https://github.com/vorpaljs-reforged/vorpal) ([MIT License](src/vorpal/LICENSE)) so that we can refactor it to fit the Chatbot environment better.
 
