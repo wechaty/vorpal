@@ -46,7 +46,7 @@
     "shx": "^0.3.2",
     "tstest": "^0.4.10",
     "vorpal-hacker-news": "^1.0.6",
-    "wechaty": "^0.41.15",
+    "wechaty": "^0.41.36",
     "wechaty-puppet-mock": "^0.22.31"
   },
   "dependencies": {
@@ -55,7 +55,7 @@
     "minimist": "^1.2.5",
     "rxjs": "^6.5.5",
     "strip-ansi": "^6.0.0",
-    "wechaty-plugin-contrib": "^0.11.4"
+    "wechaty-plugin-contrib": "^0.13.1"
   },
   "peerDependencies": {
     "wechaty": "*"

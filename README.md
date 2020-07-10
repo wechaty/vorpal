@@ -97,6 +97,7 @@ Pulling top 3 stories on Hacker News:
     1. etc...
 1. Support get the `message` instance which invoked this command
     1. `this.message`
+1. Support `prompt()` to interactive with the user!
 
 ### v0.3 (July 7, 2020)
 

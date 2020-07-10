@@ -22,7 +22,7 @@ import { VorpalIo } from './vorpal-io'
 
 class VorpalIoTest extends VorpalIo {
 
-  getStdinSub () { return this.stdinSub }
+  getStdinSub ()  { return this.stdinSub }
   getStdoutSub () { return this.stdoutSub }
   getStderrSub () { return this.stderrSub }
 
@@ -70,7 +70,7 @@ test('VorpalIo close()', async t => {
 
   t.true(io.getStderrSub(), 'should be subscription after called obsio()')
   t.true(io.getStdoutSub(), 'should be subscription after called obsio()')
-  t.true(io.getStdinSub(), 'should be subscription after called obsio()')
+  t.true(io.getStdinSub(),  'should be subscription after called obsio()')
 
   io.close()
 
@@ -151,10 +151,7 @@ test('obsio for known command', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('foo', undefined, {
-    message: fixture.message,
-    obsio: io.obsio(),
-  })
+  const ret = await vorpal.exec('foo', undefined, io.obsio())
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, EXPECTED_RET, 'should return' + EXPECTED_RET)
@@ -167,10 +164,7 @@ test('obsio for unknown command', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('unknown_command', undefined, {
-    message: fixture.message,
-    obsio: io.obsio(),
-  })
+  const ret = await vorpal.exec('unknown_command', undefined, io.obsio())
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, 1, 'should return 1 for unknown command')
@@ -193,10 +187,7 @@ test('obsio with command instance', async t => {
     })
 
   // void io
-  const ret = await vorpal.exec('test', undefined, {
-    message: fixture.message,
-    obsio: io.obsio(),
-  })
+  const ret = await vorpal.exec('test', undefined, io.obsio())
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, RET, 'should return ' + RET + ' for test command')
@@ -215,10 +206,7 @@ test('obsio with command instance return undefined', async t => {
     .action(async function action () {})
 
   // void io
-  const ret = await vorpal.exec('test', undefined, {
-    message: fixture.message,
-    obsio: io.obsio(),
-  })
+  const ret = await vorpal.exec('test', undefined, io.obsio())
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, 0, 'should return 0 for void action')
@@ -239,13 +227,42 @@ test('obsio with message', async t => {
       message = this.message
     })
 
-  await vorpal.exec('test', undefined, {
-    message: fixture.message,
-    obsio: io.obsio(),
-  })
+  await vorpal.exec('test', undefined, io.obsio())
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(message, fixture.message, 'should return get the message from command instance')
+
+  io.close()
+})
+
+test('prompt()', async t => {
+  const vorpal = new Vorpal()
+
+  const fixture = messageFixture()
+  const io = new VorpalIoTest(fixture.message)
+
+  const QUESTION = 'how are you?'
+  const ANSWER   = 'fine, thank you.'
+
+  let answer: undefined | string
+
+  vorpal.command('prompt')
+    .action(async function action (this: CommandInstance) {
+      const msg = await this.prompt(QUESTION)
+      if (typeof msg === 'string') {
+        answer = msg
+      }
+    })
+
+  const future = vorpal.exec('prompt', undefined, io.obsio())
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.deepEqual(fixture.input, [[QUESTION]], 'should send QUESTION to fixture')
+
+  io.getStdinSub()!.next(ANSWER)
+  await future  // execute the prompt
+
+  t.equal(answer, ANSWER, 'should get the answer from prompt')
 
   io.close()
 })

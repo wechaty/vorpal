@@ -1,10 +1,12 @@
+import { Message } from 'wechaty'
+import {
+  types,
+}                   from 'wechaty-plugin-contrib'
 import { Command } from './command'
 import { Session } from './session'
 import { Observable, Subject } from 'rxjs'
 
-import { SayableMessage } from '../wechaty-vorpal'
-import { ObsIo }          from '../vorpal-io'
-import { Message } from 'wechaty'
+import { ObsIo }   from '../vorpal-io'
 
 export type Args = {
   [arg: string]: string | string[]
@@ -39,10 +41,11 @@ export class CommandInstance {
 
   protected obsio?: ObsIo
 
-  get stdin ()   : Observable<SayableMessage> { return this.obsio!.stdin    }
-  get stdout ()  : Subject<SayableMessage>    { return this.obsio!.stdout   }
-  get stderr ()  : Subject<string>            { return this.obsio!.stderr   }
-  get message () : Message                    { return this.obsio!.message  }
+  get stdin ()   : Observable<types.SayableMessage> { return this.obsio!.stdin    }
+  get stdout ()  : Subject<types.SayableMessage>    { return this.obsio!.stdout   }
+  get stderr ()  : Subject<string>                  { return this.obsio!.stderr   }
+  get message () : Message                          { return this.obsio!.message  }
+  get prompt ()                                     { return this.obsio!.prompt }
 
   /**
    * Initialize a new `CommandInstance` instance.

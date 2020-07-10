@@ -12,5 +12,4 @@ export {
 export {
   WechatyVorpalConfig,
   WechatyVorpal,
-  SayableMessage,
 }                         from './wechaty-vorpal'

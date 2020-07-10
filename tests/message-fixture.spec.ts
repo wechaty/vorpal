@@ -18,14 +18,14 @@ const messageFixture = () => {
 
   const input = [] as any[]
   const message = {
-    from: () => ({
-      id: contactId,
-    } as any as Contact),
     id: messageId,
     room: () => ({
       id: roomId,
     } as any as Room),
     say: (...args: any[]) => input.push(args),
+    talker: () => ({
+      id: contactId,
+    } as any as Contact),
     wechaty,
   } as any as Message
 

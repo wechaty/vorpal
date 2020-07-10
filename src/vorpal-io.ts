@@ -15,23 +15,30 @@ import {
 import {
   concatMap,
   delay,
+  take,
+  filter,
 }                   from 'rxjs/operators'
-import { talkers }  from 'wechaty-plugin-contrib'
-
-import { SayableMessage } from './wechaty-vorpal'
+import {
+  talkers,
+  types,
+}                   from 'wechaty-plugin-contrib'
 
 export interface ObsIo {
-  stdin: Observable<SayableMessage>
-  stdout: Subject<SayableMessage>
+  stdin: Observable<types.SayableMessage>
+  stdout: Subject<types.SayableMessage>
   stderr: Subject<string>
   message: Message,
   wechaty: Wechaty,
+  prompt: (question: string) => Promise<types.SayableMessage>,
 }
 
-// const addDelay = () => concatMap<any, any>(item => concat(
-//   of(item),                 // emit first item right away
-//   EMPTY.pipe(delay(1000)),  // delay next item
-// ))
+// FIXME(huan, 202007): fix the typing of this operator function!
+// function addDelay <T> () {
+//   return concatMap<T, any>(item => concat(
+//     of(item),                 // emit first item right away
+//     EMPTY.pipe(delay(1000)),  // delay next item
+//   ))
+// }
 
 class VorpalIo {
 
@@ -43,8 +50,8 @@ class VorpalIo {
     return new this(message)
   }
 
-  protected stdinSub?  : Subject<SayableMessage>
-  protected stdoutSub? : Subject<SayableMessage>
+  protected stdinSub?  : Subject<types.SayableMessage>
+  protected stdoutSub? : Subject<types.SayableMessage>
   protected stderrSub? : Subject<string>
 
   constructor (
@@ -64,6 +71,7 @@ class VorpalIo {
 
     return {
       message: this.message,
+      prompt: this.prompt.bind(this),
       stderr : this.stderr(),
       stdin  : this.stdin(),
       stdout : this.stdout(),
@@ -92,20 +100,37 @@ class VorpalIo {
     this.setBusy(false)
   }
 
-  protected id () {
-    const from = this.message.from()
-    const room = this.message.room()
+  async prompt (question: string): Promise<types.SayableMessage> {
+    log.verbose('VorpalIo', 'prompt(%s)', question)
 
-    if (!from) {
+    if (!this.busy()) {
+      throw new Error('VorpalIo is not in duty(busy), can not use prompt()')
+    }
+
+    this.stdout().next(question)
+
+    const answer = await this.stdin()
+      .pipe(
+        take(1),
+      ).toPromise()
+
+    return answer
+  }
+
+  protected id () {
+    const talker  = this.message.talker()
+    const room    = this.message.room()
+
+    if (!talker) {
       // FIXME(huan, 202007): I can not remember why the message.form() could be undefined ...
       return cuid()
     }
 
     let id
     if (room) {
-      id = `${from.id}@${room.id}`
+      id = `${talker.id}@${room.id}`
     } else {
-      id = from.id
+      id = talker.id
     }
 
     // log.silly('VorpalIo', 'id() = %s', id)
@@ -121,23 +146,41 @@ class VorpalIo {
     }
   }
 
-  protected stdin (): Observable<SayableMessage> {
+  protected stdin (): Observable<types.SayableMessage> {
 
     if (this.stdinSub) {
       return this.stdinSub
     }
 
-    const room = this.message.room()
-    const from = this.message.from()
+    const vorpalMessage = this.message
+    const vorpalRoom    = this.message.room()
+    const vorpalTalker  = this.message.talker()
 
-    const sub = new Subject<SayableMessage>()
+    let vorpalMention: boolean
 
-    const onMessage = (message: Message) => {
-      if (message.from() === from)  { return }
-      if (message.room() === room)  { return }
+    const sub = new Subject<types.SayableMessage>()
+
+    const onMessage = async (message: Message) => {
+      if (message.talker() === vorpalTalker)  { return }
+      if (message.room() === vorpalRoom)      { return }
+
+      if (typeof vorpalMention === 'undefined') {
+        vorpalMention = await vorpalMessage.mentionSelf()
+      }
+      /**
+       * Requires consistent in a command session:
+       *  always mention the bot, or
+       *  always not mention the bot
+       */
+      const mention = await message.mentionSelf()
+      if (vorpalMention && !mention)  { return }
+      if (!vorpalMention && mention)  { return }
+
+      const sayableMsg = await types.toSayableMessage(message)
+      if (!sayableMsg)                { return }
 
       log.verbose('VorpalIo', 'stdin() onMessage(%s)', message)
-      sub.next(message)
+      sub.next(sayableMsg)
     }
     this.message.wechaty.on('message', onMessage)
 
@@ -152,19 +195,19 @@ class VorpalIo {
     return sub.asObservable()
   }
 
-  protected stdout (): Subject<SayableMessage> {
+  protected stdout (): Subject<types.SayableMessage> {
     if (this.stdoutSub) {
       return this.stdoutSub
     }
 
-    const sub = new Subject<SayableMessage>()
+    const sub = new Subject<types.SayableMessage>()
 
     this.stdoutSub = sub
     const complete = () => {
       this.stdoutSub = undefined
     }
 
-    const next = async (msg: SayableMessage) => {
+    const next = async (msg: types.SayableMessage) => {
       log.verbose('VorpalIo', 'stdout() next(%s)', msg)
 
       const talk = talkers.messageTalker(msg)
@@ -175,6 +218,7 @@ class VorpalIo {
       }
     }
 
+    // FIXME(huan): use an operator function to replace concatMap(...)
     sub.pipe(
       concatMap(item => concat(
         of(item),                 // emit first item right away
@@ -200,7 +244,7 @@ class VorpalIo {
       this.stderrSub = undefined
     }
 
-    const next = async (msg: SayableMessage) => {
+    const next = async (msg: types.SayableMessage) => {
       log.verbose('VorpalIo', 'stderr() next(%s)', msg)
       const talker = talkers.messageTalker(msg)
       try {
@@ -210,6 +254,7 @@ class VorpalIo {
       }
     }
 
+    // FIXME: use an operator function to replace concatMap(...)
     sub.pipe(
       concatMap(item => concat(
         of(item),                 // emit first item right away

@@ -8,15 +8,9 @@ import {
   matchers,
 }                   from 'wechaty-plugin-contrib'
 import {
-  MappedMessage,
-}                   from 'wechaty-plugin-contrib/src/mappers/message-mapper'
-import {
   Vorpal,
 }                   from './vorpal/mod'
 import { VorpalIo } from './vorpal-io'
-
-// TODO(huan): move SayableMessage to Wechaty
-export type SayableMessage = MappedMessage
 
 type VorpalExtensionFunction = (vorpal: Vorpal, options: any) => void
 type VorpalExtension = string | VorpalExtensionFunction
