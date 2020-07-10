@@ -16,7 +16,6 @@ import {
   concatMap,
   delay,
   take,
-  filter,
 }                   from 'rxjs/operators'
 import {
   talkers,
