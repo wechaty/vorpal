@@ -109,6 +109,7 @@ test('VorpalIo obsio() stderr', async t => {
 
 test('VorpalIo obsio() stdin', async t => {
   const fixture = messageFixture()
+  console.info('fixture.message.id:', fixture.message.id)
 
   const io = new VorpalIoTest(fixture.message)
   const obsio = io.obsio()
@@ -116,13 +117,13 @@ test('VorpalIo obsio() stdin', async t => {
   const spy = sinon.spy()
   obsio.stdin.subscribe(spy)
 
-  const { message: MESSAGE } = messageFixture()
+  const MESSAGE = messageFixture().message
   fixture.message.wechaty.emit('message', MESSAGE)
   await new Promise(resolve => setImmediate(resolve))
 
   t.true(spy.called, 'should call say when stdin got something')
-  t.equal(spy.args[0][0], MESSAGE, 'should get message from subscribe')
-  t.deepEqual(spy.args, fixture.output, 'should match wechaty & obs')
+  t.equal(spy.args[0][0], MESSAGE.text(), 'should get message from subscribe')
+  t.deepEqual(spy.args, [[fixture.output[0][0].text()]], 'should match wechaty & obs')
 })
 
 /**

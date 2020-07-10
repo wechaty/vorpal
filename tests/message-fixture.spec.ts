@@ -10,6 +10,7 @@ const messageFixture = () => {
   const contactId = cuid() + '#contact'
   const roomId    = cuid() + '#room'
   const messageId = cuid() + '#message'
+  const text = cuid() + '#text'
 
   const wechaty = new Wechaty({ puppet: 'wechaty-puppet-mock' })
 
@@ -19,6 +20,7 @@ const messageFixture = () => {
   const input = [] as any[]
   const message = {
     id: messageId,
+    mentionSelf: () => false,
     room: () => ({
       id: roomId,
     } as any as Room),
@@ -26,6 +28,8 @@ const messageFixture = () => {
     talker: () => ({
       id: contactId,
     } as any as Contact),
+    text: () => text,
+    type: () => Message.Type.Text,
     wechaty,
   } as any as Message
 
