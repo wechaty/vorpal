@@ -290,10 +290,7 @@ class Vorpal extends EventEmitter {
   public async exec (
     command: string,
     args?: object,
-    options?: {
-      obsio: ObsIo,
-      message: Message,
-    },
+    obsio?: ObsIo,
   ): Promise<number | string> {
     args = args || {}
 
@@ -301,15 +298,14 @@ class Vorpal extends EventEmitter {
 
     const commandData = utils.parseCommand(command, this.commands)
 
-    const session = new Session(this, options?.obsio)
+    const session = new Session(this, obsio)
 
     const item: utils.CommandExecutionItem = {
       args: args as any,
       command: commandData.command,
       pipes: commandData.pipes,
       session: session,
-      obsio: options?.obsio,
-      message: options?.message,
+      obsio,
     }
 
     const match = commandData.match
@@ -318,15 +314,15 @@ class Vorpal extends EventEmitter {
     function throwHelp (cmd: any, msg?: string, alternativeMatch?: any) {
       void cmd
       if (msg) {
-        if (options?.obsio) {
-          options.obsio.stdout.next(msg)
+        if (obsio) {
+          obsio.stdout.next(msg)
         } else {
           cmd.session.log(msg)
         }
       }
       const pickedMatch = alternativeMatch || match
-      if (options?.obsio) {
-        options.obsio.stdout.next(pickedMatch.helpInformation())
+      if (obsio) {
+        obsio.stdout.next(pickedMatch.helpInformation())
       } else {
         cmd.session.log(pickedMatch.helpInformation())
       }
@@ -343,9 +339,9 @@ class Vorpal extends EventEmitter {
     if (!match) {
       // If no command match, just return.
       const helpMsg = this._commandHelp(item.command)
-      if (options?.obsio) {
-        options.obsio.stderr.next('Invalid command')
-        options.obsio.stdout.next(helpMsg)
+      if (obsio) {
+        obsio.stderr.next('Invalid command')
+        obsio.stdout.next(helpMsg)
         return 1
       } else {
         item.session.log(helpMsg)
@@ -369,7 +365,7 @@ class Vorpal extends EventEmitter {
     if (typeof item.args === 'string' || typeof item.args !== 'object') {
       throwHelp(item, item.args)
       // return callback(item, undefined, item.args)
-      if (options?.obsio) {
+      if (obsio) {
         return 1
       }
       return item.args
@@ -381,8 +377,8 @@ class Vorpal extends EventEmitter {
       const commandParts = utils.matchCommand(item.pipes![j] as any, self.commands)
       if (!commandParts.command) {
         const helpMsg = self._commandHelp(item.pipes![j] as any)
-        if (options?.obsio) {
-          options.obsio.stdout.next(helpMsg)
+        if (obsio) {
+          obsio.stdout.next(helpMsg)
         } else {
           item.session.log(helpMsg)
         }
@@ -432,8 +428,7 @@ class Vorpal extends EventEmitter {
         command: pipe.command._name,
         commandObject: pipe.command,
         args: pipe.args,
-        obsio: options?.obsio,
-        message: options?.message,
+        obsio: obsio,
       })
     })
 

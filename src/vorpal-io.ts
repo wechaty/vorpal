@@ -1,6 +1,7 @@
 import {
   Message,
   log,
+  Wechaty,
 }                   from 'wechaty'
 import cuid         from 'cuid'
 
@@ -23,11 +24,9 @@ export interface ObsIo {
   stdin: Observable<SayableMessage>
   stdout: Subject<SayableMessage>
   stderr: Subject<string>
+  message: Message,
+  wechaty: Wechaty,
 }
-
-const busyState: {
-  [id: string]: true
-} = {}
 
 // const addDelay = () => concatMap<any, any>(item => concat(
 //   of(item),                 // emit first item right away
@@ -35,6 +34,10 @@ const busyState: {
 // ))
 
 class VorpalIo {
+
+  static busyState: {
+    [id: string]: true
+  } = {}
 
   static from (message: Message) {
     return new this(message)
@@ -60,14 +63,16 @@ class VorpalIo {
     this.setBusy(true)
 
     return {
+      message: this.message,
       stderr : this.stderr(),
       stdin  : this.stdin(),
       stdout : this.stdout(),
+      wechaty: this.message.wechaty,
     }
   }
 
   busy (): boolean {
-    const isBusy = !!(busyState[this.id()])
+    const isBusy = !!(VorpalIo.busyState[this.id()])
     log.verbose('VorpalIo', 'busy() = %s', isBusy)
     return isBusy
   }
@@ -110,9 +115,9 @@ class VorpalIo {
   protected setBusy (busy: boolean): void {
     log.verbose('VorpalIo', 'setBusy(%s) for %s', busy, this.message)
     if (busy) {
-      busyState[this.id()] = true
+      VorpalIo.busyState[this.id()] = true
     } else {
-      delete busyState[this.id()]
+      delete VorpalIo.busyState[this.id()]
     }
   }
 

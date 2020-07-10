@@ -99,10 +99,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
         const ret = await vorpal.exec(
           command,
           undefined,
-          {
-            message,
-            obsio,
-          },
+          obsio,
         )
 
         if (ret !== 0) {

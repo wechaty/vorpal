@@ -24,7 +24,6 @@ interface CommandInstanceOptions {
   callback?: any
   downstream?: CommandInstance
   obsio?: ObsIo
-  message?: Message
 }
 
 export class CommandInstance {
@@ -40,12 +39,10 @@ export class CommandInstance {
 
   protected obsio?: ObsIo
 
-  get stdin () : Observable<SayableMessage> { return this.obsio!.stdin }
-  get stdout (): Subject<SayableMessage> { return this.obsio!.stdout }
-  get stderr (): Subject<string> { return this.obsio!.stderr }
-
-  protected _message?: Message
-  get message () : Message { return this._message! }
+  get stdin ()   : Observable<SayableMessage> { return this.obsio!.stdin    }
+  get stdout ()  : Subject<SayableMessage>    { return this.obsio!.stdout   }
+  get stderr ()  : Subject<string>            { return this.obsio!.stderr   }
+  get message () : Message                    { return this.obsio!.message  }
 
   /**
    * Initialize a new `CommandInstance` instance.
@@ -63,7 +60,6 @@ export class CommandInstance {
     callback,
     downstream,
     obsio,
-    message,
   }: CommandInstanceOptions = {}) {
     this.command = command
     this.commandObject = commandObject
@@ -75,7 +71,6 @@ export class CommandInstance {
     this.downstream = downstream
 
     this.obsio = obsio
-    this._message = message
   }
 
   /**

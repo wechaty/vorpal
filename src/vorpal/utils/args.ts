@@ -9,7 +9,6 @@ import {
 
 import minimist from 'minimist'
 import { ObsIo } from '../../vorpal-io'
-import { Message } from 'wechaty'
 
 export type ArgTypes = {
   [P in 'string' | 'boolean']: unknown
@@ -36,7 +35,6 @@ export type CommandExecutionItem = {
   sync?: boolean
   _cancel?: any
   obsio?: ObsIo
-  message?: Message
 };
 
 type ModeOptions = {
