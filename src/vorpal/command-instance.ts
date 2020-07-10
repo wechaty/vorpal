@@ -1,7 +1,11 @@
-import { Message } from 'wechaty'
+import {
+  Message,
+  Wechaty,
+}             from 'wechaty'
 import {
   types,
-}                   from 'wechaty-plugin-contrib'
+}             from 'wechaty-plugin-contrib'
+
 import { Command } from './command'
 import { Session } from './session'
 import { Observable, Subject } from 'rxjs'
@@ -45,6 +49,7 @@ export class CommandInstance {
   get stdout ()  : Subject<types.SayableMessage>    { return this.obsio!.stdout   }
   get stderr ()  : Subject<string>                  { return this.obsio!.stderr   }
   get message () : Message                          { return this.obsio!.message  }
+  get wechaty () : Wechaty                          { return this.obsio!.message.wechaty }
   get prompt ()                                     { return this.obsio!.prompt }
 
   /**
