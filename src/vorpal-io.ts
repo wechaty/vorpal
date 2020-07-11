@@ -146,6 +146,7 @@ class VorpalIo {
   }
 
   protected stdin (): Observable<types.SayableMessage> {
+    log.verbose('VorpalIo', 'stdin()')
 
     if (this.stdinSub) {
       return this.stdinSub
@@ -160,6 +161,8 @@ class VorpalIo {
     const sub = new Subject<types.SayableMessage>()
 
     const onMessage = async (message: Message) => {
+      log.verbose('VorpalIo', 'stdin() onMessage(%s)')
+
       if (message.talker() === vorpalTalker)  { return }
       if (message.room() === vorpalRoom)      { return }
 
@@ -178,18 +181,21 @@ class VorpalIo {
       const sayableMsg = await types.toSayableMessage(message)
       if (!sayableMsg)                { return }
 
-      log.verbose('VorpalIo', 'stdin() onMessage(%s)', message)
+      log.verbose('VorpalIo', 'stdin() onMessage() match', message)
       sub.next(sayableMsg)
     }
+
+    log.verbose('VorpalIo', 'stdin() registering onMessage() on wechaty ...')
     this.message.wechaty.on('message', onMessage)
 
     this.stdinSub = sub
-    const complete = () => {
+    const onComplete = () => {
+      log.verbose('VorpalIo', 'stdin() onComplete()')
       this.message.wechaty.off('message', onMessage)
       this.stdinSub = undefined
     }
 
-    sub.subscribe({ complete })
+    sub.subscribe({ complete: onComplete })
 
     return sub.asObservable()
   }
@@ -202,11 +208,12 @@ class VorpalIo {
     const sub = new Subject<types.SayableMessage>()
 
     this.stdoutSub = sub
-    const complete = () => {
+    const onComplete = () => {
+      log.verbose('VorpalIo', 'stdout() onComplete()')
       this.stdoutSub = undefined
     }
 
-    const next = async (msg: types.SayableMessage) => {
+    const onNext = async (msg: types.SayableMessage) => {
       log.verbose('VorpalIo', 'stdout() next(%s)', msg)
 
       const talk = talkers.messageTalker(msg)
@@ -224,14 +231,16 @@ class VorpalIo {
         EMPTY.pipe(delay(1000)),  // delay next item
       ))
     ).subscribe({
-      complete,
-      next,
+      complete: onComplete,
+      next: onNext,
     })
 
     return sub
   }
 
   protected stderr (): Subject<string> {
+    log.verbose('VorpalIo', 'stderr()')
+
     if (this.stderrSub) {
       return this.stderrSub
     }
@@ -239,12 +248,13 @@ class VorpalIo {
     const sub = new Subject<string>()
 
     this.stderrSub = sub
-    const complete = () => {
+    const onComplete = () => {
+      log.verbose('VorpalIo', 'stderr() onComplete()')
       this.stderrSub = undefined
     }
 
-    const next = async (msg: types.SayableMessage) => {
-      log.verbose('VorpalIo', 'stderr() next(%s)', msg)
+    const onNext = async (msg: types.SayableMessage) => {
+      log.verbose('VorpalIo', 'stderr() onNext(%s)', msg)
       const talker = talkers.messageTalker(msg)
       try {
         await talker(this.message)
@@ -260,8 +270,8 @@ class VorpalIo {
         EMPTY.pipe(delay(1000)),  // delay next item
       ))
     ).subscribe({
-      complete,
-      next,
+      complete: onComplete,
+      next: onNext,
     })
 
     return sub
