@@ -185,13 +185,18 @@ class VorpalIo {
       sub.next(sayableMsg)
     }
 
-    log.verbose('VorpalIo', 'stdin() registering onMessage() on wechaty ...')
+    log.verbose('VorpalIo', 'stdin() registering onMessage() on wechaty.on(message) ... listenerCount: %s',
+      this.message.wechaty.listenerCount('message'),
+    )
     this.message.wechaty.on('message', onMessage)
 
     this.stdinSub = sub
     const onComplete = () => {
       log.verbose('VorpalIo', 'stdin() onComplete()')
       this.message.wechaty.off('message', onMessage)
+      log.verbose('VorpalIo', 'stdin() onComplete() wechaty.off(message)-ed listenerCount: %s',
+        this.message.wechaty.listenerCount('message'),
+      )
       this.stdinSub = undefined
     }
 
