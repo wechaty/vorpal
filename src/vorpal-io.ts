@@ -161,7 +161,7 @@ class VorpalIo {
     const sub = new Subject<types.SayableMessage>()
 
     const onMessage = async (message: Message) => {
-      log.verbose('VorpalIo', 'stdin() onMessage(%s)')
+      log.verbose('VorpalIo', 'stdin() onMessage(%s)', message)
 
       if (message.talker() === vorpalTalker)  { return }
       if (message.room() === vorpalRoom)      { return }
