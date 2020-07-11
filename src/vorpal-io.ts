@@ -59,8 +59,8 @@ class VorpalIo {
     log.verbose('VorpalIo', 'constructor(%s)', message)
   }
 
-  obsio (): ObsIo {
-    log.verbose('VorpalIo', 'obsio()')
+  open (): ObsIo {
+    log.verbose('VorpalIo', 'open()')
 
     if (this.busy()) {
       throw new Error(`Vorpal Io for ${this.message} is busy!`)
@@ -149,7 +149,7 @@ class VorpalIo {
     log.verbose('VorpalIo', 'stdin()')
 
     if (this.stdinSub) {
-      return this.stdinSub
+      return this.stdinSub.asObservable()
     }
 
     const vorpalMessage = this.message
@@ -201,6 +201,8 @@ class VorpalIo {
   }
 
   protected stdout (): Subject<types.SayableMessage> {
+    log.verbose('VorpalIo', 'stdout()')
+
     if (this.stdoutSub) {
       return this.stdoutSub
     }

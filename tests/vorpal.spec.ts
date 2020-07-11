@@ -93,7 +93,7 @@ test.skip('hacker-news', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('hacker-news --length 3', undefined, io.obsio())
+  const ret = await vorpal.exec('hacker-news --length 3', undefined, io.open())
 
   t.true(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
   t.true(/Hacker News/i.test(fixture.input[0]), 'should get the stdout with hacker news')
@@ -111,7 +111,7 @@ test('Vorpal help command with options', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  await vorpal.exec('help foo', undefined, io.obsio())
+  await vorpal.exec('help foo', undefined, io.open())
   await new Promise(resolve => setImmediate(resolve))
 
   t.true(EXPECTED_RE.test(fixture.input[0][0]), 'should get the help stdout with options message')
@@ -134,7 +134,7 @@ test('Vorpal compatibility: command actions that call this.log() twice', async t
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  await vorpal.exec('log_twice', undefined, io.obsio())
+  await vorpal.exec('log_twice', undefined, io.open())
   // FIXME(huan): remove the 2500 timer
   await new Promise(resolve => setTimeout(resolve, 2500))
 
@@ -154,7 +154,7 @@ test('Vorpal compatibility: command actions that return a str', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('ret_str', undefined, io.obsio())
+  const ret = await vorpal.exec('ret_str', undefined, io.open())
   await new Promise(resolve => setImmediate(resolve))
 
   t.equal(ret, TEXT, 'should get TEXT from return string')
@@ -174,7 +174,7 @@ test('Vorpal compatibility: command actions with a callback', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('callback', undefined, io.obsio())
+  const ret = await vorpal.exec('callback', undefined, io.open())
   await new Promise(resolve => setImmediate(resolve))
 
   t.deepEqual(ret, TEXT, 'should get TEXT from callback')
@@ -196,7 +196,7 @@ test('Vorpal compatibility: command actions log with a callback', async t => {
   const fixture = messageFixture()
   const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('callback', undefined, io.obsio())
+  const ret = await vorpal.exec('callback', undefined, io.open())
   await new Promise(resolve => setTimeout(resolve))
 
   t.equal(ret, TEXT_CB, 'should use callback data as ret')

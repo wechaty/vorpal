@@ -88,7 +88,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       const command = await message.mentionText()
 
       try {
-        const obsio = io.obsio()
+        const obsio = io.open()
 
         const ret = await vorpal.exec(
           command,
