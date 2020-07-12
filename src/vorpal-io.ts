@@ -192,11 +192,16 @@ class VorpalIo {
 
     this.stdinSub = sub
     const onComplete = () => {
-      log.verbose('VorpalIo', 'stdin() onComplete()')
+      log.verbose('VorpalIo', 'stdin() onComplete() listenerCount: %s',
+        this.message.wechaty.listenerCount('message'),
+      )
+
       this.message.wechaty.off('message', onMessage)
+
       log.verbose('VorpalIo', 'stdin() onComplete() wechaty.off(message)-ed listenerCount: %s',
         this.message.wechaty.listenerCount('message'),
       )
+
       this.stdinSub = undefined
     }
 

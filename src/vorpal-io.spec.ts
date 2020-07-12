@@ -10,7 +10,7 @@ import {
   Observable,
 }               from 'rxjs'
 
-import { createFixture } from 'wechaty-puppet-mock'
+import { createFixture } from 'wechaty'
 
 import {
   Vorpal,
@@ -272,5 +272,32 @@ test('prompt()', async t => {
     t.equal(answer, ANSWER, 'should get the answer from prompt')
 
     io.close()
+  }
+})
+
+test('io.open() listener cleanup', async t => {
+  for await (const fixture of createFixture()) {
+    const NUM = fixture.wechaty.listenerCount('message')
+
+    const io = new VorpalIoTest(fixture.message)
+    t.equal(
+      fixture.wechaty.listenerCount('message'),
+      NUM,
+      'should not add listener on message after instantiated VorpalIo: ' + NUM,
+    )
+
+    io.open()
+    t.equal(
+      fixture.wechaty.listenerCount('message'),
+      NUM + 1,
+      'should be 1 more listener on message after io.open()',
+    )
+
+    io.close()
+    t.equal(
+      fixture.wechaty.listenerCount('message'),
+      NUM,
+      'should clean the listener on message after io.clos()',
+    )
   }
 })
