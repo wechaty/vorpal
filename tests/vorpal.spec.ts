@@ -4,7 +4,7 @@ import test  from 'tstest'
 
 import {
   createFixture,
-}                   from 'wechaty-puppet-mock'
+}                   from 'wechaty'
 
 import {
   Action,
