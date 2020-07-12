@@ -80,6 +80,8 @@ Pulling top 3 stories on Hacker News:
 1. [Creating Node.js Command Line Utilities to Improve Your Workflow](https://www.telerik.com/blogs/creating-node-js-command-line-utilities-improve-workflow)
 1. [vantge - Distributed, realtime CLI for live Node apps.](https://github.com/dthree/vantage)
 1. [vorpal - Node's framework for interactive CLIs](https://github.com/dthree/vorpal)
+1. [vorpal-regorged - Conquer the command-line. ⚔️](https://github.com/vorpaljs-reforged/vorpal): This is a Fork aiming at reforging vorpal into typescript, and bringing a 2.0
+1. [bandersnatch - Super lightweight and friendly CLI scaffolding for Node.js programs.](https://github.com/hongaar/bandersnatch)
 
 ## History
 
