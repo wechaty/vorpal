@@ -170,7 +170,7 @@ test('Vorpal compatibility: command actions that return a str', async t => {
     const io = VorpalIo.from(fixture.message)
 
     const ret = await vorpal.exec('ret_str', undefined, io.open())
-    await new Promise(resolve => setImmediate(resolve))
+    await new Promise(setImmediate)
 
     t.equal(ret, TEXT, 'should get TEXT from return string')
   }
@@ -191,7 +191,7 @@ test('Vorpal compatibility: command actions with a callback', async t => {
     const io = VorpalIo.from(fixture.message)
 
     const ret = await vorpal.exec('callback', undefined, io.open())
-    await new Promise(resolve => setImmediate(resolve))
+    await new Promise(setImmediate)
 
     t.deepEqual(ret, TEXT, 'should get TEXT from callback')
   }
