@@ -242,39 +242,6 @@ test('obsio with message', async t => {
   }
 })
 
-test('prompt()', async t => {
-  for await (const fixture of createFixture()) {
-    const vorpal = new Vorpal()
-
-    const io = new VorpalIoTest(fixture.message)
-
-    const QUESTION = 'how are you?'
-    const ANSWER   = 'fine, thank you.'
-
-    let answer: undefined | string
-
-    vorpal.command('prompt')
-      .action(async function action (this: CommandInstance) {
-        const msg = await this.prompt(QUESTION)
-        if (typeof msg === 'string') {
-          answer = msg
-        }
-      })
-
-    const future = vorpal.exec('prompt', undefined, io.open())
-    await new Promise(setImmediate)
-
-    t.deepEqual(fixture.moList[0].text(), QUESTION, 'should send QUESTION to fixture')
-
-    io.getStdinSub()!.next(ANSWER)
-    await future  // execute the prompt
-
-    t.equal(answer, ANSWER, 'should get the answer from prompt')
-
-    io.close()
-  }
-})
-
 test('io.open() listener cleanup', async t => {
   for await (const fixture of createFixture()) {
     const NUM = fixture.wechaty.listenerCount('message')

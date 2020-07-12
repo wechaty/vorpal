@@ -10,7 +10,8 @@ import { Command } from './command'
 import { Session } from './session'
 import { Observable, Subject } from 'rxjs'
 
-import { ObsIo }   from '../vorpal-io'
+import { ObsIo }  from '../vorpal-io'
+import { asker }  from '../asker'
 
 export type Args = {
   [arg: string]: string | string[]
@@ -44,13 +45,14 @@ export class CommandInstance {
   public downstream?: CommandInstance
 
   protected obsio?: ObsIo
+  public _ask?: ReturnType<typeof asker>
 
   get stdin ()   : Observable<types.SayableMessage> { return this.obsio!.stdin    }
   get stdout ()  : Subject<types.SayableMessage>    { return this.obsio!.stdout   }
   get stderr ()  : Subject<string>                  { return this.obsio!.stderr   }
   get message () : Message                          { return this.obsio!.message  }
   get wechaty () : Wechaty                          { return this.obsio!.message.wechaty }
-  get prompt ()                                     { return this.obsio!.prompt }
+  get ask ()     : ReturnType<typeof asker>         { return this._ask! }
 
   /**
    * Initialize a new `CommandInstance` instance.
@@ -79,6 +81,7 @@ export class CommandInstance {
     this.downstream = downstream
 
     this.obsio = obsio
+    this._ask = obsio && asker(obsio)
   }
 
   /**

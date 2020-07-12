@@ -15,7 +15,6 @@ import {
 import {
   concatMap,
   delay,
-  take,
 }                   from 'rxjs/operators'
 import {
   talkers,
@@ -28,7 +27,6 @@ export interface ObsIo {
   stderr: Subject<string>
   message: Message,
   wechaty: Wechaty,
-  prompt: (question: string) => Promise<types.SayableMessage>,
 }
 
 // FIXME(huan, 202007): fix the typing of this operator function!
@@ -69,12 +67,11 @@ class VorpalIo {
     this.setBusy(true)
 
     return {
-      message: this.message,
-      prompt: this.prompt.bind(this),
-      stderr : this.stderr(),
-      stdin  : this.stdin(),
-      stdout : this.stdout(),
-      wechaty: this.message.wechaty,
+      message : this.message,
+      stderr  : this.stderr(),
+      stdin   : this.stdin(),
+      stdout  : this.stdout(),
+      wechaty : this.message.wechaty,
     }
   }
 
@@ -97,23 +94,6 @@ class VorpalIo {
       this.stdoutSub.complete()
     }
     this.setBusy(false)
-  }
-
-  async prompt (question: string): Promise<types.SayableMessage> {
-    log.verbose('VorpalIo', 'prompt(%s)', question)
-
-    if (!this.busy()) {
-      throw new Error('VorpalIo is not in duty(busy), can not use prompt()')
-    }
-
-    this.stdout().next(question)
-
-    const answer = await this.stdin()
-      .pipe(
-        take(1),
-      ).toPromise()
-
-    return answer
   }
 
   protected id () {
