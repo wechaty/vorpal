@@ -47,7 +47,7 @@
     "tstest": "^0.4.10",
     "vorpal-hacker-news": "^1.0.6",
     "wechaty": "^0.41.36",
-    "wechaty-puppet-mock": "^0.22.31"
+    "wechaty-puppet-mock": "^0.22.36"
   },
   "dependencies": {
     "cuid": "^2.1.8",

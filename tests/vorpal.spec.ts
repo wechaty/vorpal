@@ -3,6 +3,10 @@
 import test  from 'tstest'
 
 import {
+  createFixture,
+}                   from 'wechaty-puppet-mock'
+
+import {
   Action,
   CommandInstance,
   Vorpal,
@@ -10,10 +14,6 @@ import {
 }                   from '../src/vorpal/mod'
 
 import { VorpalIo } from '../src/vorpal-io'
-
-import {
-  messageFixture,
-}                   from './message-fixture.spec'
 
 test('smoke testing', async t => {
   const vorpal = new Vorpal()
@@ -86,119 +86,137 @@ test('command() stdout pipe redirect', async t => {
 })
 
 test.skip('hacker-news', async t => {
-  const vorpal = new Vorpal()
+  for await (const fixture of createFixture()) {
+    const vorpal = new Vorpal()
 
-  vorpal.use(require('vorpal-hacker-news'))
+    vorpal.use(require('vorpal-hacker-news'))
 
-  const fixture = messageFixture()
-  const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('hacker-news --length 3', undefined, io.open())
+    const ret = await vorpal.exec('hacker-news --length 3', undefined, io.open())
 
-  t.true(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
-  t.true(/Hacker News/i.test(fixture.input[0]), 'should get the stdout with hacker news')
+    t.true(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
+    t.true(/Hacker News/i.test(fixture.mtList[0].text()), 'should get the stdout with hacker news')
+  }
 })
 
 test('Vorpal help command with options', async t => {
-  const EXPECTED_RE = /-t --option +test option/
+  for await (const fixture of createFixture()) {
+    const EXPECTED_RE = /-t --option +test option/
 
-  const vorpal = new Vorpal()
-  vorpal
-    .command('foo')
-    .option('-t --option', 'test option')
-    .action(async () => {})
+    const vorpal = new Vorpal()
+    vorpal
+      .command('foo')
+      .option('-t --option', 'test option')
+      .action(async () => {})
 
-  const fixture = messageFixture()
-  const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.message)
 
-  await vorpal.exec('help foo', undefined, io.open())
-  await new Promise(resolve => setImmediate(resolve))
+    await vorpal.exec('help foo', undefined, io.open())
+    await new Promise(setImmediate)
 
-  t.true(EXPECTED_RE.test(fixture.input[0][0]), 'should get the help stdout with options message')
+    t.true(
+      EXPECTED_RE.test(
+        fixture.moList[0].text()
+      ),
+      'should get the help stdout with options message',
+    )
+  }
 })
 
-test('Vorpal compatibility: command actions that call this.log() twice', async t => {
-  const EXPECTED_INPUT = [
-    ['one'],
-    ['two'],
-  ]
+test('Vorpal compatibility: command actions that call this.log() multiple times', async t => {
+  for await (const fixture of createFixture()) {
+    const TEXT_LIST = [
+      'one',
+      'two',
+      'three',
+    ]
+    const COMMAND = 'log_multiple_times'
 
-  const vorpal = new Vorpal()
-  vorpal
-    .command('log_twice')
-    .action(async function (this: any) {
-      this.log('one')
-      this.log('two')
-    })
+    const vorpal = new Vorpal()
+    vorpal
+      .command(COMMAND)
+      .action(async function (this: CommandInstance) {
+        TEXT_LIST.forEach(t => this.log(t))
+      })
 
-  const fixture = messageFixture()
-  const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.message)
 
-  await vorpal.exec('log_twice', undefined, io.open())
-  // FIXME(huan): remove the 2500 timer
-  await new Promise(resolve => setTimeout(resolve, 2500))
+    await vorpal.exec(COMMAND, undefined, io.open())
+    await new Promise(setImmediate)
 
-  t.deepEqual(fixture.input, EXPECTED_INPUT, 'should get one/two as fixture input')
+    // FIXME(huan): remove the 2500 timer
+    await new Promise(resolve => setTimeout(resolve, 2500))
+
+    t.equal(fixture.moList.length, TEXT_LIST.length, 'should receive all TEXT_LIST')
+    for (let i = 0; i < TEXT_LIST.length; i++) {
+      t.ok(fixture.moList[i], `should exist moList for ${i}`)
+      t.deepEqual(fixture.moList[i].text(), TEXT_LIST[i], `should get TEXT_LIST[${i}]`)
+    }
+  }
 })
 
 test('Vorpal compatibility: command actions that return a str', async t => {
-  const TEXT = 'str'
+  for await (const fixture of createFixture()) {
+    const TEXT = 'str'
 
-  const vorpal = new Vorpal()
-  vorpal
-    .command('ret_str')
-    .action(async function (this: any) {
-      return TEXT as any
-    })
+    const vorpal = new Vorpal()
+    vorpal
+      .command('ret_str')
+      .action(async function (this: any) {
+        return TEXT as any
+      })
 
-  const fixture = messageFixture()
-  const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('ret_str', undefined, io.open())
-  await new Promise(resolve => setImmediate(resolve))
+    const ret = await vorpal.exec('ret_str', undefined, io.open())
+    await new Promise(resolve => setImmediate(resolve))
 
-  t.equal(ret, TEXT, 'should get TEXT from return string')
+    t.equal(ret, TEXT, 'should get TEXT from return string')
+  }
 })
 
 test('Vorpal compatibility: command actions with a callback', async t => {
-  const TEXT = 'callback text'
+  for await (const fixture of createFixture()) {
+    const TEXT = 'callback text'
 
-  const vorpal = new Vorpal()
-  vorpal
-    .command('callback')
-    .action(function (this: any, args: any, callback: any) {
-      void args
-      setImmediate(() => callback(undefined, TEXT))
-    })
+    const vorpal = new Vorpal()
+    vorpal
+      .command('callback')
+      .action(function (this: any, args: any, callback: any) {
+        void args
+        setImmediate(() => callback(undefined, TEXT))
+      })
 
-  const fixture = messageFixture()
-  const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('callback', undefined, io.open())
-  await new Promise(resolve => setImmediate(resolve))
+    const ret = await vorpal.exec('callback', undefined, io.open())
+    await new Promise(resolve => setImmediate(resolve))
 
-  t.deepEqual(ret, TEXT, 'should get TEXT from callback')
+    t.deepEqual(ret, TEXT, 'should get TEXT from callback')
+  }
 })
 
 test('Vorpal compatibility: command actions log with a callback', async t => {
-  const TEXT_LOG = 'log text'
-  const TEXT_CB = 'callback text'
+  for await (const fixture of createFixture()) {
+    const TEXT_LOG = 'log text'
+    const TEXT_CB = 'callback text'
 
-  const vorpal = new Vorpal()
-  vorpal
-    .command('callback')
-    .action(function (this: any, args: any, callback) {
-      void args
-      this.log(TEXT_LOG)
-      setImmediate(() => callback(undefined, TEXT_CB))
-    })
+    const vorpal = new Vorpal()
+    vorpal
+      .command('callback')
+      .action(function (this: any, args: any, callback) {
+        void args
+        this.log(TEXT_LOG)
+        setImmediate(() => callback(undefined, TEXT_CB))
+      })
 
-  const fixture = messageFixture()
-  const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.message)
 
-  const ret = await vorpal.exec('callback', undefined, io.open())
-  await new Promise(resolve => setTimeout(resolve))
+    const ret = await vorpal.exec('callback', undefined, io.open())
+    await new Promise(resolve => setTimeout(resolve))
 
-  t.equal(ret, TEXT_CB, 'should use callback data as ret')
-  t.deepEqual(fixture.input, [[TEXT_LOG]], 'should get TEXT_LOG from log')
+    t.equal(ret, TEXT_CB, 'should use callback data as ret')
+    t.equal(fixture.moList[0].text(), TEXT_LOG, 'should get TEXT_LOG from log')
+  }
 })
