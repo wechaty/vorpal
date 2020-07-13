@@ -143,8 +143,8 @@ class VorpalIo {
     const onMessage = async (message: Message) => {
       log.verbose('VorpalIo', 'stdin() onMessage(%s)', message)
 
-      if (message.talker() === vorpalTalker)  { return }
-      if (message.room() === vorpalRoom)      { return }
+      if (message.talker() !== vorpalTalker)  { return }
+      if (message.room() !== vorpalRoom)      { return }
 
       if (typeof vorpalMention === 'undefined') {
         vorpalMention = await vorpalMessage.mentionSelf()

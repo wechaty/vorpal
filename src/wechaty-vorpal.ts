@@ -25,7 +25,7 @@ export interface WechatyVorpalConfig {
 }
 
 function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
-  log.verbose('WechatyVorpal', 'WechatyVorpal(%s)', JSON.stringify(config))
+  log.verbose('WechatyVorpal', 'WechatyVorpal(%s) (use will not show at here)', JSON.stringify(config))
 
   const matchContact = matchers.contactMatcher(config.contact)
   const matchRoom    = matchers.roomMatcher(config.room)
@@ -78,6 +78,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
     log.verbose('WechatyVorpal', 'WechatyVorpalPlugin(%s)', wechaty)
 
     async function onMessage (message: Message) {
+      log.verbose('WechatyVorpal', 'WechatyVorpalPlugin() onMessage(%s)', message)
 
       if (!await matchPlugin(message))  { return }
       if (!await matchConfig(message))  { return }
