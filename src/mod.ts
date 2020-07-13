@@ -13,3 +13,6 @@ export {
   WechatyVorpalConfig,
   WechatyVorpal,
 }                         from './wechaty-vorpal'
+export {
+  VorpalIo,
+}                         from './vorpal-io'

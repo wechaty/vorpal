@@ -143,7 +143,9 @@ class VorpalIo {
       if (!sayableMsg)                { return }
 
       log.verbose('VorpalIo', 'stdin() onMessage() match', message)
-      sub.next(sayableMsg)
+
+      // Add io to the end of the task queue
+      setImmediate(() => sub.next(sayableMsg))
     }
 
     log.verbose('VorpalIo', 'stdin() registering onMessage() on wechaty.on(message) ... listenerCount: %s',
@@ -191,7 +193,12 @@ class VorpalIo {
 
       const talk = talkers.messageTalker(msg)
       try {
+
+        // Clean the task queue before talk
+        await new Promise(setImmediate)
+
         await talk(this.message)
+
       } catch (e) {
         log.error('VorpalIo', 'stdout() next(%s) rejection: %s', msg, e)
         console.error(e.stack)
@@ -223,9 +230,14 @@ class VorpalIo {
 
     const onNext = async (msg: types.SayableMessage) => {
       log.verbose('VorpalIo', 'stderr() onNext(%s)', msg)
-      const talker = talkers.messageTalker(msg)
+      const talk = talkers.messageTalker(msg)
       try {
-        await talker(this.message)
+
+        // Clean the task queue before talk
+        await new Promise(setImmediate)
+
+        await talk(this.message)
+
       } catch (e) {
         log.error('VorpalIo', 'stderr() next() rejection: %s', e)
       }
