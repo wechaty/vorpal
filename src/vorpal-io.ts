@@ -3,39 +3,23 @@ import {
   log,
   Wechaty,
 }                   from 'wechaty'
-import cuid         from 'cuid'
 
 import {
   Observable,
   Subject,
-  EMPTY,
-  concat,
-  of,
 }                   from 'rxjs'
-import {
-  concatMap,
-  delay,
-}                   from 'rxjs/operators'
 import {
   talkers,
   types,
 }                   from 'wechaty-plugin-contrib'
 
 export interface ObsIo {
-  stdin: Observable<types.SayableMessage>
-  stdout: Subject<types.SayableMessage>
-  stderr: Subject<string>
-  message: Message,
-  wechaty: Wechaty,
+  stdin   : Observable<types.SayableMessage>
+  stdout  : Subject<types.SayableMessage>
+  stderr  : Subject<string>
+  message : Message,
+  wechaty : Wechaty,
 }
-
-// FIXME(huan, 202007): fix the typing of this operator function!
-// function addDelay <T> () {
-//   return concatMap<T, any>(item => concat(
-//     of(item),                 // emit first item right away
-//     EMPTY.pipe(delay(1000)),  // delay next item
-//   ))
-// }
 
 class VorpalIo {
 
@@ -76,6 +60,8 @@ class VorpalIo {
   }
 
   busy (): boolean {
+    // log.verbose('VorpalIo', 'busy() for id=%s', this.id())
+
     const isBusy = !!(VorpalIo.busyState[this.id()])
     log.verbose('VorpalIo', 'busy() = %s', isBusy)
     return isBusy
@@ -100,11 +86,6 @@ class VorpalIo {
     const talker  = this.message.talker()
     const room    = this.message.room()
 
-    if (!talker) {
-      // FIXME(huan, 202007): I can not remember why the message.form() could be undefined ...
-      return cuid()
-    }
-
     let id
     if (room) {
       id = `${talker.id}@${room.id}`
@@ -112,7 +93,7 @@ class VorpalIo {
       id = talker.id
     }
 
-    // log.silly('VorpalIo', 'id() = %s', id)
+    // log.verbose('VorpalIo', 'id() = %s', id)
     return id
   }
 
@@ -212,17 +193,12 @@ class VorpalIo {
       try {
         await talk(this.message)
       } catch (e) {
-        log.error('VorpalIo', 'stdout() next() rejection: %s', e)
+        log.error('VorpalIo', 'stdout() next(%s) rejection: %s', msg, e)
+        console.error(e.stack)
       }
     }
 
-    // FIXME(huan): use an operator function to replace concatMap(...)
-    sub.pipe(
-      concatMap(item => concat(
-        of(item),                 // emit first item right away
-        EMPTY.pipe(delay(1000)),  // delay next item
-      ))
-    ).subscribe({
+    sub.subscribe({
       complete: onComplete,
       next: onNext,
     })
@@ -255,13 +231,7 @@ class VorpalIo {
       }
     }
 
-    // FIXME: use an operator function to replace concatMap(...)
-    sub.pipe(
-      concatMap(item => concat(
-        of(item),                 // emit first item right away
-        EMPTY.pipe(delay(1000)),  // delay next item
-      ))
-    ).subscribe({
+    sub.subscribe({
       complete: onComplete,
       next: onNext,
     })

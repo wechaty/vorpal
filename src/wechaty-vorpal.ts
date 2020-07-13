@@ -102,6 +102,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
         }
 
       } finally {
+        await new Promise(setImmediate)
         io.close()
       }
 
