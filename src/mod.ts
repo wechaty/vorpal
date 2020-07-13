@@ -14,5 +14,5 @@ export {
   WechatyVorpal,
 }                         from './wechaty-vorpal'
 export {
-  VorpalIo,
+  ObsIo,
 }                         from './vorpal-io'

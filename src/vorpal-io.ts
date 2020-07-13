@@ -145,7 +145,10 @@ class VorpalIo {
       log.verbose('VorpalIo', 'stdin() onMessage() match', message)
 
       // Add io to the end of the task queue
-      setImmediate(() => sub.next(sayableMsg))
+      // setImmediate(() => sub.next(sayableMsg))
+
+      sub.next(sayableMsg)
+
     }
 
     log.verbose('VorpalIo', 'stdin() registering onMessage() on wechaty.on(message) ... listenerCount: %s',
@@ -195,7 +198,7 @@ class VorpalIo {
       try {
 
         // Clean the task queue before talk
-        await new Promise(setImmediate)
+        // await new Promise(setImmediate)
 
         await talk(this.message)
 
@@ -234,7 +237,7 @@ class VorpalIo {
       try {
 
         // Clean the task queue before talk
-        await new Promise(setImmediate)
+        // await new Promise(setImmediate)
 
         await talk(this.message)
 
