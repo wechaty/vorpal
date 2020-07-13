@@ -93,10 +93,11 @@ test('hacker-news', async t => {
 
     const io = VorpalIo.from(fixture.message)
 
-    const ret = await vorpal.exec('hacker-news --length 3', undefined, io.open())
+    const ret = await vorpal.exec('hacker-news --length 1', undefined, io.open())
+    await new Promise(setImmediate)
 
     t.true(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
-    t.true(/Hacker News/i.test(fixture.mtList[0].text()), 'should get the stdout with hacker news')
+    t.true(/Hacker News/i.test(fixture.moList[0].text()), 'should get the stdout with hacker news')
   }
 })
 
