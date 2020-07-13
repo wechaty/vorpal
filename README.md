@@ -85,7 +85,7 @@ Pulling top 3 stories on Hacker News:
 
 ## History
 
-### v0.4 (July 10, 2020)
+### v0.6 (July 13, 2020)
 
 1. Support Input, Output, and Error (powered by Observable)
     1. `this.stdout.next(...)`
