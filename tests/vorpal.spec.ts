@@ -85,7 +85,7 @@ test('command() stdout pipe redirect', async t => {
   t.deepEqual(output, EXPECTED_TEXT, 'should execute a command and get the output')
 })
 
-test.skip('hacker-news', async t => {
+test('hacker-news', async t => {
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
