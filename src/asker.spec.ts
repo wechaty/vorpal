@@ -4,7 +4,15 @@ import {
   test,
 }          from 'tstest'
 
-import { createFixture } from 'wechaty'
+import {
+  createFixture,
+  Wechaty,
+}                     from 'wechaty'
+
+import {
+  PuppetMock,
+  mock,
+}                         from 'wechaty-puppet-mock'
 
 import {
   Vorpal,
@@ -12,6 +20,8 @@ import {
 }                   from './vorpal/mod'
 
 import { VorpalIo } from './vorpal-io'
+
+import { WechatyVorpal } from './wechaty-vorpal'
 
 class VorpalIoTest extends VorpalIo {
 
@@ -52,4 +62,61 @@ test('ask()', async t => {
 
     io.close()
   }
+})
+
+test('asker() with mocker', async t => {
+  /**
+   * Install Vorpal Plugin & Ask Extension
+   */
+  const DING    = 'ding'
+  const DONG    = 'dong'
+  const COMMAND = 'dingdong'
+
+  let ANSWER: any
+
+  const VorpalExtension = (vorpal: Vorpal) => {
+    vorpal
+      .command(COMMAND)
+      .action(async function action (this: CommandInstance) {
+        ANSWER = await this.ask(DING)
+      })
+  }
+
+  const WechatyVorpalPlugin = WechatyVorpal({
+    contact: true,
+    use: VorpalExtension,
+  })
+
+  /**
+   * Initialize Wechaty
+   */
+  const mocker = new mock.Mocker()
+  const puppet = new PuppetMock({ mocker })
+  const wechaty = new Wechaty({ puppet })
+
+  wechaty.use(WechatyVorpalPlugin)
+  await wechaty.start()
+
+  const bot    = mocker.createContact({ name: 'Bot' })
+  const player = mocker.createContact({ name: 'Player' })
+  mocker.login(bot)
+
+  /**
+   * Answer Logic
+   */
+  const onPlayerMessage = (message: mock.MessageMock) => {
+    const text = message.text()
+    const talker = message.talker()
+    if (text === DING) {
+      player.say(DONG).to(talker)
+    }
+  }
+  player.on('message', onPlayerMessage)
+
+  player.say(COMMAND).to(bot)
+  await new Promise(setImmediate)
+
+  await wechaty.stop()
+
+  t.equal(ANSWER, DONG, 'should get dong as the answer of the ask command')
 })

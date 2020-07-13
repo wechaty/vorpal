@@ -110,7 +110,7 @@ test('VorpalIo obsio() stderr', async t => {
 
 test('VorpalIo obsio() stdin', async t => {
   for await (const fixture of createFixture()) {
-    console.info('fixture.message.id:', fixture.message.id)
+    // console.info('fixture.message.id:', fixture.message.id)
 
     const io = new VorpalIoTest(fixture.message)
     const obsio = io.open()
@@ -119,7 +119,7 @@ test('VorpalIo obsio() stdin', async t => {
     obsio.stdin.subscribe(spy)
 
     const TEXT = 'hello, world!'
-    fixture.mary.say(TEXT).to(fixture.user)
+    fixture.player.say(TEXT).to(fixture.bot)
     await new Promise(setImmediate)
 
     t.true(spy.called, 'should call say when stdin got something')
@@ -156,7 +156,7 @@ test('obsio for known command', async t => {
     const ret = await vorpal.exec('foo', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.equal(ret, EXPECTED_RET, 'should return' + EXPECTED_RET)
+    t.equal(ret, EXPECTED_RET, 'should return ' + EXPECTED_RET)
     t.deepEqual(fixture.moList[0].text(), EXPECTED_TEXT, 'should get the expected stdout')
   }
 })
