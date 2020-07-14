@@ -10,6 +10,7 @@ import { Command }          from './command'
 import { CommandInstance }  from './command-instance'
 import { Session }          from './session'
 import { commons }          from './vorpal-commons'
+import { ParsedCommand } from './types'
 
 export type VorpalExtension = (
   vorpal   : Vorpal,
@@ -275,6 +276,10 @@ class Vorpal extends EventEmitter {
   //   return this
   // }
 
+  parseCommand (command: string): ParsedCommand {
+    return utils.parseCommand(command, this.commands)
+  }
+
   /**
    * Executes a vorpal API command and
    * returns the response either through a
@@ -296,7 +301,7 @@ class Vorpal extends EventEmitter {
 
     const self = this
 
-    const commandData = utils.parseCommand(command, this.commands)
+    const commandData = this.parseCommand(command)
 
     const session = new Session(this, obsio)
 

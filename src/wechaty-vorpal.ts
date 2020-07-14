@@ -21,7 +21,8 @@ export interface WechatyVorpalConfig {
 
   contact? : matchers.ContactMatcherOptions,
   room?    : matchers.RoomMatcherOptions,
-  at?      : boolean,
+  mention? : boolean,
+  silent?  : boolean,
 }
 
 function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
@@ -53,6 +54,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   const matchPlugin = (message: Message): boolean => {
     if (message.self())                       { return false }
     if (message.type() !== Message.Type.Text) { return false }
+
     return true
   }
 
@@ -63,7 +65,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
     if (room) {
       if (!await matchRoom(room))                 { return false }
       const atSelf = await message.mentionSelf()
-      if (config.at && !atSelf)                   { return false }
+      if (config.mention && !atSelf)                   { return false }
     } else if (from) {
       if (!await matchContact(from))              { return false }
     } else                                        { return false }
@@ -87,6 +89,8 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       if (io.busy())                    { return }
 
       const command = await message.mentionText()
+      const { match } = vorpal.parseCommand(command)
+      if (!match && config.silent)      { return }
 
       try {
         const obsio = io.open()
