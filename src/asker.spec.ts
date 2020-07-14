@@ -2,6 +2,7 @@
 
 import {
   test,
+  // sinon,
 }          from 'tstest'
 
 import {
@@ -122,4 +123,68 @@ test('asker() with mocker', async t => {
   await wechaty.stop()
 
   t.equal(ANSWER, DONG, 'should get dong as the answer of the ask command')
+})
+
+/**
+ * FIXME(huan, 202007): use sinon.useFakeTimers() to test the RxJS timer()
+ */
+test('ask() with timeout & default options', async t => {
+  // const sandbox = sinon.createSandbox()
+  // const clock = sandbox.useFakeTimers()
+
+  const COMMAND  = 'ask'
+  const QUESTION = 'how are you?'
+  const ANSWER   = 'fine, thank you.'
+  const TIMEOUT  = 1
+
+  let answer: undefined | string
+
+  async function askAction (this: CommandContext) {
+    const msg = await this.ask(QUESTION, {
+      default: ANSWER,
+      timeout: TIMEOUT,
+    })
+
+    if (typeof msg === 'string') {
+      answer = msg
+    }
+  }
+
+  const extension = (vorpal: Vorpal) => {
+    vorpal
+      .command(COMMAND)
+      .action(askAction)
+  }
+
+  const plugin = WechatyVorpal({
+    contact: true,
+    use: extension,
+  })
+
+  for await (const fixture of createFixture()) {
+    fixture.wechaty.use(plugin)
+
+    fixture.player.say(COMMAND).to(fixture.bot)
+
+    await new Promise(setImmediate)
+    await new Promise(setImmediate)
+    await new Promise(setImmediate)
+
+    const future = new Promise(resolve => setTimeout(resolve, 1 + TIMEOUT * 1000))
+    // clock.runToLast()
+    // clock.runAll()
+    // clock.runMicrotasks()
+    // clock.runAll()
+    // clock.tick(100000 + TIMEOUT * 1000)
+
+    // clock.runToLast()
+    await future
+
+    // await new Promise(setImmediate)
+
+    t.equal(answer, ANSWER, 'should get the answer from ask with timeout/default options')
+  }
+
+  // clock.restore()
+  // sandbox.restore()
 })

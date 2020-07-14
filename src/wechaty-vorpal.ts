@@ -28,8 +28,13 @@ export interface WechatyVorpalConfig {
 function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   log.verbose('WechatyVorpal', 'WechatyVorpal(%s) (use will not show at here)', JSON.stringify(config))
 
-  const matchContact = matchers.contactMatcher(config.contact)
-  const matchRoom    = matchers.roomMatcher(config.room)
+  const matchContact = typeof config.contact === 'undefined'
+    ? () => true
+    : matchers.contactMatcher(config.contact)
+
+  const matchRoom    = typeof config.room === 'undefined'
+    ? () => true
+    : matchers.roomMatcher(config.room)
 
   const vorpal = new Vorpal()
 
