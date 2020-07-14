@@ -4,7 +4,7 @@ import Session from '../session'
 import { Command } from '../command'
 import {
   Args,
-  CommandInstance,
+  CommandContext,
 }                   from '../command-instance'
 
 import minimist from 'minimist'
@@ -26,10 +26,10 @@ export type CommandExecutionItem = {
   args?: string | Args // From buildCommandArgs()
   command?: string // The input on the command line
   commandObject?: Command
-  commandInstance?: CommandInstance
-  fn?: (ci: CommandInstance, args: Args) => any // TODO response value?
+  commandContext?: CommandContext
+  fn?: (ci: CommandContext, args: Args) => any // TODO response value?
   options?: ModeOptions;
-  pipes?: string[] | CommandInstance[] // From parseCommand()
+  pipes?: string[] | CommandContext[] // From parseCommand()
   validate?: any
   session: Session
   sync?: boolean

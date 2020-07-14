@@ -14,7 +14,7 @@ import {
 import {
   WechatyVorpal,
   Vorpal,
-  CommandInstance,
+  CommandContext,
 }                     from '../src/mod'
 
 test('WechatyVorpal integration smoke testing', async t => {
@@ -31,7 +31,7 @@ test('WechatyVorpal integration smoke testing', async t => {
     const VorpalExtension = (vorpal: Vorpal) => {
       vorpal
         .command(COMMAND)
-        .action(async function action (this: CommandInstance) {
+        .action(async function action (this: CommandContext) {
           ANSWER = await this.ask(DING)
         })
     }

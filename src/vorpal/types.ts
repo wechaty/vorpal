@@ -6,7 +6,7 @@ import {
 import {
   // CommandInstance,
   Args,
-  CommandInstance,
+  CommandContext,
 }                   from './command-instance'
 
 // type ParseFn = (str: string, args: string | Args) => string
@@ -15,12 +15,12 @@ import {
 // type FnFn = (args: Arg[], onComplete: (err?: Error) => void) => void
 
 type PromiseAction = (
-  this: CommandInstance,
+  this: CommandContext,
   args: Args,
 ) => Promise<void | number>
 
 type CallbackAction = (
-  this: CommandInstance,
+  this: CommandContext,
   args: Args,
   callback: (err: any, data: any) => void,
 ) => void | number
@@ -36,5 +36,5 @@ export type ParsedCommand = {
   command: string
   match?: null | Command
   matchArgs: string | Args
-  pipes: CommandInstance[]
+  pipes: CommandContext[]
 }

@@ -4,7 +4,7 @@ import stripAnsi    from 'strip-ansi'
 
 import * as utils from './utils/mod'
 
-import { CommandInstance } from './command-instance'
+import { CommandContext } from './command-instance'
 import { Vorpal } from './vorpal'
 import { ObsIo } from '../vorpal-io'
 
@@ -112,14 +112,14 @@ export class Session extends EventEmitter {
 
     // Create the command instance for the first
     // command and hook it up to the pipe chain.
-    const commandInstance = new CommandInstance({
+    const commandContext = new CommandContext({
       downstream: wrapper.pipes![0] as any,
       commandObject: wrapper.commandObject,
       commandWrapper: wrapper,
       obsio: wrapper.obsio,
     })
 
-    wrapper.commandInstance = commandInstance
+    wrapper.commandContext = commandContext
 
     function sendDones (itm: any) {
       if (itm.commandObject && itm.commandObject._done) {
@@ -151,7 +151,7 @@ export class Session extends EventEmitter {
       }
 
       callback(wrapper, err, data, argus)
-      sendDones(commandInstance)
+      sendDones(commandContext)
     }
 
     function onCompletion (wrapperInner: any, err: any, data?: any, argus?: any) {
@@ -171,7 +171,7 @@ export class Session extends EventEmitter {
     let valid
     if (typeof wrapper.validate === 'function') {
       try {
-        valid = wrapper.validate.call(commandInstance, wrapper.args)
+        valid = wrapper.validate.call(commandContext, wrapper.args)
       } catch (e) {
         // Complete with error on validation error
         onCompletion(wrapper, e)
@@ -188,7 +188,7 @@ export class Session extends EventEmitter {
     }
 
     // Call the root command.
-    const res = wrapper.fn!.call(commandInstance, wrapper.args as any, function (...argus: any) {
+    const res = wrapper.fn!.call(commandContext, wrapper.args as any, function (...argus: any) {
       onCompletion(wrapper, argus[0], argus[1], argus)
     } as any)
 

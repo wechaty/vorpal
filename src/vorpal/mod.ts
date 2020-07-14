@@ -3,6 +3,6 @@ export {
   Action,
 }                   from './types'
 export {
-  CommandInstance,
+  CommandContext,
   Args,
 }                   from './command-instance'

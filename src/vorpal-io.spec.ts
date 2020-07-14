@@ -15,7 +15,7 @@ import { createFixture } from 'wechaty'
 import {
   Vorpal,
   Action,
-  CommandInstance,
+  CommandContext,
 }                   from './vorpal/mod'
 
 import { VorpalIo } from './vorpal-io'
@@ -140,7 +140,7 @@ test('obsio for known command', async t => {
   const vorpal = new Vorpal()
 
   const fooAction: Action = async function (
-    this: CommandInstance,
+    this: CommandContext,
   ) {
     this.log(EXPECTED_TEXT)
     return EXPECTED_RET
@@ -185,7 +185,7 @@ test('obsio with command instance', async t => {
     const RET = 42
 
     vorpal.command('test')
-      .action(async function action (this: CommandInstance) {
+      .action(async function action (this: CommandContext) {
         this.stdout.next(TEXT)
         return RET
       })
@@ -229,7 +229,7 @@ test('obsio with message', async t => {
     let message
 
     vorpal.command('test')
-      .action(async function action (this: CommandInstance) {
+      .action(async function action (this: CommandContext) {
         message = this.message
       })
 

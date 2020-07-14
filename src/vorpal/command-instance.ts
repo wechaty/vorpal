@@ -23,17 +23,17 @@ interface ArgsOptions {
   }
 }
 
-interface CommandInstanceOptions {
+interface CommandContextOptions {
   commandWrapper?: any
   args?: Args
   commandObject?: Command
   command?: any
   callback?: any
-  downstream?: CommandInstance
+  downstream?: CommandContext
   obsio?: ObsIo
 }
 
-export class CommandInstance {
+export class CommandContext {
 
   public commandWrapper: any
   public args?: Args
@@ -42,7 +42,7 @@ export class CommandInstance {
   public session: Session
   public parent: any
   public callback: any
-  public downstream?: CommandInstance
+  public downstream?: CommandContext
 
   protected obsio?: ObsIo
   public _ask?: ReturnType<typeof asker>
@@ -58,7 +58,7 @@ export class CommandInstance {
    * Initialize a new `CommandInstance` instance.
    *
    * @param {Object} params
-   * @return {CommandInstance}
+   * @return {CommandContext}
    * @api public
    */
 
@@ -70,7 +70,7 @@ export class CommandInstance {
     callback,
     downstream,
     obsio,
-  }: CommandInstanceOptions = {}) {
+  }: CommandContextOptions = {}) {
     this.command = command
     this.commandObject = commandObject
     this.args = args

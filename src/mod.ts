@@ -6,7 +6,7 @@ export {
 export { VERSION }        from './version'
 export {
   Vorpal,
-  CommandInstance,
+  CommandContext,
   Args,
 }                         from './vorpal/mod'
 export {

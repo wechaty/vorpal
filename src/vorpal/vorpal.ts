@@ -7,7 +7,7 @@ import * as utils from './utils/mod'
 import { ObsIo } from '../vorpal-io'
 
 import { Command }          from './command'
-import { CommandInstance }  from './command-instance'
+import { CommandContext }  from './command-instance'
 import { Session }          from './session'
 import { commons }          from './vorpal-commons'
 import { ParsedCommand } from './types'
@@ -428,7 +428,7 @@ class Vorpal extends EventEmitter {
 
     // Build the instances for each pipe.
     item.pipes = (item.pipes as any).map(function (pipe: any) {
-      return new CommandInstance({
+      return new CommandContext({
         commandWrapper: item,
         command: pipe.command._name,
         commandObject: pipe.command,

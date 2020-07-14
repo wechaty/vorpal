@@ -16,7 +16,7 @@ import {
 
 import {
   Vorpal,
-  CommandInstance,
+  CommandContext,
 }                   from './vorpal/mod'
 
 import { VorpalIo } from './vorpal-io'
@@ -43,7 +43,7 @@ test('ask()', async t => {
     let answer: undefined | string
 
     vorpal.command('ask')
-      .action(async function action (this: CommandInstance) {
+      .action(async function action (this: CommandContext) {
         const msg = await this.ask(QUESTION)
         if (typeof msg === 'string') {
           answer = msg
@@ -80,7 +80,7 @@ test('asker() with mocker', async t => {
   const VorpalExtension = (vorpal: Vorpal) => {
     vorpal
       .command(COMMAND)
-      .action(async function action (this: CommandInstance) {
+      .action(async function action (this: CommandContext) {
         ANSWER = await this.ask(DING)
       })
   }

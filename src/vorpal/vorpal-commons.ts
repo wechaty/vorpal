@@ -6,7 +6,7 @@
 
 import { Vorpal }   from './vorpal'
 import {
-  CommandInstance,
+  CommandContext,
   Args,
 }                   from './command-instance'
 
@@ -18,7 +18,7 @@ function commons (vorpal: Vorpal) {
   vorpal
     .command('help [command...]')
     .description('Provides help for a given command.')
-    .action(async function (this: CommandInstance, args: Args) {
+    .action(async function (this: CommandContext, args: Args) {
       if (args.command) {
         args.command = (args.command as any).join(' ')
         const commandWithName = this.parent.commands.find(
