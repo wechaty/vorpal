@@ -8,7 +8,7 @@ import {
 
 import {
   Action,
-  CommandInstance,
+  CommandContext,
   Vorpal,
   Args,
 }                   from '../src/vorpal/mod'
@@ -59,14 +59,14 @@ test('command() stdout pipe redirect', async t => {
 
   const vorpal = new Vorpal()
   const fooAction: Action = async function (
-    this: CommandInstance,
+    this: CommandContext,
   ) {
     this.log(EXPECTED_TEXT)
   }
 
   let output = ''
   const collect: Action = async function (
-    this: CommandInstance,
+    this: CommandContext,
     args: Args,
   ) {
     output = args.stdin[0]
@@ -86,6 +86,13 @@ test('command() stdout pipe redirect', async t => {
 })
 
 test('hacker-news', async t => {
+  const inGfw = require('in-gfw')
+
+  if (await inGfw()) {
+    t.skip('Skip Hacker News testing when in gfw')
+    return
+  }
+
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
@@ -137,7 +144,7 @@ test('Vorpal compatibility: command actions that call this.log() multiple times'
     const vorpal = new Vorpal()
     vorpal
       .command(COMMAND)
-      .action(async function (this: CommandInstance) {
+      .action(async function (this: CommandContext) {
         TEXT_LIST.forEach(t => this.log(t))
       })
 
