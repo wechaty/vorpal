@@ -113,11 +113,11 @@ class VorpalIo {
       return this.stdinSub.asObservable()
     }
 
-    const vorpalMessage = this.message
     const vorpalRoom    = this.message.room()
     const vorpalTalker  = this.message.talker()
 
-    let vorpalMention: boolean
+    // const vorpalMessage = this.message
+    // let vorpalMention: boolean
 
     const sub = new Subject<types.SayableMessage>()
 
@@ -127,17 +127,17 @@ class VorpalIo {
       if (message.talker() !== vorpalTalker)  { return }
       if (message.room() !== vorpalRoom)      { return }
 
-      if (typeof vorpalMention === 'undefined') {
-        vorpalMention = await vorpalMessage.mentionSelf()
-      }
-      /**
-       * Requires consistent in a command session:
-       *  always mention the bot, or
-       *  always not mention the bot
-       */
-      const mention = await message.mentionSelf()
-      if (vorpalMention && !mention)  { return }
-      if (!vorpalMention && mention)  { return }
+      // if (typeof vorpalMention === 'undefined') {
+      //   vorpalMention = await vorpalMessage.mentionSelf()
+      // }
+      // /**
+      //  * Requires consistent in a command session:
+      //  *  always mention the bot, or
+      //  *  always not mention the bot
+      //  */
+      // const mention = await message.mentionSelf()
+      // if (vorpalMention && !mention)  { return }
+      // if (!vorpalMention && mention)  { return }
 
       const sayableMsg = await types.toSayableMessage(message)
       if (!sayableMsg)                { return }
