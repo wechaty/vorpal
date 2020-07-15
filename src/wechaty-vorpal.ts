@@ -69,8 +69,8 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
     if (room) {
       if (!await matchRoom(room))                 { return false }
-      const atSelf = await message.mentionSelf()
-      if (config.mention && !atSelf)                   { return false }
+      const mentionSelf = await message.mentionSelf()
+      if (config.mention && !mentionSelf)         { return false }
     } else if (from) {
       if (!await matchContact(from))              { return false }
     } else                                        { return false }
