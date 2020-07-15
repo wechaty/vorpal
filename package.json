@@ -56,7 +56,7 @@
     "minimist": "^1.2.5",
     "rxjs": "^6.5.5",
     "strip-ansi": "^6.0.0",
-    "wechaty-plugin-contrib": "^0.13.5"
+    "wechaty-plugin-contrib": "^0.14.2"
   },
   "peerDependencies": {
     "wechaty": "*"
