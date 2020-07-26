@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/wechaty/wechaty-vorpal#readme",
   "devDependencies": {
-    "@chatie/eslint-config": "^0.11.5",
+    "@chatie/eslint-config": "^0.12.1",
     "@chatie/git-scripts": "^0.6.2",
     "@chatie/semver": "^0.4.7",
     "@chatie/tsconfig": "^0.10.1",
@@ -57,7 +57,7 @@
     "minimist": "^1.2.5",
     "rxjs": "^6.5.5",
     "strip-ansi": "^6.0.0",
-    "wechaty-plugin-contrib": "^0.13.5"
+    "wechaty-plugin-contrib": "^0.14.2"
   },
   "peerDependencies": {
     "wechaty": "*"
