@@ -6,15 +6,16 @@ import {
 }          from 'tstest'
 
 import {
-  createFixture,
   Wechaty,
 }                     from 'wechaty'
 
 import {
   PuppetMock,
   mock,
-}                         from 'wechaty-puppet-mock'
-
+}                     from 'wechaty-puppet-mock'
+import {
+  createFixture,
+}                     from 'wechaty-mocker'
 import {
   Vorpal,
   CommandContext,
@@ -36,7 +37,7 @@ test('ask()', async t => {
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
 
     const QUESTION = 'how are you?'
     const ANSWER   = 'fine, thank you.'
@@ -162,9 +163,9 @@ test('ask() with timeout & default options', async t => {
   })
 
   for await (const fixture of createFixture()) {
-    fixture.wechaty.use(plugin)
+    fixture.wechaty.wechaty.use(plugin)
 
-    fixture.player.say(COMMAND).to(fixture.bot)
+    fixture.mocker.player.say(COMMAND).to(fixture.mocker.bot)
 
     await new Promise(setImmediate)
     await new Promise(setImmediate)

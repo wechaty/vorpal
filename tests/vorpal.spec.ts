@@ -4,7 +4,7 @@ import test  from 'tstest'
 
 import {
   createFixture,
-}                   from 'wechaty'
+}                   from 'wechaty-mocker'
 
 import {
   Action,
@@ -98,7 +98,7 @@ test('hacker-news', async t => {
 
     vorpal.use(require('vorpal-hacker-news'))
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     const ret = await vorpal.exec('hacker-news --length 1', undefined, io.open())
     await new Promise(setImmediate)
@@ -118,7 +118,7 @@ test('Vorpal help command with options', async t => {
       .option('-t --option', 'test option')
       .action(async () => {})
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     await vorpal.exec('help foo', undefined, io.open())
     await new Promise(setImmediate)
@@ -148,7 +148,7 @@ test('Vorpal compatibility: command actions that call this.log() multiple times'
         TEXT_LIST.forEach(t => this.log(t))
       })
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     await vorpal.exec(COMMAND, undefined, io.open())
     await new Promise(setImmediate)
@@ -175,7 +175,7 @@ test('Vorpal compatibility: command actions that return a str', async t => {
         return TEXT as any
       })
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     const ret = await vorpal.exec('ret_str', undefined, io.open())
     await new Promise(setImmediate)
@@ -196,7 +196,7 @@ test('Vorpal compatibility: command actions with a callback', async t => {
         setImmediate(() => callback(undefined, TEXT))
       })
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     const ret = await vorpal.exec('callback', undefined, io.open())
     await new Promise(setImmediate)
@@ -219,7 +219,7 @@ test('Vorpal compatibility: command actions log with a callback', async t => {
         setImmediate(() => callback(undefined, TEXT_CB))
       })
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     const ret = await vorpal.exec('callback', undefined, io.open())
     await new Promise(resolve => setTimeout(resolve))

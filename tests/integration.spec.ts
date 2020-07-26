@@ -6,7 +6,7 @@ import {
 
 import {
   createFixture,
-}                   from 'wechaty'
+}                   from 'wechaty-mocker'
 import {
   mock,
 }                   from 'wechaty-puppet-mock'
@@ -41,18 +41,18 @@ test('WechatyVorpal integration smoke testing', async t => {
       use: VorpalExtension,
     })
 
-    fixture.wechaty.use(WechatyVorpalPlugin)
+    fixture.wechaty.wechaty.use(WechatyVorpalPlugin)
 
     const onPlayerMessage = (message: mock.MessageMock) => {
       const text = message.text()
       const talker = message.talker()
       if (text === DING) {
-        fixture.player.say(DONG).to(talker)
+        fixture.mocker.player.say(DONG).to(talker)
       }
     }
-    fixture.player.on('message', onPlayerMessage)
+    fixture.mocker.player.on('message', onPlayerMessage)
 
-    fixture.player.say(COMMAND).to(fixture.bot)
+    fixture.mocker.player.say(COMMAND).to(fixture.mocker.bot)
     await new Promise(setImmediate)
 
     t.equal(ANSWER, DONG, 'should get dong as the answer of the ask command')
