@@ -19,7 +19,7 @@ export type Args = {
 
 interface ArgsOptions {
   options: {
-    [arg: string]: boolean | number | string | string[]
+    [arg: string]: boolean | number | string
   }
 }
 
