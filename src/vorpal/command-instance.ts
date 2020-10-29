@@ -18,6 +18,7 @@ export type Args = {
 } & ArgsOptions
 
 interface ArgsOptions {
+  rawCommand: string,
   options: {
     [arg: string]: boolean | number | string
   }
