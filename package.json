@@ -50,7 +50,7 @@
     "vorpal-hacker-news": "^1.0.6",
     "wechaty": "^0.48.0",
     "wechaty-mocker": "^0.5.2",
-    "wechaty-puppet-mock": "^0.27.5"
+    "wechaty-puppet-mock": "^0.28.2"
   },
   "dependencies": {
     "lodash": "^4.17.15",
