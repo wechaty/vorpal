@@ -55,7 +55,7 @@
   "dependencies": {
     "lodash": "^4.17.15",
     "minimist": "^1.2.5",
-    "rxjs": "^6.5.5",
+    "rxjs": "^7.0.0",
     "strip-ansi": "^6.0.0",
     "wechaty-plugin-contrib": "^0.14.2"
   },
