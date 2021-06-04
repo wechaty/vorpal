@@ -65,7 +65,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
   const matchConfig = async (message: Message): Promise<boolean> => {
     const room = message.room()
-    const from = message.from()
+    const from = message.talker()
 
     if (room) {
       if (!await matchRoom(room))                 { return false }
