@@ -54,8 +54,8 @@
   "dependencies": {
     "lodash": "^4.17.15",
     "minimist": "^1.2.5",
+    "strip-ansi": "^7.0.0",
     "rxjs": "^7.3.0",
-    "strip-ansi": "^6.0.0",
     "wechaty-plugin-contrib": "^0.14.2"
   },
   "peerDependencies": {
