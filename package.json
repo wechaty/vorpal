@@ -55,11 +55,11 @@
   "dependencies": {
     "lodash": "^4.17.15",
     "minimist": "^1.2.5",
-    "rxjs": "^7.3.0",
     "strip-ansi": "^6",
     "wechaty-plugin-contrib": "^0.14.2"
   },
   "peerDependencies": {
+    "rxjs": ">=7.3",
     "wechaty": "*"
   },
   "git": {
