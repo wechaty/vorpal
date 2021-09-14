@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 
 import {
   test,
@@ -16,9 +16,9 @@ import {
   Vorpal,
   Action,
   CommandContext,
-}                   from './vorpal/mod'
+}                   from './vorpal/mod.js'
 
-import { VorpalIo } from './vorpal-io'
+import { VorpalIo } from './vorpal-io.js'
 
 class VorpalIoTest extends VorpalIo {
 
@@ -89,7 +89,7 @@ test('VorpalIo obsio() stdout', async t => {
     obsio.stdout.next(TEXT)
     await new Promise(setImmediate)
 
-    t.deepEqual(fixture.moList[0].text(), TEXT, 'should pass stdout to wechaty')
+    t.same(fixture.moList[0]!.text(), TEXT, 'should pass stdout to wechaty')
   }
 })
 
@@ -104,7 +104,7 @@ test('VorpalIo obsio() stderr', async t => {
     obsio.stderr.next(TEXT)
     await new Promise(setImmediate)
 
-    t.deepEqual(fixture.moList[0].text(), TEXT, 'should pass stderr to wechaty')
+    t.same(fixture.moList[0]!.text(), TEXT, 'should pass stderr to wechaty')
   }
 })
 
@@ -123,7 +123,7 @@ test('VorpalIo obsio() stdin', async t => {
     await new Promise(setImmediate)
 
     t.true(spy.called, 'should call say when stdin got something')
-    t.equal(spy.args[0][0], TEXT, 'should get message from subscribe')
+    t.equal(spy.args[0]![0], TEXT, 'should get message from subscribe')
   }
 })
 
@@ -157,7 +157,7 @@ test('obsio for known command', async t => {
     await new Promise(setImmediate)
 
     t.equal(ret, EXPECTED_RET, 'should return ' + EXPECTED_RET)
-    t.deepEqual(fixture.moList[0].text(), EXPECTED_TEXT, 'should get the expected stdout')
+    t.same(fixture.moList[0]!.text(), EXPECTED_TEXT, 'should get the expected stdout')
   }
 })
 
@@ -171,7 +171,7 @@ test('obsio for unknown command', async t => {
     await new Promise(setImmediate)
 
     t.equal(ret, 1, 'should return 1 for unknown command')
-    t.deepEqual(fixture.moList[0].text(), 'Invalid command', 'should get the expected invalid command message')
+    t.same(fixture.moList[0]!.text(), 'Invalid command', 'should get the expected invalid command message')
   }
 })
 
@@ -195,7 +195,7 @@ test('obsio with command instance', async t => {
     await new Promise(setImmediate)
 
     t.equal(ret, RET, 'should return ' + RET + ' for test command')
-    t.deepEqual(fixture.moList[0].text(), TEXT, 'should get the expected TEXT message')
+    t.same(fixture.moList[0]!.text(), TEXT, 'should get the expected TEXT message')
 
     io.close()
   }

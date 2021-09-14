@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 
 import {
   test,
@@ -6,7 +6,7 @@ import {
 
 import { createFixture } from 'wechaty-mocker'
 
-import { WechatyVorpal } from './wechaty-vorpal'
+import { WechatyVorpal } from './wechaty-vorpal.js'
 
 test('WechatyVorpalConfig.silent = undefined | false', async t => {
   for await (const fixture of createFixture()) {

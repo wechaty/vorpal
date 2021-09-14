@@ -9,8 +9,8 @@ import {
 }                   from 'wechaty-plugin-contrib'
 import {
   Vorpal,
-}                   from './vorpal/mod'
-import { VorpalIo } from './vorpal-io'
+}                   from './vorpal/mod.js'
+import { VorpalIo } from './vorpal-io.js'
 
 type VorpalExtensionFunction = (vorpal: Vorpal, options: any) => void
 type VorpalExtension = string | VorpalExtensionFunction

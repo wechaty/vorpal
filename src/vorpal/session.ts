@@ -2,11 +2,11 @@
 import { EventEmitter } from 'events'
 import stripAnsi    from 'strip-ansi'
 
-import * as utils from './utils/mod'
+import type * as utils from './utils/mod.js'
 
-import { CommandContext } from './command-instance'
-import { Vorpal } from './vorpal'
-import { ObsIo } from '../vorpal-io'
+import { CommandContext } from './command-instance.js'
+import type { Vorpal } from './vorpal.js'
+import type { ObsIo } from '../vorpal-io.js'
 
 interface CommandResponse {
   error?: Error;

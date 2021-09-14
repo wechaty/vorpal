@@ -1,28 +1,29 @@
-import {
+import type {
   Message,
   Wechaty,
 }             from 'wechaty'
-import {
+import type {
   types,
 }             from 'wechaty-plugin-contrib'
 
-import { Command } from './command'
-import { Session } from './session'
-import { Observable, Subject } from 'rxjs'
+import type { Command } from './command.js'
+import type { Session } from './session.js'
+import type { Observable, Subject } from 'rxjs'
 
-import { ObsIo }  from '../vorpal-io'
-import { asker }  from '../asker'
+import type { ObsIo }  from '../vorpal-io.js'
+import { asker }  from '../asker.js'
 
-export type Args = {
-  [arg: string]: string | string[]
-} & ArgsOptions
-
+/* eslint-disable no-use-before-define */
 interface ArgsOptions {
   rawCommand: string,
   options: {
     [arg: string]: boolean | number | string
   }
 }
+
+export type Args = {
+  [arg: string]: string | string[]
+} & ArgsOptions
 
 interface CommandContextOptions {
   commandWrapper?: any
@@ -93,7 +94,7 @@ export class CommandContext {
     if (this.downstream) {
       const fn = this.downstream.commandObject._fn || (() => {})
       this.session.registerCommand()
-      this.downstream.args!.stdin = args
+      this.downstream.args!['stdin'] = args
       const onComplete = (err?: Error) => {
         if (err) {
           this.session.log(String(err.stack || err))
@@ -111,7 +112,7 @@ export class CommandContext {
           validate.call(this.downstream, this.downstream.args)
         } catch (e) {
           // Log error without piping to downstream on validation error.
-          this.session.log(e.toString())
+          this.session.log((e as Error).toString())
           onComplete()
           return
         }

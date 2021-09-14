@@ -1,14 +1,16 @@
-import { clone, isObject, isUndefined } from 'lodash'
-import Session from '../session'
+import _ from 'lodash'
+import type Session from '../session.js'
 
-import { Command } from '../command'
-import {
+import type { Command } from '../command.js'
+import type {
   Args,
   CommandContext,
-}                   from '../command-instance'
+}                   from '../command-instance.js'
 
 import minimist from 'minimist'
-import { ObsIo } from '../../vorpal-io'
+import type { ObsIo } from '../../vorpal-io.js'
+
+const { clone, isObject, isUndefined } = _
 
 export type ArgTypes = {
   [P in 'string' | 'boolean']: unknown
@@ -21,6 +23,11 @@ type CLIArgs = minimist.ParsedArgs & {
 const PAIR_NORMALIZE_PATTERN = /(['"]?)(\w+)=(?:(['"])((?:(?!\3).)*)\3|(\S+))\1/g
 const MAX_ARGS = 10
 const ARGS_PATTERN = /"(.*?)"|'(.*?)'|`(.*?)`|([^\s"]+)/gi
+
+type ModeOptions = {
+  message?: string;
+  sessionId?: string;
+}
 
 export type CommandExecutionItem = {
   args?: string | Args // From buildCommandArgs()
@@ -37,23 +44,22 @@ export type CommandExecutionItem = {
   obsio?: ObsIo
 };
 
-type ModeOptions = {
-  message?: string;
-  sessionId?: string;
-};
-
 /**
  * Parses command arguments from multiple sources.
  */
 export function parseArgs (input: string, opts?: Record<string, any>): CLIArgs {
-  const args = []
+  const args = [] as string[]
   let match
 
   do {
     match = ARGS_PATTERN.exec(input)
 
     if (match !== null) {
-      args.push(match[1] || match[2] || match[3] || match[4])
+      const current = match[1] || match[2] || match[3] || match[4]
+      if (!current) {
+        throw new Error('no current value')
+      }
+      args.push(current)
     }
   } while (match !== null)
 
@@ -173,8 +179,8 @@ export function buildCommandArgs (
   }
 
   // Looks for a help arg and throws help if any.
-  if (parsedArgs.help || parsedArgs._.includes('/?')) {
-    args.options.help = true
+  if (parsedArgs['help'] || parsedArgs._.includes('/?')) {
+    args.options['help'] = true
   }
 
   return args

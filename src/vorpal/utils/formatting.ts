@@ -1,5 +1,5 @@
 import strip from 'strip-ansi'
-import { Arg } from '../command'
+import type { Arg } from '../command.js'
 
 export const PADDING = '  '
 export const PADDING_SIZE = PADDING.length

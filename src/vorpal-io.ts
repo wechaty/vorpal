@@ -204,7 +204,7 @@ class VorpalIo {
 
       } catch (e) {
         log.error('VorpalIo', 'stdout() next(%s) rejection: %s', msg, e)
-        console.error(e.stack)
+        console.error(e as Error)
       }
     }
 

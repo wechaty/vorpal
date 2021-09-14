@@ -1,5 +1,5 @@
 import { log }    from 'wechaty'
-import { types }  from 'wechaty-plugin-contrib'
+import type { types }  from 'wechaty-plugin-contrib'
 import {
   take,
   mapTo,
@@ -9,7 +9,7 @@ import {
   merge,
 }                 from 'rxjs'
 
-import { ObsIo } from './vorpal-io'
+import type { ObsIo } from './vorpal-io.js'
 
 interface AskOptions {
   /**

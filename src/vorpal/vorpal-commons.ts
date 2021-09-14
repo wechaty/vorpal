@@ -4,11 +4,11 @@
  * through vorpal.use(module).
  */
 
-import { Vorpal }   from './vorpal'
-import {
+import type { Vorpal }   from './vorpal.js'
+import type {
   CommandContext,
   Args,
-}                   from './command-instance'
+}                   from './command-instance.js'
 
 function commons (vorpal: Vorpal) {
   /**
@@ -19,24 +19,24 @@ function commons (vorpal: Vorpal) {
     .command('help [command...]')
     .description('Provides help for a given command.')
     .action(async function (this: CommandContext, args: Args) {
-      if (args.command) {
-        args.command = (args.command as any).join(' ')
+      if (args['command']) {
+        args['command'] = (args['command'] as any).join(' ')
         const commandWithName = this.parent.commands.find(
-          (command: any) => command._name === String(args.command).trim()
+          (command: any) => command._name === String(args['command']).trim()
         )
         if (commandWithName && !commandWithName._hidden) {
           if (typeof commandWithName._help === 'function') {
-            commandWithName._help(args.command, (str: string) => {
+            commandWithName._help(args['command'], (str: string) => {
               this.log(str)
             })
             return 0
           }
           this.log(commandWithName.helpInformation())
         } else {
-          this.log(this.parent._commandHelp(args.command))
+          this.log(this.parent._commandHelp(args['command']))
         }
       } else {
-        this.log(this.parent._commandHelp(args.command))
+        this.log(this.parent._commandHelp(args['command']))
       }
       return 0
     })
