@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys */
 import { EventEmitter } from 'events'
-import stripAnsi    from 'strip-ansi'
+
+import { stripAnsi }    from '../config.js'
 
 import type * as utils from './utils/mod.js'
 
