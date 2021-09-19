@@ -106,7 +106,6 @@ class VorpalIo {
     } else {
       VorpalIo.busySet.delete(this.id)
     }
-    console.info('setBusy() done')
   }
 
   protected stdin (): Observable<types.SayableMessage> {
