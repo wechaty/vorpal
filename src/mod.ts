@@ -1,18 +1,32 @@
-export {
+import {
   log,
   Wechaty,
 }             from 'wechaty'
 
-export { VERSION }        from './version'
-export {
+import { VERSION }        from './config.js'
+import {
   Vorpal,
   CommandContext,
   Args,
-}                         from './vorpal/mod'
-export {
+}                         from './vorpal/mod.js'
+import {
   WechatyVorpalConfig,
   WechatyVorpal,
-}                         from './wechaty-vorpal'
-export {
+}                         from './wechaty-vorpal.js'
+import type {
   ObsIo,
-}                         from './vorpal-io'
+}                         from './vorpal-io.js'
+
+export type {
+  Args,
+  CommandContext,
+  ObsIo,
+  WechatyVorpalConfig,
+}
+export {
+  log,
+  VERSION,
+  Vorpal,
+  Wechaty,
+  WechatyVorpal,
+}

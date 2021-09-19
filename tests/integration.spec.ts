@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 
 import {
   test,
@@ -7,7 +7,7 @@ import {
 import {
   createFixture,
 }                   from 'wechaty-mocker'
-import {
+import type {
   mock,
 }                   from 'wechaty-puppet-mock'
 
@@ -15,7 +15,7 @@ import {
   WechatyVorpal,
   Vorpal,
   CommandContext,
-}                     from '../src/mod'
+}                     from '../src/mod.js'
 
 test('WechatyVorpal integration smoke testing', async t => {
   for await (const fixture of createFixture()) {

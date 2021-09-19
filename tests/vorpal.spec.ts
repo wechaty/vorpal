@@ -1,19 +1,24 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 
-import test  from 'tstest'
+import { test } from 'tstest'
 
 import {
   createFixture,
 }                   from 'wechaty-mocker'
+
+import '../src/config.js'
+import vorpalHackerNews from 'vorpal-hacker-news'
+
+import inGfw from 'in-gfw'
 
 import {
   Action,
   CommandContext,
   Vorpal,
   Args,
-}                   from '../src/vorpal/mod'
+}                   from '../src/vorpal/mod.js'
 
-import { VorpalIo } from '../src/vorpal-io'
+import { VorpalIo } from '../src/vorpal-io.js'
 
 test('smoke testing', async t => {
   const vorpal = new Vorpal()
@@ -51,7 +56,7 @@ test('command() foo', async t => {
     rawCommand: 'foo bar1 bar2 -t',
   }
   await vorpal.exec('foo bar1 bar2 -t')
-  t.deepEqual(actualArgs, EXPECTED_ARGS, 'should execute a command with no options')
+  t.same(actualArgs, EXPECTED_ARGS, 'should execute a command with no options')
 })
 
 test('command() stdout pipe redirect', async t => {
@@ -69,7 +74,7 @@ test('command() stdout pipe redirect', async t => {
     this: CommandContext,
     args: Args,
   ) {
-    output = args.stdin[0]
+    output = args['stdin']![0]!
   }
 
   vorpal
@@ -82,29 +87,27 @@ test('command() stdout pipe redirect', async t => {
 
   await vorpal.exec('foo | collect')
 
-  t.deepEqual(output, EXPECTED_TEXT, 'should execute a command and get the output')
+  t.same(output, EXPECTED_TEXT, 'should execute a command and get the output')
 })
 
 test('hacker-news', async t => {
-  const inGfw = require('in-gfw')
-
   if (await inGfw()) {
-    t.skip('Skip Hacker News testing when in gfw')
+    await t.skip('Skip Hacker News testing when in gfw')
     return
   }
 
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
-    vorpal.use(require('vorpal-hacker-news'))
+    vorpal.use(vorpalHackerNews)
 
     const io = VorpalIo.from(fixture.wechaty.message)
 
     const ret = await vorpal.exec('hacker-news --length 1', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.true(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
-    t.true(/Hacker News/i.test(fixture.moList[0].text()), 'should get the stdout with hacker news')
+    t.ok(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
+    t.ok(/Hacker News/i.test(fixture.moList[0]!.text()), 'should get the stdout with hacker news')
   }
 })
 
@@ -123,9 +126,9 @@ test('Vorpal help command with options', async t => {
     await vorpal.exec('help foo', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.true(
+    t.ok(
       EXPECTED_RE.test(
-        fixture.moList[0].text()
+        fixture.moList[0]!.text()
       ),
       'should get the help stdout with options message',
     )
@@ -159,7 +162,7 @@ test('Vorpal compatibility: command actions that call this.log() multiple times'
     t.equal(fixture.moList.length, TEXT_LIST.length, 'should receive all TEXT_LIST')
     for (let i = 0; i < TEXT_LIST.length; i++) {
       t.ok(fixture.moList[i], `should exist moList for ${i}`)
-      t.deepEqual(fixture.moList[i].text(), TEXT_LIST[i], `should get TEXT_LIST[${i}]`)
+      t.same(fixture.moList[i]!.text(), TEXT_LIST[i], `should get TEXT_LIST[${i}]`)
     }
   }
 })
@@ -201,7 +204,7 @@ test('Vorpal compatibility: command actions with a callback', async t => {
     const ret = await vorpal.exec('callback', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.deepEqual(ret, TEXT, 'should get TEXT from callback')
+    t.same(ret, TEXT, 'should get TEXT from callback')
   }
 })
 
@@ -225,6 +228,6 @@ test('Vorpal compatibility: command actions log with a callback', async t => {
     await new Promise(resolve => setTimeout(resolve))
 
     t.equal(ret, TEXT_CB, 'should use callback data as ret')
-    t.equal(fixture.moList[0].text(), TEXT_LOG, 'should get TEXT_LOG from log')
+    t.equal(fixture.moList[0]!.text(), TEXT_LOG, 'should get TEXT_LOG from log')
   }
 })

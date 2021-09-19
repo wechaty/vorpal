@@ -1,13 +1,13 @@
-import {
+import type {
   // Arg,
   Command,
-}           from './command'
+}           from './command.js'
 
-import {
+import type {
   // CommandInstance,
   Args,
   CommandContext,
-}                   from './command-instance'
+}                   from './command-instance.js'
 
 // type ParseFn = (str: string, args: string | Args) => string
 // type ValidateFn = (instance: CommandInstance, args: Args) => string

@@ -27,7 +27,7 @@ class Option {
 
     const flagList = flags.split(/[ ,|]+/)
 
-    if (flagList.length > 1 && !/^[[<]/.test(flagList[1])) {
+    if (flagList.length > 1 && !/^[[<]/.test(flagList[1] || '')) {
       this.assignFlag(flagList.shift()!)
     }
     this.assignFlag(flagList.shift()!)

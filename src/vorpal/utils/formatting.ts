@@ -1,5 +1,5 @@
-import strip from 'strip-ansi'
-import { Arg } from '../command'
+import { stripAnsi }  from '../../config.js'
+import type { Arg } from '../command.js'
 
 export const PADDING = '  '
 export const PADDING_SIZE = PADDING.length
@@ -9,7 +9,7 @@ export const PADDING_SIZE = PADDING.length
  */
 export function pad (value: string | string[], width: number, delimiter?: string): string {
   const str = Array.isArray(value) ? value.join() : value
-  return str + (delimiter || ' ').repeat(Math.max(0, Math.floor(width) - strip(str).length))
+  return str + (delimiter || ' ').repeat(Math.max(0, Math.floor(width) - stripAnsi(str).length))
 }
 
 /**
@@ -33,11 +33,11 @@ export function prettifyArray (baseArray?: string[]): string {
   const maxWidth = process.stdout.columns
   const longestWidth
     = array.reduce((longest, item) => {
-      const { length } = strip(item)
+      const { length } = stripAnsi(item)
 
       return length > longest ? length : longest
     }, 0) + PADDING_SIZE
-  const fullWidth = strip(array.join('')).length
+  const fullWidth = stripAnsi(array.join('')).length
 
   // Does it fit on one line?
   if (fullWidth + array.length * PADDING_SIZE <= maxWidth) {
