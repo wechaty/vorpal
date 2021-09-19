@@ -18,3 +18,5 @@
  *
  */
 declare module 'strip-ansi'
+declare module 'vorpal-hacker-news'
+declare module 'in-gfw'

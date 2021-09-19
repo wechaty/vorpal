@@ -156,9 +156,10 @@ class Vorpal extends EventEmitter {
     if (typeof extension === 'function') {
       extension.call(this, this, options)
     } else if (typeof extension === 'string') {
-      /* eslint-disable-next-line @typescript-eslint/no-var-requires */
-      const module = require(extension)
-      return this.use(module, options)
+      import(extension)
+        .then(module => this.use(module, options))
+        .catch(error => console.error(error))
+      return this
     } else {
       extension = Array.isArray(extension) ? extension : [extension]
       for (const cmd of extension) {

@@ -6,6 +6,11 @@ import {
   createFixture,
 }                   from 'wechaty-mocker'
 
+import '../src/config.js'
+import vorpalHackerNews from 'vorpal-hacker-news'
+
+import inGfw from 'in-gfw'
+
 import {
   Action,
   CommandContext,
@@ -86,8 +91,6 @@ test('command() stdout pipe redirect', async t => {
 })
 
 test('hacker-news', async t => {
-  const inGfw = require('in-gfw')
-
   if (await inGfw()) {
     await t.skip('Skip Hacker News testing when in gfw')
     return
@@ -96,7 +99,7 @@ test('hacker-news', async t => {
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
-    vorpal.use(require('vorpal-hacker-news'))
+    vorpal.use(vorpalHackerNews)
 
     const io = VorpalIo.from(fixture.wechaty.message)
 
