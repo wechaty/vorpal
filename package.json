@@ -70,7 +70,7 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
-    "strip-ansi": "^7"
+    "strip-ansi": "^6.0.0"
   },
   "files": [
     "bin/",
