@@ -96,7 +96,7 @@ Pulling top 3 stories on Hacker News:
 
 ## History
 
-### main (Sep 19, 2021)
+### main v0.7 (Sep 19, 2021)
 
 1. ES MOdule support
 
