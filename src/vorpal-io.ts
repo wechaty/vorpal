@@ -23,9 +23,7 @@ export interface ObsIo {
 
 class VorpalIo {
 
-  static busyState: {
-    [id: string]: true
-  } = {}
+  static readonly busySet = new Set<string>()
 
   static from (message: Message) {
     return new this(message)
@@ -35,17 +33,36 @@ class VorpalIo {
   protected stdoutSub? : Subject<types.SayableMessage>
   protected stderrSub? : Subject<string>
 
+  protected readonly id: string
+
   constructor (
     protected message: Message,
   ) {
     log.verbose('VorpalIo', 'constructor(%s)', message)
+
+    this.id = this.generateId()
+  }
+
+  protected generateId () {
+    const talker  = this.message.talker()
+    const room    = this.message.room()
+
+    let id
+    if (room) {
+      id = `${talker.id}@${room.id}`
+    } else {
+      id = talker.id
+    }
+
+    // log.verbose('VorpalIo', 'id() = %s', id)
+    return id
   }
 
   open (): ObsIo {
     log.verbose('VorpalIo', 'open()')
 
     if (this.busy()) {
-      throw new Error(`Vorpal Io for ${this.message} is busy!`)
+      throw new Error(`Vorpal Io for ${this.id} is busy!`)
     }
 
     this.setBusy(true)
@@ -60,9 +77,9 @@ class VorpalIo {
   }
 
   busy (): boolean {
-    // log.verbose('VorpalIo', 'busy() for id=%s', this.id())
+    log.verbose('VorpalIo', 'busy() for id=%s', this.id)
 
-    const isBusy = !!(VorpalIo.busyState[this.id()])
+    const isBusy = VorpalIo.busySet.has(this.id)
     log.verbose('VorpalIo', 'busy() = %s', isBusy)
     return isBusy
   }
@@ -82,28 +99,14 @@ class VorpalIo {
     this.setBusy(false)
   }
 
-  protected id () {
-    const talker  = this.message.talker()
-    const room    = this.message.room()
-
-    let id
-    if (room) {
-      id = `${talker.id}@${room.id}`
-    } else {
-      id = talker.id
-    }
-
-    // log.verbose('VorpalIo', 'id() = %s', id)
-    return id
-  }
-
   protected setBusy (busy: boolean): void {
-    log.verbose('VorpalIo', 'setBusy(%s) for %s', busy, this.message)
+    log.verbose('VorpalIo', 'setBusy(%s) for %s', busy, this.id)
     if (busy) {
-      VorpalIo.busyState[this.id()] = true
+      VorpalIo.busySet.add(this.id)
     } else {
-      delete VorpalIo.busyState[this.id()]
+      VorpalIo.busySet.delete(this.id)
     }
+    console.info('setBusy() done')
   }
 
   protected stdin (): Observable<types.SayableMessage> {

@@ -40,23 +40,23 @@ test('VorpalIo obsio()', async t => {
     const io = VorpalIo.from(fixture.wechaty.message)
     const obsio = io.open()
 
-    t.true(obsio.stderr instanceof Subject, 'should get stderr as Subject')
-    t.true(obsio.stdout instanceof Subject, 'should get stdout as Subject')
-    t.true(obsio.stdin instanceof Observable, 'should get stdin as Subject')
+    t.ok(obsio.stderr instanceof Subject, 'should get stderr as Subject')
+    t.ok(obsio.stdout instanceof Subject, 'should get stdout as Subject')
+    t.ok(obsio.stdin instanceof Observable, 'should get stdin as Subject')
   }
 })
 
 test('VorpalIo busy()', async t => {
   for await (const fixture of createFixture()) {
     const io = new VorpalIoTest(fixture.wechaty.message)
-    t.false(io.busy(), 'should not busy right after initializing from message')
+    t.notOk(io.busy(), 'should not busy right after initializing from message')
 
     const obsio = io.open()
     void obsio
-    t.true(io.busy(), 'should be busy after get obsio()')
+    t.ok(io.busy(), 'should be busy after get obsio()')
 
     io.close()
-    t.false(io.busy(), 'should not busy after close()')
+    t.notOk(io.busy(), 'should not busy after close()')
   }
 })
 
@@ -67,15 +67,15 @@ test('VorpalIo close()', async t => {
     const obsio = io.open()
     void obsio
 
-    t.true(io.getStderrSub(), 'should be subscription after called obsio()')
-    t.true(io.getStdoutSub(), 'should be subscription after called obsio()')
-    t.true(io.getStdinSub(),  'should be subscription after called obsio()')
+    t.ok(io.getStderrSub(), 'should be subscription after called obsio()')
+    t.ok(io.getStdoutSub(), 'should be subscription after called obsio()')
+    t.ok(io.getStdinSub(),  'should be subscription after called obsio()')
 
     io.close()
 
-    t.false(io.getStderrSub(), 'should be undefined after close')
-    t.false(io.getStdoutSub(), 'should be undefined after close')
-    t.false(io.getStdinSub(), 'should be undefined after close')
+    t.notOk(io.getStderrSub(), 'should be undefined after close')
+    t.notOk(io.getStdoutSub(), 'should be undefined after close')
+    t.notOk(io.getStdinSub(), 'should be undefined after close')
   }
 })
 
@@ -122,7 +122,7 @@ test('VorpalIo obsio() stdin', async t => {
     fixture.mocker.player.say(TEXT).to(fixture.mocker.bot)
     await new Promise(setImmediate)
 
-    t.true(spy.called, 'should call say when stdin got something')
+    t.ok(spy.called, 'should call say when stdin got something')
     t.equal(spy.args[0]![0], TEXT, 'should get message from subscribe')
   }
 })

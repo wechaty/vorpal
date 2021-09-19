@@ -91,6 +91,12 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       if (!await matchConfig(message))  { return }
 
       const io = VorpalIo.from(message)
+
+      /**
+       * The meaning of BUSY:
+       *  If we are in a session that dealing with the previous vorpal command,
+       *  then we should leave all new messages to the session.
+       */
       if (io.busy())                    { return }
 
       const command = await message.mentionText()
@@ -117,9 +123,15 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
     }
 
+    /**
+     * Register the event listener
+     */
     wechaty.on('message', onMessage)
-    return () => wechaty.off('message', onMessage)
 
+    /**
+    * Return the dispose function for clean up
+    */
+    return () => wechaty.off('message', onMessage)
   }
 }
 

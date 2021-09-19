@@ -21,7 +21,7 @@ test('WechatyVorpalConfig.silent = undefined | false', async t => {
     fixture.mocker.player.say('not_exist_command').to(fixture.mocker.bot)
     await new Promise(setImmediate)
 
-    t.true(fixture.moList.length > 0, 'should show help message for unknown command')
+    t.ok(fixture.moList.length > 0, 'should show help message for unknown command')
   }
 })
 

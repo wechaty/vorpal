@@ -83,7 +83,22 @@ Pulling top 3 stories on Hacker News:
 1. [vorpal-regorged - Conquer the command-line. ⚔️](https://github.com/vorpaljs-reforged/vorpal): This is a Fork aiming at reforging vorpal into typescript, and bringing a 2.0
 1. [bandersnatch - Super lightweight and friendly CLI scaffolding for Node.js programs.](https://github.com/hongaar/bandersnatch)
 
+## Contributors
+
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/0)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/0)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/1)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/1)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/2)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/2)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/3)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/3)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/4)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/4)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/5)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/5)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/6)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/6)
+[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/7)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/7)
+
 ## History
+
+### main (Sep 19, 2021)
+
+1. ES MOdule support
 
 ### v0.6 (July 13, 2020)
 
@@ -110,17 +125,6 @@ Inherit the TypeScript source code from the [Vorpal Reforged](https://github.com
 ### v0.2 (Jun 19, 2020)
 
 Init the first version of Vorpal Wechaty Plugin for managing ChatOps Commands
-
-## Contributors
-
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/0)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/0)
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/1)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/1)
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/2)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/2)
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/3)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/3)
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/4)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/4)
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/5)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/5)
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/6)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/6)
-[![contributor](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/images/7)](https://sourcerer.io/fame/huan/wechaty/wechaty-vorpal/links/7)
 
 ## Author
 

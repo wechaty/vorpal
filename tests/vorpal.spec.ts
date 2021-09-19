@@ -106,8 +106,8 @@ test('hacker-news', async t => {
     const ret = await vorpal.exec('hacker-news --length 1', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.true(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
-    t.true(/Hacker News/i.test(fixture.moList[0]!.text()), 'should get the stdout with hacker news')
+    t.ok(/points/i.test(String(ret)), 'should include "points" form hacker news ret')
+    t.ok(/Hacker News/i.test(fixture.moList[0]!.text()), 'should get the stdout with hacker news')
   }
 })
 
@@ -126,7 +126,7 @@ test('Vorpal help command with options', async t => {
     await vorpal.exec('help foo', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.true(
+    t.ok(
       EXPECTED_RE.test(
         fixture.moList[0]!.text()
       ),
