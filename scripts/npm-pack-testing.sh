@@ -21,10 +21,9 @@ cd $TMPDIR
 
 npm init -y
 npm install --production ./*-*.*.*.tgz \
-  @chatie/tsconfig@$NPM_TAG \
+  @chatie/tsconfig@"$NPM_TAG" \
   pkg-jq \
-  "wechaty-puppet@$NPM_TAG" \
-  "wechaty@$NPM_TAG" \
+  wechaty@"$NPM_TAG" \
 
 #
 # CommonJS
