@@ -1,20 +1,15 @@
 /* eslint-disable sort-keys */
 import { EventEmitter } from 'events'
 
-import { Message }  from 'wechaty'
+import type { Message }  from 'wechaty'
 
-import * as utils from './utils/mod'
-import { ObsIo } from '../vorpal-io'
+import * as utils from './utils/mod.js'
+import type { ObsIo } from '../vorpal-io.js'
 
-import { Command }          from './command'
-import { CommandInstance }  from './command-instance'
-import { Session }          from './session'
-import { commons }          from './vorpal-commons'
-
-export type VorpalExtension = (
-  vorpal   : Vorpal,
-  options? : Object,
-) => void
+import { Command }          from './command.js'
+import { CommandInstance }  from './command-instance.js'
+import { Session }          from './session.js'
+import { commons }          from './vorpal-commons.js'
 
 interface VorpalMeta {
   version?    : string,
@@ -28,6 +23,12 @@ interface CommandXOptions {
   mode?    : boolean,
   default? : boolean,
 }
+
+type VorpalExtension = (
+  // eslint-disable-next-line
+  vorpal   : Vorpal,
+  options? : Object,
+) => void
 
 class Vorpal extends EventEmitter {
 
@@ -162,15 +163,18 @@ class Vorpal extends EventEmitter {
       for (const cmd of extension) {
         if (cmd.command) {
           const command = this.command(cmd.command)
+          // eslint-disable-next-line
           if (cmd.description) {
             command.description(cmd.description as any)
           }
+          // eslint-disable-next-line
           if (cmd.options) {
             cmd.options = Array.isArray(cmd.options) ? cmd.options : [cmd.options]
             for (let j = 0; j < cmd.options.length; ++j) {
               command.option((cmd.options[j] as any)[0], (cmd.options[j] as any)[1])
             }
           }
+          // eslint-disable-next-line
           if (cmd.action) {
             command.action(cmd.action as any)
           }
@@ -195,13 +199,12 @@ class Vorpal extends EventEmitter {
     desc?: string,
     opts: CommandXOptions = {},
   ): Command {
-    opts = opts || {}
     name = String(name)
 
     const args = name.match(/(\[[^\]]*\]|<[^>]*>)/g) || []
 
     const cmdNameRegExp = /^([^[<]*)/
-    const cmdName = cmdNameRegExp.exec(name)![0].trim()
+    const cmdName = cmdNameRegExp.exec(name)![0]!.trim()
 
     const cmd = new Command(cmdName, this)
 
@@ -215,7 +218,7 @@ class Vorpal extends EventEmitter {
 
     let exists = false
     for (let i = 0; i < this.commands.length; ++i) {
-      exists = this.commands[i]._name === cmd._name ? true : exists
+      exists = this.commands[i]!._name === cmd._name ? true : exists
       if (exists) {
         this.commands[i] = cmd
         break
@@ -357,7 +360,7 @@ class Vorpal extends EventEmitter {
       matchArgs,
       match,
       item,
-      self.isCommandArgKeyPairNormalized
+      self.isCommandArgKeyPairNormalized,
     )
 
     // If we get a string back, it's a validation error.
@@ -387,7 +390,7 @@ class Vorpal extends EventEmitter {
       }
       commandParts.args = (utils.buildCommandArgs(
         commandParts.args,
-        commandParts.command
+        commandParts.command,
       ) as unknown) as string
       if (typeof commandParts.args === 'string' || typeof commandParts.args !== 'object') {
         throwHelp(item, commandParts.args, commandParts.command)
@@ -403,14 +406,14 @@ class Vorpal extends EventEmitter {
     }
 
     // If `--help` or `/?` is passed, do help.
-    if (item.args.options.help && typeof match._help === 'function') {
+    if (item.args.options['help'] && typeof match._help === 'function') {
       // If the command has a custom help function, run it
       // as the actual "command". In this way it can go through
       // the whole cycle and expect a callback.
       item.fn = match._help as any
       delete item.validate
       delete item._cancel
-    } else if (item.args.options.help) {
+    } else if (item.args.options['help']) {
       // Otherwise, throw the standard help.
       throwHelp(item, '')
       // return callback(item)
@@ -628,7 +631,7 @@ class Vorpal extends EventEmitter {
       : '  Command Groups:\n\n' + groups.join('\n') + '\n'
 
     return String(
-      this._helpHeader(!!invalidString) + invalidString + commandsString + '\n' + groupsString
+      this._helpHeader(!!invalidString) + invalidString + commandsString + '\n' + groupsString,
     )
       .replace(/\n\n\n/g, '\n\n')
       .replace(/\n\n$/, '\n')
@@ -667,4 +670,7 @@ class Vorpal extends EventEmitter {
 
 }
 
+export type {
+  VorpalExtension,
+}
 export { Vorpal }

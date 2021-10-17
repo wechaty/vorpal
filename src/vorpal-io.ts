@@ -3,7 +3,6 @@ import {
   log,
   Wechaty,
 }                   from 'wechaty'
-import cuid         from 'cuid'
 
 import {
   Observable,
@@ -15,6 +14,7 @@ import {
 import {
   concatMap,
   delay,
+  // eslint-disable-next-line
 }                   from 'rxjs/operators'
 import {
   talkers,
@@ -22,8 +22,8 @@ import {
 }                   from 'wechaty-plugin-contrib'
 
 export interface ObsIo {
-  stdin: Observable<types.SayableMessage>
-  stdout: Subject<types.SayableMessage>
+  stdin: Observable<types.TalkerMessage>
+  stdout: Subject<types.TalkerMessage>
   stderr: Subject<string>
   message: Message,
   wechaty: Wechaty,
@@ -47,8 +47,8 @@ class VorpalIo {
     return new this(message)
   }
 
-  protected stdinSub?  : Subject<types.SayableMessage>
-  protected stdoutSub? : Subject<types.SayableMessage>
+  protected stdinSub?  : Subject<types.TalkerMessage>
+  protected stdoutSub? : Subject<types.TalkerMessage>
   protected stderrSub? : Subject<string>
 
   constructor (
@@ -100,11 +100,6 @@ class VorpalIo {
     const talker  = this.message.talker()
     const room    = this.message.room()
 
-    if (!talker) {
-      // FIXME(huan, 202007): I can not remember why the message.form() could be undefined ...
-      return cuid()
-    }
-
     let id
     if (room) {
       id = `${talker.id}@${room.id}`
@@ -125,7 +120,7 @@ class VorpalIo {
     }
   }
 
-  protected stdin (): Observable<types.SayableMessage> {
+  protected stdin (): Observable<types.TalkerMessage> {
     log.verbose('VorpalIo', 'stdin()')
 
     if (this.stdinSub) {
@@ -138,7 +133,7 @@ class VorpalIo {
 
     let vorpalMention: boolean
 
-    const sub = new Subject<types.SayableMessage>()
+    const sub = new Subject<types.TalkerMessage>()
 
     const onMessage = async (message: Message) => {
       log.verbose('VorpalIo', 'stdin() onMessage(%s)', message)
@@ -158,7 +153,7 @@ class VorpalIo {
       if (vorpalMention && !mention)  { return }
       if (!vorpalMention && mention)  { return }
 
-      const sayableMsg = await types.toSayableMessage(message)
+      const sayableMsg = await types.talkerMessageFrom(message)
       if (!sayableMsg)                { return }
 
       log.verbose('VorpalIo', 'stdin() onMessage() match', message)
@@ -190,14 +185,14 @@ class VorpalIo {
     return sub.asObservable()
   }
 
-  protected stdout (): Subject<types.SayableMessage> {
+  protected stdout (): Subject<types.TalkerMessage> {
     log.verbose('VorpalIo', 'stdout()')
 
     if (this.stdoutSub) {
       return this.stdoutSub
     }
 
-    const sub = new Subject<types.SayableMessage>()
+    const sub = new Subject<types.TalkerMessage>()
 
     this.stdoutSub = sub
     const onComplete = () => {
@@ -205,14 +200,15 @@ class VorpalIo {
       this.stdoutSub = undefined
     }
 
-    const onNext = async (msg: types.SayableMessage) => {
-      log.verbose('VorpalIo', 'stdout() next(%s)', msg)
+    const onNext = async (msg: types.TalkerMessage) => {
+      log.verbose('VorpalIo', 'stdout() onNext(%s)', msg)
 
       const talk = talkers.messageTalker(msg)
       try {
         await talk(this.message)
       } catch (e) {
-        log.error('VorpalIo', 'stdout() next() rejection: %s', e)
+        console.error(e)
+        log.error('VorpalIo', 'stdout() onNext() rejection: %s', e)
       }
     }
 
@@ -221,7 +217,7 @@ class VorpalIo {
       concatMap(item => concat(
         of(item),                 // emit first item right away
         EMPTY.pipe(delay(1000)),  // delay next item
-      ))
+      )),
     ).subscribe({
       complete: onComplete,
       next: onNext,
@@ -245,7 +241,7 @@ class VorpalIo {
       this.stderrSub = undefined
     }
 
-    const onNext = async (msg: types.SayableMessage) => {
+    const onNext = async (msg: types.TalkerMessage) => {
       log.verbose('VorpalIo', 'stderr() onNext(%s)', msg)
       const talker = talkers.messageTalker(msg)
       try {
@@ -260,7 +256,7 @@ class VorpalIo {
       concatMap(item => concat(
         of(item),                 // emit first item right away
         EMPTY.pipe(delay(1000)),  // delay next item
-      ))
+      )),
     ).subscribe({
       complete: onComplete,
       next: onNext,

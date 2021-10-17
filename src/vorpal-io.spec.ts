@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 
 import {
   test,
@@ -10,15 +10,15 @@ import {
   Observable,
 }               from 'rxjs'
 
-import { createFixture } from 'wechaty'
+import { createFixture } from 'wechaty-mocker'
 
 import {
   Vorpal,
   Action,
   CommandInstance,
-}                   from './vorpal/mod'
+}                   from './vorpal/mod.js'
 
-import { VorpalIo } from './vorpal-io'
+import { VorpalIo } from './vorpal-io.js'
 
 class VorpalIoTest extends VorpalIo {
 
@@ -30,14 +30,14 @@ class VorpalIoTest extends VorpalIo {
 
 test('VorpalIo smoke testing', async t => {
   for await (const fixture of createFixture()) {
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
     t.ok(io, 'should instantiate an instance of VorpalIo')
   }
 })
 
 test('VorpalIo obsio()', async t => {
   for await (const fixture of createFixture()) {
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
     const obsio = io.open()
 
     t.true(obsio.stderr instanceof Subject, 'should get stderr as Subject')
@@ -48,7 +48,7 @@ test('VorpalIo obsio()', async t => {
 
 test('VorpalIo busy()', async t => {
   for await (const fixture of createFixture()) {
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
     t.false(io.busy(), 'should not busy right after initializing from message')
 
     const obsio = io.open()
@@ -62,7 +62,7 @@ test('VorpalIo busy()', async t => {
 
 test('VorpalIo close()', async t => {
   for await (const fixture of createFixture()) {
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
 
     const obsio = io.open()
     void obsio
@@ -81,7 +81,7 @@ test('VorpalIo close()', async t => {
 
 test('VorpalIo obsio() stdout', async t => {
   for await (const fixture of createFixture()) {
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
     const obsio = io.open()
 
     const TEXT = 'hello'
@@ -89,14 +89,14 @@ test('VorpalIo obsio() stdout', async t => {
     obsio.stdout.next(TEXT)
     await new Promise(setImmediate)
 
-    t.deepEqual(fixture.moList[0].text(), TEXT, 'should pass stdout to wechaty')
+    t.same(fixture.moList[0]!.text(), TEXT, 'should pass stdout to wechaty')
   }
 })
 
 test('VorpalIo obsio() stderr', async t => {
   for await (const fixture of createFixture()) {
 
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
     const obsio = io.open()
 
     const TEXT = 'hello'
@@ -104,26 +104,26 @@ test('VorpalIo obsio() stderr', async t => {
     obsio.stderr.next(TEXT)
     await new Promise(setImmediate)
 
-    t.deepEqual(fixture.moList[0].text(), TEXT, 'should pass stderr to wechaty')
+    t.same(fixture.moList[0]!.text(), TEXT, 'should pass stderr to wechaty')
   }
 })
 
 test('VorpalIo obsio() stdin', async t => {
   for await (const fixture of createFixture()) {
-    // console.info('fixture.message.id:', fixture.message.id)
+    // console.info('fixture.wechaty.message.id:', fixture.wechaty.message.id)
 
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
     const obsio = io.open()
 
     const spy = sinon.spy()
     obsio.stdin.subscribe(spy)
 
     const TEXT = 'hello, world!'
-    fixture.player.say(TEXT).to(fixture.bot)
+    fixture.mocker.player.say(TEXT).to(fixture.mocker.bot)
     await new Promise(setImmediate)
 
     t.true(spy.called, 'should call say when stdin got something')
-    t.equal(spy.args[0][0], TEXT, 'should get message from subscribe')
+    t.equal(spy.args[0]![0], TEXT, 'should get message from subscribe')
   }
 })
 
@@ -151,13 +151,13 @@ test('obsio for known command', async t => {
     .action(fooAction)
 
   for await (const fixture of createFixture()) {
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     const ret = await vorpal.exec('foo', undefined, io.open())
     await new Promise(setImmediate)
 
     t.equal(ret, EXPECTED_RET, 'should return ' + EXPECTED_RET)
-    t.deepEqual(fixture.moList[0].text(), EXPECTED_TEXT, 'should get the expected stdout')
+    t.same(fixture.moList[0]!.text(), EXPECTED_TEXT, 'should get the expected stdout')
   }
 })
 
@@ -165,13 +165,13 @@ test('obsio for unknown command', async t => {
   const vorpal = new Vorpal()
 
   for await (const fixture of createFixture()) {
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     const ret = await vorpal.exec('unknown_command', undefined, io.open())
     await new Promise(setImmediate)
 
     t.equal(ret, 1, 'should return 1 for unknown command')
-    t.deepEqual(fixture.moList[0].text(), 'Invalid command', 'should get the expected invalid command message')
+    t.same(fixture.moList[0]!.text(), 'Invalid command', 'should get the expected invalid command message')
   }
 })
 
@@ -179,7 +179,7 @@ test('obsio with command instance', async t => {
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     const TEXT = 'test'
     const RET = 42
@@ -195,7 +195,7 @@ test('obsio with command instance', async t => {
     await new Promise(setImmediate)
 
     t.equal(ret, RET, 'should return ' + RET + ' for test command')
-    t.deepEqual(fixture.moList[0].text(), TEXT, 'should get the expected TEXT message')
+    t.same(fixture.moList[0]!.text(), TEXT, 'should get the expected TEXT message')
 
     io.close()
   }
@@ -205,7 +205,7 @@ test('obsio with command instance return undefined', async t => {
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     vorpal.command('test')
       .action(async function action () {})
@@ -224,7 +224,7 @@ test('obsio with message', async t => {
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
-    const io = VorpalIo.from(fixture.message)
+    const io = VorpalIo.from(fixture.wechaty.message)
 
     let message
 
@@ -236,7 +236,7 @@ test('obsio with message', async t => {
     await vorpal.exec('test', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.equal(message, fixture.message, 'should return get the message from command instance')
+    t.equal(message, fixture.wechaty.message, 'should return get the message from command instance')
 
     io.close()
   }
@@ -244,25 +244,25 @@ test('obsio with message', async t => {
 
 test('io.open() listener cleanup', async t => {
   for await (const fixture of createFixture()) {
-    const NUM = fixture.wechaty.listenerCount('message')
+    const NUM = fixture.wechaty.wechaty.listenerCount('message')
 
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
     t.equal(
-      fixture.wechaty.listenerCount('message'),
+      fixture.wechaty.wechaty.listenerCount('message'),
       NUM,
       'should not add listener on message after instantiated VorpalIo: ' + NUM,
     )
 
     io.open()
     t.equal(
-      fixture.wechaty.listenerCount('message'),
+      fixture.wechaty.wechaty.listenerCount('message'),
       NUM + 1,
       'should be 1 more listener on message after io.open()',
     )
 
     io.close()
     t.equal(
-      fixture.wechaty.listenerCount('message'),
+      fixture.wechaty.wechaty.listenerCount('message'),
       NUM,
       'should clean the listener on message after io.clos()',
     )

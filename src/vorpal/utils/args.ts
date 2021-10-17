@@ -1,14 +1,15 @@
-import { clone, isObject, isUndefined } from 'lodash'
-import Session from '../session'
+import lodash from 'lodash'
+import minimist   from 'minimist'
 
-import { Command } from '../command'
-import {
+import type Session from '../session.js'
+
+import type { Command } from '../command.js'
+import type {
   Args,
   CommandInstance,
-}                   from '../command-instance'
+}                   from '../command-instance.js'
 
-import minimist from 'minimist'
-import { ObsIo } from '../../vorpal-io'
+import type { ObsIo } from '../../vorpal-io.js'
 
 export type ArgTypes = {
   [P in 'string' | 'boolean']: unknown
@@ -21,6 +22,11 @@ type CLIArgs = minimist.ParsedArgs & {
 const PAIR_NORMALIZE_PATTERN = /(['"]?)(\w+)=(?:(['"])((?:(?!\3).)*)\3|(\S+))\1/g
 const MAX_ARGS = 10
 const ARGS_PATTERN = /"(.*?)"|'(.*?)'|`(.*?)`|([^\s"]+)/gi
+
+type ModeOptions = {
+  message?: string
+  sessionId?: string
+}
 
 export type CommandExecutionItem = {
   args?: string | Args // From buildCommandArgs()
@@ -37,28 +43,24 @@ export type CommandExecutionItem = {
   obsio?: ObsIo
 };
 
-type ModeOptions = {
-  message?: string;
-  sessionId?: string;
-};
-
 /**
  * Parses command arguments from multiple sources.
  */
 export function parseArgs (input: string, opts?: Record<string, any>): CLIArgs {
-  const args = []
+  const args: string[] = []
   let match
 
   do {
     match = ARGS_PATTERN.exec(input)
 
     if (match !== null) {
-      args.push(match[1] || match[2] || match[3] || match[4])
+      // Huan(202110): FIXME: remove the trailing ''
+      args.push(match[1] || match[2] || match[3] || match[4] || '')
     }
   } while (match !== null)
 
   const parsedArgs = minimist(args, opts)
-  parsedArgs._ = parsedArgs._ || []
+  // parsedArgs._ = parsedArgs._ || []
 
   return parsedArgs
 }
@@ -67,7 +69,7 @@ export function buildCommandArgs (
   passedArgs: string,
   command: Command,
   execCommand?: CommandExecutionItem,
-  isCommandArgKeyPairNormalized = false
+  isCommandArgKeyPairNormalized = false,
 ): Args | string {
   const args = { options: {} } as Args
 
@@ -108,7 +110,7 @@ export function buildCommandArgs (
 
   // Use minimist to parse the args, and then build varidiac args and options.
   const parsedArgs = parseArgs(passedArgs, types)
-  const remainingArgs = clone(parsedArgs._)
+  const remainingArgs = lodash.clone(parsedArgs._)
 
   // Builds varidiac args and options.
   for (let l = 0; l < MAX_ARGS; l += 1) {
@@ -117,7 +119,7 @@ export function buildCommandArgs (
 
     if (matchArg) {
       // Can be a falsy value
-      if (!isUndefined(passedArg)) {
+      if (!lodash.isUndefined(passedArg)) {
         if (matchArg.variadic) {
           args[matchArg.name] = remainingArgs
         } else {
@@ -136,13 +138,13 @@ export function buildCommandArgs (
     const long = String(option.long || '')
       .replace(/--no-/g, '')
       .replace(/^-*/g, '')
-    const exists = !isUndefined(parsedArgs[long]) ? parsedArgs[long] : parsedArgs[short]
+    const exists = !lodash.isUndefined(parsedArgs[long]) ? parsedArgs[long] : parsedArgs[short]
     const existsNotSet = exists === true || exists === false
 
     if (existsNotSet && option.required !== 0) {
       return `\n  Missing required value for option ${option.long || option.short}. Showing Help:`
     }
-    if (!isUndefined(exists)) {
+    if (!lodash.isUndefined(exists)) {
       args.options[long || short] = exists
     }
   }
@@ -156,7 +158,7 @@ export function buildCommandArgs (
       expected =>
         `--${option}` === expected.long
         || `--no-${option}` === expected.long
-        || `-${option}` === expected.short
+        || `-${option}` === expected.short,
     )
     if (!optionFound) {
       if (command._allowUnknownOptions) {
@@ -168,13 +170,13 @@ export function buildCommandArgs (
   }
 
   // If args were passed into the programmatic `Vorpal#exec`, merge them here.
-  if (execCommand && execCommand.args && isObject(execCommand.args)) {
+  if (execCommand && execCommand.args && lodash.isObject(execCommand.args)) {
     Object.assign(args, execCommand.args)
   }
 
   // Looks for a help arg and throws help if any.
-  if (parsedArgs.help || parsedArgs._.includes('/?')) {
-    args.options.help = true
+  if (parsedArgs['help'] || parsedArgs._.includes('/?')) {
+    args.options['help'] = true
   }
 
   return args

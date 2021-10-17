@@ -9,8 +9,8 @@ import {
 }                   from 'wechaty-plugin-contrib'
 import {
   Vorpal,
-}                   from './vorpal/mod'
-import { VorpalIo } from './vorpal-io'
+}                   from './vorpal/mod.js'
+import { VorpalIo } from './vorpal-io.js'
 
 type VorpalExtensionFunction = (vorpal: Vorpal, options: any) => void
 type VorpalExtension = string | VorpalExtensionFunction
@@ -57,16 +57,16 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   }
 
   const matchConfig = async (message: Message): Promise<boolean> => {
-    const room = message.room()
-    const from = message.from()
+    const room    = message.room()
+    const talker  = message.talker()
 
     if (room) {
       if (!await matchRoom(room))                 { return false }
       const atSelf = await message.mentionSelf()
       if (config.at && !atSelf)                   { return false }
-    } else if (from) {
-      if (!await matchContact(from))              { return false }
-    } else                                        { return false }
+    } else {
+      if (!await matchContact(talker))            { return false }
+    }
 
     return true
   }

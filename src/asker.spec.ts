@@ -1,13 +1,15 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 
 import {
   test,
 }          from 'tstest'
 
 import {
-  createFixture,
   Wechaty,
 }                     from 'wechaty'
+import {
+  createFixture,
+}                     from 'wechaty-mocker'
 
 import {
   PuppetMock,
@@ -17,11 +19,11 @@ import {
 import {
   Vorpal,
   CommandInstance,
-}                   from './vorpal/mod'
+}                   from './vorpal/mod.js'
 
-import { VorpalIo } from './vorpal-io'
+import { VorpalIo } from './vorpal-io.js'
 
-import { WechatyVorpal } from './wechaty-vorpal'
+import { WechatyVorpal } from './wechaty-vorpal.js'
 
 class VorpalIoTest extends VorpalIo {
 
@@ -35,7 +37,7 @@ test('ask()', async t => {
   for await (const fixture of createFixture()) {
     const vorpal = new Vorpal()
 
-    const io = new VorpalIoTest(fixture.message)
+    const io = new VorpalIoTest(fixture.wechaty.message)
 
     const QUESTION = 'how are you?'
     const ANSWER   = 'fine, thank you.'
@@ -53,7 +55,7 @@ test('ask()', async t => {
     const future = vorpal.exec('ask', undefined, io.open())
     await new Promise(setImmediate)
 
-    t.deepEqual(fixture.moList[0].text(), QUESTION, 'should send QUESTION to fixture')
+    t.same(fixture.moList[0]!.text(), QUESTION, 'should send QUESTION to fixture')
 
     io.getStdinSub()!.next(ANSWER)
     await future  // execute the ask

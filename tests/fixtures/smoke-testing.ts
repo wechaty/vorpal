@@ -1,9 +1,14 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env -S node --no-warnings --loader ts-node/esm
 import {
   VERSION,
+  WechatyVorpal,
 }                       from 'wechaty-vorpal'
 
 async function main () {
+  if (typeof WechatyVorpal !== 'function') {
+    throw new Error('WechatyVorpal should be function')
+  }
+
   if (VERSION === '0.0.0') {
     throw new Error('version should be set before publishing')
   }

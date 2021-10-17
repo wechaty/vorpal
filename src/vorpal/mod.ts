@@ -1,8 +1,10 @@
-export { Vorpal }   from './vorpal'
-export {
+export { Vorpal }   from './vorpal.js'
+export type {
   Action,
-}                   from './types'
+}                   from './types.js'
 export {
   CommandInstance,
+}                   from './command-instance.js'
+export type {
   Args,
-}                   from './command-instance'
+}                   from './command-instance.js'

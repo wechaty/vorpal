@@ -3,13 +3,17 @@ export {
   Wechaty,
 }             from 'wechaty'
 
-export { VERSION }        from './version'
+export { VERSION }        from './version.js'
 export {
   Vorpal,
   CommandInstance,
+}                         from './vorpal/mod.js'
+export type {
   Args,
-}                         from './vorpal/mod'
+}                         from './vorpal/mod.js'
 export {
-  WechatyVorpalConfig,
   WechatyVorpal,
-}                         from './wechaty-vorpal'
+}                         from './wechaty-vorpal.js'
+export type {
+  WechatyVorpalConfig,
+}                         from './wechaty-vorpal.js'

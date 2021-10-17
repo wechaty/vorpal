@@ -2,11 +2,11 @@
 import { EventEmitter } from 'events'
 import stripAnsi    from 'strip-ansi'
 
-import * as utils from './utils/mod'
+import type * as utils from './utils/mod.js'
 
-import { CommandInstance } from './command-instance'
-import { Vorpal } from './vorpal'
-import { ObsIo } from '../vorpal-io'
+import { CommandInstance } from './command-instance.js'
+import type { Vorpal } from './vorpal.js'
+import type { ObsIo } from '../vorpal-io.js'
 
 interface CommandResponse {
   error?: Error;
@@ -139,7 +139,7 @@ export class Session extends EventEmitter {
         let stack
         if (data && data.stack) {
           stack = data.stack
-        } else if (err && err.stack) {
+        } else if (err.stack) {
           stack = err.stack
         } else {
           stack = err
@@ -184,7 +184,7 @@ export class Session extends EventEmitter {
     }
 
     if (wrapper.args && typeof wrapper.args === 'object') {
-      wrapper.args.rawCommand = wrapper.command!
+      wrapper.args['rawCommand'] = wrapper.command!
     }
 
     // Call the root command.

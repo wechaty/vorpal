@@ -1,21 +1,20 @@
-import {
+import type {
   Message,
   Wechaty,
 }             from 'wechaty'
-import {
+import type {
   types,
 }             from 'wechaty-plugin-contrib'
 
-import { Command } from './command'
-import { Session } from './session'
-import { Observable, Subject } from 'rxjs'
+import type { Command } from './command.js'
+import type { Session } from './session.js'
+import type {
+  Observable,
+  Subject,
+}                 from 'rxjs'
 
-import { ObsIo }  from '../vorpal-io'
-import { asker }  from '../asker'
-
-export type Args = {
-  [arg: string]: string | string[]
-} & ArgsOptions
+import type { ObsIo }  from '../vorpal-io.js'
+import { asker }  from '../asker.js'
 
 interface ArgsOptions {
   options: {
@@ -23,12 +22,17 @@ interface ArgsOptions {
   }
 }
 
+export type Args = {
+  [arg: string]: string | string[]
+} & ArgsOptions
+
 interface CommandInstanceOptions {
   commandWrapper?: any
   args?: Args
   commandObject?: Command
   command?: any
   callback?: any
+  // eslint-disable-next-line
   downstream?: CommandInstance
   obsio?: ObsIo
 }
@@ -47,8 +51,8 @@ export class CommandInstance {
   protected obsio?: ObsIo
   public _ask?: ReturnType<typeof asker>
 
-  get stdin ()   : Observable<types.SayableMessage> { return this.obsio!.stdin    }
-  get stdout ()  : Subject<types.SayableMessage>    { return this.obsio!.stdout   }
+  get stdin ()   : Observable<types.TalkerMessage> { return this.obsio!.stdin    }
+  get stdout ()  : Subject<types.TalkerMessage>    { return this.obsio!.stdout   }
   get stderr ()  : Subject<string>                  { return this.obsio!.stderr   }
   get message () : Message                          { return this.obsio!.message  }
   get wechaty () : Wechaty                          { return this.obsio!.message.wechaty }
@@ -92,7 +96,7 @@ export class CommandInstance {
     if (this.downstream) {
       const fn = this.downstream.commandObject._fn || (() => {})
       this.session.registerCommand()
-      this.downstream.args!.stdin = args
+      this.downstream.args!['stdin'] = args
       const onComplete = (err?: Error) => {
         if (err) {
           this.session.log(String(err.stack || err))
@@ -110,7 +114,7 @@ export class CommandInstance {
           validate.call(this.downstream, this.downstream.args)
         } catch (e) {
           // Log error without piping to downstream on validation error.
-          this.session.log(e.toString())
+          this.session.log((e as any).toString())
           onComplete()
           return
         }

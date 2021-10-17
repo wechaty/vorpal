@@ -1,17 +1,17 @@
 import { EventEmitter } from 'events'
-import { camelCase } from 'lodash'
+import lodash from 'lodash'
 
 import {
   humanReadableArgName,
   pad,
-}                       from './utils/mod'
+}                       from './utils/mod.js'
 
-import { Option } from './option'
-import { Vorpal } from './vorpal'
-import {
+import { Option } from './option.js'
+import type { Vorpal } from './vorpal.js'
+import type {
   Action,
-}                 from './types'
-import { Args } from './command-instance'
+}                 from './types.js'
+import type { Args } from './command-instance.js'
 
 export interface Arg {
   required: boolean
@@ -83,7 +83,7 @@ export class Command extends EventEmitter {
   public option (flags: string, description: string): Command {
     const option = new Option(flags, description)
     const optionName = option.name()
-    const name = camelCase(optionName)
+    const name = lodash.camelCase(optionName)
     let defaultValue: any
 
     // preassign default value only for --no-*, [optional], or <required>

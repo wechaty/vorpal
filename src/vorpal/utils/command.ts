@@ -1,9 +1,9 @@
 /* eslint-disable sort-keys */
-import {
+import type {
   MatchParts,
   ParsedCommand,
-}                   from '../types'
-import { Command }  from '../command'
+}                   from '../types.js'
+import type { Command }  from '../command.js'
 
 /**
  * Run a raw command string, e.g. foo -bar against a given list of commands,
@@ -11,7 +11,7 @@ import { Command }  from '../command'
  */
 export function matchCommand (
   commandName: string,
-  commands: Command[] = []
+  commands: Command[] = [],
 ): MatchParts<string> {
   const parts = String(commandName)
     .trim()
@@ -67,6 +67,8 @@ export function matchCommand (
         return false
       })
 
+      // Huan(202110): FIXME: remove the eslint-disable
+      // eslint-disable-next-line
       if (wordMatch) {
         match = undefined
       } else {
@@ -138,7 +140,8 @@ export function parseCommand (command: string, commands: Command[] = []): Parsed
       // Loop through each individual character in the possible pipe
       // tracking the opening and closing of quotes.
       for (let i = 0; i < possiblePipe.length; i += 1) {
-        const char = possiblePipe[i]
+        // Huan(202110): remove the tailing ''
+        const char = possiblePipe[i] || ''
 
         if (includeQuotaChar(char)) {
           quoteTracker[char] = !quoteTracker[char]
