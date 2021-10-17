@@ -3,6 +3,7 @@ import type { types }  from 'wechaty-plugin-contrib'
 import {
   take,
   mapTo,
+  // eslint-disable-next-line
 }                from 'rxjs/operators'
 import {
   timer,
@@ -25,7 +26,7 @@ function asker (io: ObsIo) {
   return async function ask (
     question: string,
     options: AskOptions = {},
-  ): Promise<types.SayableMessage> {
+  ): Promise<types.TalkerMessage> {
     log.verbose('WechatyVorpal', 'ask(%s, %s)', question, JSON.stringify(options))
 
     const normalizedOptions = {
@@ -54,7 +55,7 @@ function asker (io: ObsIo) {
         */
       timer(timeout * 1000).pipe(
         mapTo(options.default),
-      )
+      ),
     ).pipe(take(1)).toPromise()
 
     // console.info('answer:', answer)

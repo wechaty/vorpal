@@ -64,7 +64,7 @@ export function parseArgs (input: string, opts?: Record<string, any>): CLIArgs {
   } while (match !== null)
 
   const parsedArgs = minimist(args, opts)
-  parsedArgs._ = parsedArgs._ || []
+  // parsedArgs._ = parsedArgs._ || []
 
   return parsedArgs
 }
@@ -73,7 +73,7 @@ export function buildCommandArgs (
   passedArgs: string,
   command: Command,
   execCommand?: CommandExecutionItem,
-  isCommandArgKeyPairNormalized = false
+  isCommandArgKeyPairNormalized = false,
 ): Args | string {
   const args = { options: {} } as Args
 
@@ -162,7 +162,7 @@ export function buildCommandArgs (
       expected =>
         `--${option}` === expected.long
         || `--no-${option}` === expected.long
-        || `-${option}` === expected.short
+        || `-${option}` === expected.short,
     )
     if (!optionFound) {
       if (command._allowUnknownOptions) {

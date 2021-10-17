@@ -64,16 +64,16 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
   }
 
   const matchConfig = async (message: Message): Promise<boolean> => {
-    const room = message.room()
-    const from = message.talker()
+    const room    = message.room()
+    const talker  = message.talker()
 
     if (room) {
       if (!await matchRoom(room))                 { return false }
       const mentionSelf = await message.mentionSelf()
       if (config.mention && !mentionSelf)         { return false }
-    } else if (from) {
-      if (!await matchContact(from))              { return false }
-    } else                                        { return false }
+    } else {
+      if (!await matchContact(talker))              { return false }
+    }
 
     return true
   }

@@ -6,10 +6,10 @@ import {
   createFixture,
 }                   from 'wechaty-mocker'
 
-import '../src/config.js'
 import vorpalHackerNews from 'vorpal-hacker-news'
-
 import inGfw from 'in-gfw'
+
+import '../src/config.js'
 
 import {
   Action,
@@ -128,7 +128,7 @@ test('Vorpal help command with options', async t => {
 
     t.ok(
       EXPECTED_RE.test(
-        fixture.moList[0]!.text()
+        fixture.moList[0]!.text(),
       ),
       'should get the help stdout with options message',
     )

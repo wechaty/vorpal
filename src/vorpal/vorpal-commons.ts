@@ -22,7 +22,7 @@ function commons (vorpal: Vorpal) {
       if (args['command']) {
         args['command'] = (args['command'] as any).join(' ')
         const commandWithName = this.parent.commands.find(
-          (command: any) => command._name === String(args['command']).trim()
+          (command: any) => command._name === String(args['command']).trim(),
         )
         if (commandWithName && !commandWithName._hidden) {
           if (typeof commandWithName._help === 'function') {

@@ -165,15 +165,18 @@ class Vorpal extends EventEmitter {
       for (const cmd of extension) {
         if (cmd.command) {
           const command = this.command(cmd.command)
+          // eslint-disable-next-line
           if (cmd.description) {
             command.description(cmd.description as any)
           }
+          // eslint-disable-next-line
           if (cmd.options) {
             cmd.options = Array.isArray(cmd.options) ? cmd.options : [cmd.options]
             for (let j = 0; j < cmd.options.length; ++j) {
               command.option((cmd.options[j] as any)[0], (cmd.options[j] as any)[1])
             }
           }
+          // eslint-disable-next-line
           if (cmd.action) {
             command.action(cmd.action as any)
           }
@@ -198,7 +201,7 @@ class Vorpal extends EventEmitter {
     desc?: string,
     opts: CommandXOptions = {},
   ): Command {
-    opts = opts || {}
+    // opts = opts || {}
     name = String(name)
 
     const args = name.match(/(\[[^\]]*\]|<[^>]*>)/g) || []
@@ -364,7 +367,7 @@ class Vorpal extends EventEmitter {
       matchArgs,
       match,
       item,
-      self.isCommandArgKeyPairNormalized
+      self.isCommandArgKeyPairNormalized,
     )
 
     // If we get a string back, it's a validation error.
@@ -394,7 +397,7 @@ class Vorpal extends EventEmitter {
       }
       commandParts.args = (utils.buildCommandArgs(
         commandParts.args,
-        commandParts.command
+        commandParts.command,
       ) as unknown) as string
       if (typeof commandParts.args === 'string' || typeof commandParts.args !== 'object') {
         throwHelp(item, commandParts.args, commandParts.command)
@@ -635,7 +638,7 @@ class Vorpal extends EventEmitter {
       : '  Command Groups:\n\n' + groups.join('\n') + '\n'
 
     return String(
-      this._helpHeader(!!invalidString) + invalidString + commandsString + '\n' + groupsString
+      this._helpHeader(!!invalidString) + invalidString + commandsString + '\n' + groupsString,
     )
       .replace(/\n\n\n/g, '\n\n')
       .replace(/\n\n$/, '\n')

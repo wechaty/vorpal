@@ -140,7 +140,7 @@ export class Session extends EventEmitter {
         let stack
         if (data && data.stack) {
           stack = data.stack
-        } else if (err && err.stack) {
+        } else if (err.stack) {
           stack = err.stack
         } else {
           stack = err

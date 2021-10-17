@@ -11,7 +11,7 @@ import type { Command }  from '../command.js'
  */
 export function matchCommand (
   commandName: string,
-  commands: Command[] = []
+  commands: Command[] = [],
 ): MatchParts<string> {
   const parts = String(commandName)
     .trim()
@@ -67,6 +67,8 @@ export function matchCommand (
         return false
       })
 
+      // Huan(202110): FIXME: remove eslint-disable
+      // eslint-disable-next-line
       if (wordMatch) {
         match = undefined
       } else {

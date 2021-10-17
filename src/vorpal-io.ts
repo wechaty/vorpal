@@ -14,8 +14,8 @@ import {
 }                   from 'wechaty-plugin-contrib'
 
 export interface ObsIo {
-  stdin   : Observable<types.SayableMessage>
-  stdout  : Subject<types.SayableMessage>
+  stdin   : Observable<types.TalkerMessage>
+  stdout  : Subject<types.TalkerMessage>
   stderr  : Subject<string>
   message : Message,
   wechaty : Wechaty,
@@ -29,8 +29,8 @@ class VorpalIo {
     return new this(message)
   }
 
-  protected stdinSub?  : Subject<types.SayableMessage>
-  protected stdoutSub? : Subject<types.SayableMessage>
+  protected stdinSub?  : Subject<types.TalkerMessage>
+  protected stdoutSub? : Subject<types.TalkerMessage>
   protected stderrSub? : Subject<string>
 
   protected readonly id: string
@@ -108,7 +108,7 @@ class VorpalIo {
     }
   }
 
-  protected stdin (): Observable<types.SayableMessage> {
+  protected stdin (): Observable<types.TalkerMessage> {
     log.verbose('VorpalIo', 'stdin()')
 
     if (this.stdinSub) {
@@ -121,7 +121,7 @@ class VorpalIo {
     // const vorpalMessage = this.message
     // let vorpalMention: boolean
 
-    const sub = new Subject<types.SayableMessage>()
+    const sub = new Subject<types.TalkerMessage>()
 
     const onMessage = async (message: Message) => {
       log.verbose('VorpalIo', 'stdin() onMessage(%s)', message)
@@ -141,7 +141,7 @@ class VorpalIo {
       // if (vorpalMention && !mention)  { return }
       // if (!vorpalMention && mention)  { return }
 
-      const sayableMsg = await types.toSayableMessage(message)
+      const sayableMsg = await types.talkerMessageFrom(message)
       if (!sayableMsg)                { return }
 
       log.verbose('VorpalIo', 'stdin() onMessage() match', message)
@@ -178,14 +178,14 @@ class VorpalIo {
     return sub.asObservable()
   }
 
-  protected stdout (): Subject<types.SayableMessage> {
+  protected stdout (): Subject<types.TalkerMessage> {
     log.verbose('VorpalIo', 'stdout()')
 
     if (this.stdoutSub) {
       return this.stdoutSub
     }
 
-    const sub = new Subject<types.SayableMessage>()
+    const sub = new Subject<types.TalkerMessage>()
 
     this.stdoutSub = sub
     const onComplete = () => {
@@ -193,7 +193,7 @@ class VorpalIo {
       this.stdoutSub = undefined
     }
 
-    const onNext = async (msg: types.SayableMessage) => {
+    const onNext = async (msg: types.TalkerMessage) => {
       log.verbose('VorpalIo', 'stdout() next(%s)', msg)
 
       const talk = talkers.messageTalker(msg)
@@ -233,7 +233,7 @@ class VorpalIo {
       this.stderrSub = undefined
     }
 
-    const onNext = async (msg: types.SayableMessage) => {
+    const onNext = async (msg: types.TalkerMessage) => {
       log.verbose('VorpalIo', 'stderr() onNext(%s)', msg)
       const talk = talkers.messageTalker(msg)
       try {

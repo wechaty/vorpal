@@ -49,8 +49,8 @@ export class CommandContext {
   protected obsio?: ObsIo
   public _ask?: ReturnType<typeof asker>
 
-  get stdin ()   : Observable<types.SayableMessage> { return this.obsio!.stdin    }
-  get stdout ()  : Subject<types.SayableMessage>    { return this.obsio!.stdout   }
+  get stdin ()   : Observable<types.TalkerMessage>  { return this.obsio!.stdin    }
+  get stdout ()  : Subject<types.TalkerMessage>     { return this.obsio!.stdout   }
   get stderr ()  : Subject<string>                  { return this.obsio!.stderr   }
   get message () : Message                          { return this.obsio!.message  }
   get wechaty () : Wechaty                          { return this.obsio!.message.wechaty }
