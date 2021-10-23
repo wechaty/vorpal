@@ -96,9 +96,11 @@ Pulling top 3 stories on Hacker News:
 
 ## History
 
-### main v0.7 (Sep 19, 2021)
+### main v1.0 (Oct 23, 2021)
 
-1. ES MOdule support
+Release 1.0
+
+1. v0.7 (Sep 19, 2021): ES MOdule support
 
 ### v0.6 (July 13, 2020)
 
