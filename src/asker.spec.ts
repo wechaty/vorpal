@@ -6,7 +6,7 @@ import {
 }          from 'tstest'
 
 import {
-  Wechaty,
+  WechatyBuilder,
 }                     from 'wechaty'
 
 import {
@@ -97,7 +97,7 @@ test('asker() with mocker', async t => {
    */
   const mocker = new mock.Mocker()
   const puppet = new PuppetMock({ mocker })
-  const wechaty = new Wechaty({ puppet })
+  const wechaty = new WechatyBuilder().options({ puppet }).build()
 
   wechaty.use(WechatyVorpalPlugin)
   await wechaty.start()

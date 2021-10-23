@@ -1,8 +1,3 @@
-import {
-  log,
-  Wechaty,
-}             from 'wechaty'
-
 import { VERSION }        from './config.js'
 import {
   Vorpal,
@@ -24,9 +19,7 @@ export type {
   WechatyVorpalConfig,
 }
 export {
-  log,
   VERSION,
   Vorpal,
-  Wechaty,
   WechatyVorpal,
 }
