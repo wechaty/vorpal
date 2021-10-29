@@ -1,6 +1,6 @@
 {
   "name": "wechaty-vorpal",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.",
   "type": "module",
   "exports": {
