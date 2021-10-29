@@ -11,7 +11,7 @@
   },
   "typings": "./dist/esm/src/mod.d.ts",
   "engines": {
-    "wechaty": ">=0.77",
+    "wechaty": ">=1.0",
     "node": ">=16",
     "npm": ">=7"
   },
@@ -53,23 +53,18 @@
     "@chatie/tsconfig": "^0.20.6",
     "@types/lodash": "^4.14.175",
     "@types/minimist": "^1.2.2",
-    "cross-env": "^7.0.3",
     "in-gfw": "^1.2.0",
-    "npm-run-all": "^4.1.5",
-    "pkg-jq": "^0.2.11",
-    "shx": "^0.3.3",
     "tstest": "^0.7.3",
-    "typescript": "^4.4.4",
     "vorpal-hacker-news": "^1.0.6",
-    "wechaty": "^0.77.20",
+    "wechaty": "^1.0.3",
     "wechaty-mocker": "^1",
-    "wechaty-puppet-mock": "^0.35.8"
+    "wechaty-puppet-mock": "^1"
   },
   "dependencies": {
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "strip-ansi": "^6.0",
-    "wechaty-plugin-contrib": "^1.0.9"
+    "wechaty-plugin-contrib": "^1"
   },
   "files": [
     "bin/",

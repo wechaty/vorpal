@@ -4,9 +4,7 @@ import {
   Message,
   log,
 }                   from 'wechaty'
-import {
-  MessageType,
-}                   from 'wechaty-puppet'
+import * as PUPPET  from 'wechaty-puppet'
 import {
   matchers,
 }                   from 'wechaty-plugin-contrib'
@@ -61,7 +59,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
   const matchPlugin = (message: Message): boolean => {
     if (message.self())                       { return false }
-    if (message.type() !== MessageType.Text) { return false }
+    if (message.type() !== PUPPET.type.Message.Text) { return false }
 
     return true
   }
