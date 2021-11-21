@@ -3,6 +3,6 @@ const rules = {
 }
 
 module.exports = {
-  extends: '@chatie',
+  extends: '@chatie/eslint-config',
   rules,
 }

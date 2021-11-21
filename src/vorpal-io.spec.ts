@@ -19,6 +19,7 @@ import {
 }                   from './vorpal/mod.js'
 
 import { VorpalIo } from './vorpal-io.js'
+import type { WechatyImpl } from 'wechaty/impls'
 
 class VorpalIoTest extends VorpalIo {
 
@@ -244,25 +245,25 @@ test('obsio with message', async t => {
 
 test('io.open() listener cleanup', async t => {
   for await (const fixture of createFixture()) {
-    const NUM = fixture.wechaty.wechaty.listenerCount('message')
+    const NUM = (fixture.wechaty.wechaty as WechatyImpl).listenerCount('message')
 
     const io = new VorpalIoTest(fixture.wechaty.message)
     t.equal(
-      fixture.wechaty.wechaty.listenerCount('message'),
+      (fixture.wechaty.wechaty as WechatyImpl).listenerCount('message'),
       NUM,
       'should not add listener on message after instantiated VorpalIo: ' + NUM,
     )
 
     io.open()
     t.equal(
-      fixture.wechaty.wechaty.listenerCount('message'),
+      (fixture.wechaty.wechaty as WechatyImpl).listenerCount('message'),
       NUM + 1,
       'should be 1 more listener on message after io.open()',
     )
 
     io.close()
     t.equal(
-      fixture.wechaty.wechaty.listenerCount('message'),
+      (fixture.wechaty.wechaty as WechatyImpl).listenerCount('message'),
       NUM,
       'should clean the listener on message after io.clos()',
     )

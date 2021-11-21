@@ -1,6 +1,6 @@
 {
   "name": "wechaty-vorpal",
-  "version": "1.0.5",
+  "version": "1.10.0",
   "description": "Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.",
   "type": "module",
   "exports": {
@@ -11,7 +11,6 @@
   },
   "typings": "./dist/esm/src/mod.d.ts",
   "engines": {
-    "wechaty": ">=1.0",
     "node": ">=16",
     "npm": ">=7"
   },
@@ -47,24 +46,24 @@
   },
   "homepage": "https://github.com/wechaty/wechaty-vorpal#readme",
   "devDependencies": {
-    "@chatie/eslint-config": "^0.16.2",
+    "@chatie/eslint-config": "^1.0.4",
     "@chatie/git-scripts": "^0.6.2",
     "@chatie/semver": "^0.4.7",
-    "@chatie/tsconfig": "^0.20.6",
-    "@types/lodash": "^4.14.175",
+    "@chatie/tsconfig": "^4.5.3",
+    "@types/lodash": "^4.14.177",
     "@types/minimist": "^1.2.2",
     "in-gfw": "^1.2.0",
-    "tstest": "^0.7.3",
+    "tstest": "^1.0.1",
     "vorpal-hacker-news": "^1.0.6",
-    "wechaty": "^1.0.3",
+    "wechaty": "^1.10.3",
     "wechaty-mocker": "^1",
-    "wechaty-puppet-mock": "^1"
+    "wechaty-puppet-mock": "^1.10.2"
   },
   "dependencies": {
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
-    "strip-ansi": "^6.0",
-    "wechaty-plugin-contrib": "^1.0.15"
+    "strip-ansi": "^7.0",
+    "wechaty-plugin-contrib": "^1.0.18"
   },
   "files": [
     "bin/",

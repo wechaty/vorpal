@@ -59,7 +59,7 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
 
   const matchPlugin = (message: Message): boolean => {
     if (message.self())                       { return false }
-    if (message.type() !== PUPPET.type.Message.Text) { return false }
+    if (message.type() !== PUPPET.types.Message.Text) { return false }
 
     return true
   }

@@ -97,7 +97,7 @@ test('asker() with mocker', async t => {
    */
   const mocker = new mock.Mocker()
   const puppet = new PuppetMock({ mocker })
-  const wechaty = new WechatyBuilder().options({ puppet }).build()
+  const wechaty = WechatyBuilder.build({ puppet })
 
   wechaty.use(WechatyVorpalPlugin)
   await wechaty.start()
