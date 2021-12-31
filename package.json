@@ -55,9 +55,9 @@
     "in-gfw": "^1.2.0",
     "tstest": "^1.0.1",
     "vorpal-hacker-news": "^1.0.6",
-    "wechaty": "^1.11.27",
-    "wechaty-mocker": "^1",
-    "wechaty-puppet-mock": "^1.10.2"
+    "wechaty": "^1.11.28",
+    "wechaty-mocker": "^1.11.1",
+    "wechaty-puppet-mock": "^1.11.11"
   },
   "dependencies": {
     "lodash": "^4.17.21",

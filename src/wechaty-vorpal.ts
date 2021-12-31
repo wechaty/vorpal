@@ -55,10 +55,10 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
     : []
 
   extensionList.forEach(m => vorpal.use(m))
-  log.verbose('WechatyVorpal', 'WechatyVorpal() %s vorpal module installed', config.use.length)
+  log.verbose('WechatyVorpal', 'WechatyVorpal() %s vorpal module installed', extensionList.length)
 
   const matchPlugin = (message: Message): boolean => {
-    if (message.self())                       { return false }
+    if (message.self())                               { return false }
     if (message.type() !== PUPPET.types.Message.Text) { return false }
 
     return true
