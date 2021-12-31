@@ -63,7 +63,7 @@
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "strip-ansi": "^7.0",
-    "wechaty-plugin-contrib": "^1.0.18"
+    "wechaty-plugin-contrib": "^1.11.1"
   },
   "files": [
     "bin/",
