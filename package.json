@@ -1,6 +1,6 @@
 {
   "name": "wechaty-vorpal",
-  "version": "1.11.4",
+  "version": "1.13.0",
   "description": "Extensible Interactive CLI for Wechaty ChatOps, Powered by Vorpal.",
   "type": "module",
   "exports": {
@@ -55,9 +55,9 @@
     "in-gfw": "^1.2.0",
     "tstest": "^1.0.1",
     "vorpal-hacker-news": "^1.0.6",
-    "wechaty": "^1.11.28",
-    "wechaty-mocker": "^1.11.1",
-    "wechaty-puppet-mock": "^1.11.11"
+    "wechaty": "^1.13.15",
+    "wechaty-mocker": "^1.11.2",
+    "wechaty-puppet-mock": "^1.13.4"
   },
   "dependencies": {
     "lodash": "^4.17.21",

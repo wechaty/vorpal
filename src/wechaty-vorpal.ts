@@ -91,18 +91,17 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
       if (!await matchPlugin(message))  { return }
       if (!await matchConfig(message))  { return }
 
-      const io = VorpalIo.from(message)
-
-      /**
-       * The meaning of BUSY:
-       *  If we are in a session that dealing with the previous vorpal command,
-       *  then we should leave all new messages to the session.
-       */
-      if (io.busy())                    { return }
-
       const command = await message.mentionText()
       const { match } = vorpal.parseCommand(command)
       if (!match && config.silent)      { return }
+
+      const io = VorpalIo.from(message)
+      /**
+        * The meaning of BUSY:
+        *  If we are in a session that dealing with the previous vorpal command,
+        *  then we should leave all new messages to the session.
+        */
+      if (io.busy())                    { return }
 
       try {
         const obsio = io.open()
@@ -117,6 +116,8 @@ function WechatyVorpal (config: WechatyVorpalConfig): WechatyPlugin {
           log.error('WechatyVorpal', 'WechatyVorpalPlugin() onMessage() command<%s> exit code %s', command, ret)
         }
 
+      } catch (e) {
+        log.error('WechatyVorpal', 'WechatyVorpalPlugin() onMessage() command<%s> exception: %s', command, (e as Error).message)
       } finally {
         await new Promise(setImmediate)
         io.close()
